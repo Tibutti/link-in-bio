@@ -40,7 +40,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             <div style={{ 
               width: '100%', 
               maxWidth: '320px', 
-              height: '180px', 
+              height: '130px', 
               position: 'relative',
               margin: '0 auto',
               overflow: 'hidden'
@@ -54,7 +54,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
                   position: 'absolute',
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  marginTop: '-20px' // Przesunięcie w górę, aby odciąć suwak
+                  marginTop: '0px' // Usunięcie marginesu górnego
                 }}
                 title="TryHackMe Badge"
                 onLoad={() => setIsLoaded(true)}
