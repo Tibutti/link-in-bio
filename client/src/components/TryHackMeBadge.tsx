@@ -25,13 +25,14 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
           Statystyki i osiągnięcia z platformy TryHackMe
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className={`w-full flex justify-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <CardContent className="p-4 flex items-center justify-center">
+        <div className={`w-full flex flex-col items-center justify-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
           <iframe 
             src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
-            style={{ border: 'none', width: '100%', height: '220px' }}
+            style={{ border: 'none', width: '100%', maxWidth: '500px', height: '250px' }}
             title="TryHackMe Badge"
             onLoad={() => setIsLoaded(true)}
+            className="mx-auto"
           />
         </div>
       </CardContent>
