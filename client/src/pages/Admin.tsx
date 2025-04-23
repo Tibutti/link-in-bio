@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EditProfileForm } from '@/components/EditProfileForm';
 import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
 import { EditFeaturedContentForm } from '@/components/EditFeaturedContentForm';
+import { ContactDetailsForm } from '@/components/ContactDetailsForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { Plus } from 'lucide-react';
 import {
@@ -36,6 +37,8 @@ interface Profile {
   name: string;
   bio: string;
   location: string;
+  email: string | null;
+  phone: string | null;
   imageIndex: number;
   backgroundIndex: number;
   backgroundGradient: string | null;
@@ -222,9 +225,10 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="profile">Profil</TabsTrigger>
             <TabsTrigger value="avatar">Zdjęcie</TabsTrigger>
+            <TabsTrigger value="contact">Kontakt</TabsTrigger>
             <TabsTrigger value="social">Media społecznościowe</TabsTrigger>
             <TabsTrigger value="knowledge">Platformy wiedzy</TabsTrigger>
             <TabsTrigger value="featured">Wyróżnione treści</TabsTrigger>
@@ -299,6 +303,19 @@ export default function Admin() {
                     imageIndex: newIndex
                   });
                   // Dodatkowo przeładujemy dane z serwera dla pewności
+                  loadData();
+                }}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="contact" className="mt-4">
+            {profile && (
+              <ContactDetailsForm
+                profileId={profile.id}
+                email={profile.email || ""}
+                phone={profile.phone || ""}
+                onSuccess={() => {
                   loadData();
                 }}
               />

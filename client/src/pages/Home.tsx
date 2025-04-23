@@ -10,6 +10,7 @@ import ProfileSelector from "@/components/ProfileSelector";
 import BackgroundSelector from "@/components/BackgroundSelector";
 import GitHubStats from "@/components/GitHubStats";
 import GitHubUsernameForm from "@/components/GitHubUsernameForm";
+import ContactDetails from "@/components/ContactDetails";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
@@ -127,6 +128,11 @@ export default function Home() {
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <ProfileHeader 
           profile={profile}
+        />
+        
+        <ContactDetails 
+          email="mateus@example.com"
+          phone="+48 123 456 789"
         />
         
         <SocialLinks 
