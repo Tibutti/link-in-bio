@@ -25,6 +25,7 @@ export const profiles = pgTable("profiles", {
   location: text("location"),
   imageIndex: integer("image_index").default(0),
   backgroundIndex: integer("background_index").default(0),
+  githubUsername: text("github_username"),
 });
 
 export const insertProfileSchema = createInsertSchema(profiles).pick({
@@ -34,6 +35,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   location: true,
   imageIndex: true,
   backgroundIndex: true,
+  githubUsername: true,
 });
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
@@ -82,3 +84,32 @@ export const insertFeaturedContentSchema = createInsertSchema(featuredContents).
 
 export type InsertFeaturedContent = z.infer<typeof insertFeaturedContentSchema>;
 export type FeaturedContent = typeof featuredContents.$inferSelect;
+
+// GitHub contributions
+export const githubContributions = pgTable("github_contributions", {
+  id: serial("id").primaryKey(),
+  profileId: integer("profile_id").notNull().references(() => profiles.id),
+  contributionData: jsonb("contribution_data").notNull(),
+  lastUpdated: text("last_updated").notNull(),
+});
+
+export const insertGithubContributionSchema = createInsertSchema(githubContributions).pick({
+  profileId: true,
+  contributionData: true,
+  lastUpdated: true,
+});
+
+export type InsertGithubContribution = z.infer<typeof insertGithubContributionSchema>;
+export type GithubContribution = typeof githubContributions.$inferSelect;
+
+// Custom type for GitHub contribution data structure
+export type ContributionDay = {
+  date: string;
+  count: number;
+  level: 0 | 1 | 2 | 3 | 4;
+};
+
+export type ContributionData = {
+  total: number;
+  days: ContributionDay[];
+};
