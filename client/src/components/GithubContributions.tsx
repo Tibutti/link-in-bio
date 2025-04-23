@@ -45,20 +45,26 @@ export default function GithubContributions({
   // Fetch contributions mutation
   const fetchContributionsMutation = useMutation({
     mutationFn: async (githubUsername: string) => {
+      console.log("Pobieranie danych dla użytkownika GitHub:", githubUsername);
       const response = await apiRequest(
         "GET", 
         `/api/github-contributions/${githubUsername}`
       );
       return response;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Pobrane dane GitHub:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
     },
+    onError: (error) => {
+      console.error("Błąd pobierania danych GitHub:", error);
+    }
   });
 
   const handleFetchContributions = (e: React.FormEvent) => {
     e.preventDefault();
     if (usernameInput) {
+      console.log("Wysyłanie żądania o dane GitHub dla:", usernameInput);
       fetchContributionsMutation.mutate(usernameInput);
     }
   };
@@ -75,40 +81,58 @@ export default function GithubContributions({
                         
   if (!contributions && !fetchContributionsMutation.isPending) {
     return (
-      <div className="mb-10">
-        <h2 className="text-xl font-semibold mb-4 text-center">GitHub Contributions</h2>
-        <p className="text-gray-600 text-center mb-4">
-          Connect your GitHub account to display your contributions graph.
-        </p>
-        <form onSubmit={handleFetchContributions} className="flex gap-2 max-w-md mx-auto">
-          <Input
-            placeholder="GitHub username"
-            value={usernameInput}
-            onChange={(e) => setUsernameInput(e.target.value)}
-            className="flex-1"
-          />
-          <Button 
-            type="submit"
-            className="bg-gray-800 hover:bg-gray-700"
-            disabled={!usernameInput || fetchContributionsMutation.isPending}
-          >
-            <FaGithub className="mr-2" />
-            Connect
-          </Button>
-        </form>
-      </div>
+      <motion.div 
+        className="mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h2 className="text-xl font-semibold mb-4 text-center flex items-center justify-center">
+          <FaGithub className="mr-2" />
+          GitHub Contributions
+        </h2>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+          <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+            Wpisz nazwę użytkownika GitHub, aby wyświetlić statystyki aktywności.
+          </p>
+          <form onSubmit={handleFetchContributions} className="flex gap-2 max-w-md mx-auto">
+            <Input
+              placeholder="Nazwa użytkownika GitHub"
+              value={usernameInput}
+              onChange={(e) => setUsernameInput(e.target.value)}
+              className="flex-1"
+            />
+            <Button 
+              type="submit"
+              className="bg-gray-800 hover:bg-gray-700"
+              disabled={!usernameInput || fetchContributionsMutation.isPending}
+            >
+              <FaGithub className="mr-2" />
+              Połącz
+            </Button>
+          </form>
+        </div>
+      </motion.div>
     );
   }
 
   if (fetchContributionsMutation.isPending) {
     return (
-      <div className="mb-10">
-        <h2 className="text-xl font-semibold mb-4 text-center">GitHub Contributions</h2>
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <span className="ml-2">Loading contributions...</span>
+      <motion.div 
+        className="mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h2 className="text-xl font-semibold mb-4 text-center flex items-center justify-center">
+          <FaGithub className="mr-2" />
+          GitHub Contributions
+        </h2>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2">Pobieranie danych z GitHub...</span>
+          </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -230,8 +254,8 @@ export default function GithubContributions({
       
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "graph" | "stats")} className="w-full">
         <TabsList className="mx-auto mb-4">
-          <TabsTrigger value="graph">Contribution Graph</TabsTrigger>
-          <TabsTrigger value="stats">Statistics</TabsTrigger>
+          <TabsTrigger value="graph">Wykres aktywności</TabsTrigger>
+          <TabsTrigger value="stats">Statystyki</TabsTrigger>
         </TabsList>
         
         <TabsContent value="graph" className="focus-visible:outline-none focus-visible:ring-0">
@@ -244,13 +268,13 @@ export default function GithubContributions({
               <div className="mt-6 pr-2 text-xs text-gray-400">
                 {Array.from({ length: 7 }).map((_, i) => (
                   <div key={i} style={{ height: `${cellSize}px` }} className="flex items-center justify-start">
-                    {i === 0 && "Sun"}
-                    {i === 1 && "Mon"}
-                    {i === 2 && "Tue"}
-                    {i === 3 && "Wed"}
-                    {i === 4 && "Thu"}
-                    {i === 5 && "Fri"}
-                    {i === 6 && "Sat"}
+                    {i === 0 && "Ndz"}
+                    {i === 1 && "Pon"}
+                    {i === 2 && "Wt"}
+                    {i === 3 && "Śr"}
+                    {i === 4 && "Czw"}
+                    {i === 5 && "Pt"}
+                    {i === 6 && "Sob"}
                   </div>
                 ))}
               </div>
@@ -320,11 +344,11 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Contributions</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Wszystkie kontrybucje</h3>
                   <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                     {stats.totalContributions.toLocaleString()}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">in the last year</p>
+                  <p className="text-xs text-gray-500 mt-2">w ciągu ostatniego roku</p>
                 </motion.div>
                 
                 <motion.div 
@@ -333,11 +357,11 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Streak</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Aktualna seria</h3>
                   <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                    {stats.currentStreak} {stats.currentStreak === 1 ? "day" : "days"}
+                    {stats.currentStreak} {stats.currentStreak === 1 ? "dzień" : stats.currentStreak > 1 && stats.currentStreak < 5 ? "dni" : "dni"}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">consecutive days with contributions</p>
+                  <p className="text-xs text-gray-500 mt-2">kolejnych dni z aktywnością</p>
                 </motion.div>
                 
                 <motion.div 
@@ -346,11 +370,11 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Longest Streak</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Najdłuższa seria</h3>
                   <p className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">
-                    {stats.longestStreak} {stats.longestStreak === 1 ? "day" : "days"}
+                    {stats.longestStreak} {stats.longestStreak === 1 ? "dzień" : stats.longestStreak > 1 && stats.longestStreak < 5 ? "dni" : "dni"}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">best consecutive contribution streak</p>
+                  <p className="text-xs text-gray-500 mt-2">najlepsza seria aktywności</p>
                 </motion.div>
                 
                 <motion.div 
@@ -359,12 +383,12 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Best Day</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Najlepszy dzień</h3>
                   <p className="text-4xl font-bold text-amber-600 dark:text-amber-400 mt-2">
                     {stats.bestDay.count}
                   </p>
                   <p className="text-xs text-gray-500 mt-2">
-                    contributions on {new Date(stats.bestDay.date).toLocaleDateString()}
+                    kontrybucji dnia {new Date(stats.bestDay.date).toLocaleDateString('pl-PL')}
                   </p>
                 </motion.div>
               </div>
@@ -373,16 +397,28 @@ export default function GithubContributions({
         </TabsContent>
       </Tabs>
       
-      <div className="text-center mt-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleFetchContributions}
-          disabled={!usernameInput || fetchContributionsMutation.isPending}
-          className="text-xs text-gray-500 hover:text-gray-700"
-        >
-          {fetchContributionsMutation.isPending ? 'Refreshing...' : 'Refresh contributions'}
-        </Button>
+      <div className="flex flex-col items-center mt-4 gap-2">
+        <div className="text-xs text-gray-500">
+          Wyświetlanie danych dla użytkownika: <span className="font-semibold">{username || "nie ustawiono"}</span>
+        </div>
+        
+        <form onSubmit={handleFetchContributions} className="flex gap-2 w-full max-w-md">
+          <Input
+            placeholder="Zmień nazwę użytkownika GitHub"
+            value={usernameInput}
+            onChange={(e) => setUsernameInput(e.target.value)}
+            className="flex-1 text-sm h-8"
+            size={20}
+          />
+          <Button
+            type="submit"
+            variant="outline" 
+            size="sm"
+            disabled={!usernameInput || fetchContributionsMutation.isPending}
+          >
+            {fetchContributionsMutation.isPending ? 'Pobieranie...' : 'Zmień'}
+          </Button>
+        </form>
       </div>
     </motion.section>
   );
