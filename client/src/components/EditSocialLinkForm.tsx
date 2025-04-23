@@ -9,11 +9,13 @@ import { apiRequest } from '@/lib/queryClient';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -31,6 +33,7 @@ interface SocialLink {
   iconName: string;
   order: number;
   category: string;
+  isVisible: boolean;
 }
 
 interface EditSocialLinkFormProps {
@@ -67,6 +70,7 @@ const socialLinkSchema = z.object({
   platform: z.string().min(1, { message: 'Wybierz platformę' }),
   username: z.string().min(1, { message: 'Wprowadź nazwę użytkownika' }),
   url: z.string().url({ message: 'Wprowadź poprawny adres URL' }),
+  isVisible: z.boolean().default(true),
 });
 
 type SocialLinkFormValues = z.infer<typeof socialLinkSchema>;
@@ -83,6 +87,7 @@ export function EditSocialLinkForm({ profileId, link, category, onSuccess, onCan
       platform: link?.platform || '',
       username: link?.username || '',
       url: link?.url || '',
+      isVisible: link?.isVisible !== undefined ? link.isVisible : true,
     },
   });
 
@@ -224,6 +229,27 @@ export function EditSocialLinkForm({ profileId, link, category, onSuccess, onCan
                 <Input placeholder="https://platform.com/username" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="isVisible"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Widoczność</FormLabel>
+                <FormDescription>
+                  Czy link ma być widoczny na stronie głównej?
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

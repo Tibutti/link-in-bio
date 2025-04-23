@@ -127,31 +127,46 @@ export default function Home() {
           profile={profile}
         />
         
-        <ContactDetails 
-          email="mateus@example.com"
-          phone="+48 123 456 789"
-        />
+        {profile.showContact && (
+          <ContactDetails 
+            email={profile.email || ""}
+            phone={profile.phone || ""}
+          />
+        )}
         
-        <SocialLinks 
-          links={socialLinks} 
-          onLinkClick={handleLinkClick}
-        />
+        {profile.showSocial && (
+          <SocialLinks 
+            links={socialLinks.filter(link => link.isVisible && link.category === 'social')} 
+            onLinkClick={handleLinkClick}
+          />
+        )}
         
-        {featuredContents.length > 0 && (
+        {profile.showKnowledge && (
+          <SocialLinks 
+            links={socialLinks.filter(link => link.isVisible && link.category === 'knowledge')} 
+            onLinkClick={handleLinkClick}
+          />
+        )}
+        
+        {profile.showFeatured && featuredContents.length > 0 && (
           <FeaturedContent 
-            contents={featuredContents} 
+            contents={featuredContents.filter(content => content.isVisible)} 
             onContentClick={handleLinkClick}
           />
         )}
         
-        <GitHubStats 
-          profile={profile} 
-        />
+        {profile.showGithubStats && profile.githubUsername && (
+          <GitHubStats 
+            profile={profile} 
+          />
+        )}
         
-        <ProfileSelector 
-          selectedIndex={profile.imageIndex ?? 0} 
-          onSelect={handleProfileImageChange} 
-        />
+        {profile.showImage && (
+          <ProfileSelector 
+            selectedIndex={profile.imageIndex ?? 0} 
+            onSelect={handleProfileImageChange} 
+          />
+        )}
         
         <BackgroundSelector 
           selectedIndex={backgroundIndex} 
