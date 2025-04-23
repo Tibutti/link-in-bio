@@ -1,9 +1,10 @@
 import { 
-  users, profiles, socialLinks, featuredContents,
+  users, profiles, socialLinks, featuredContents, sessions,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
-  type FeaturedContent, type InsertFeaturedContent
+  type FeaturedContent, type InsertFeaturedContent,
+  type Session, type InsertSession
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -36,6 +37,12 @@ export interface IStorage {
   deleteFeaturedContent(id: number): Promise<boolean>;
   
   // GitHub contributions methods have been removed
+  
+  // Session methods
+  createSession(session: InsertSession): Promise<Session>;
+  getSessionByToken(token: string): Promise<Session | undefined>;
+  deleteSession(id: number): Promise<boolean>;
+  deleteSessionByToken(token: string): Promise<boolean>;
   
   // Demo data initialization
   initializeDemoData(): Promise<void>;
@@ -184,6 +191,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   // GitHub contributions methods have been removed
+
+  // Session methods
+  async createSession(insertSession: InsertSession): Promise<Session> {
+    const [session] = await db.insert(sessions).values(insertSession).returning();
+    return session;
+  }
+
+  async getSessionByToken(token: string): Promise<Session | undefined> {
+    const [session] = await db.select().from(sessions).where(eq(sessions.token, token));
+    return session;
+  }
+
+  async deleteSession(id: number): Promise<boolean> {
+    const [deleted] = await db.delete(sessions).where(eq(sessions.id, id)).returning();
+    return !!deleted;
+  }
+
+  async deleteSessionByToken(token: string): Promise<boolean> {
+    const [deleted] = await db.delete(sessions).where(eq(sessions.token, token)).returning();
+    return !!deleted;
+  }
 
   // Initialize database with demo data 
   async initializeDemoData() {
