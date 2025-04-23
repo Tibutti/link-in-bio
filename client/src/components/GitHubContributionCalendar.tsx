@@ -48,39 +48,46 @@ export default function GitHubContributionCalendar({ profile }: GitHubContributi
   
   // Zorganizuj dane w tygodnie dla wyświetlenia w kalendarzu
   const getCalendarData = () => {
-    if (!data?.contributions || data.contributions.length === 0) {
+    if (!data?.contributions) {
       return [];
     }
     
-    // Przygotuj dane kalendarza
-    const contributions = data.contributions.sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-    
-    // Oblicz datę rozpoczęcia (53 tygodnie wstecz)
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 371); // Około 53 tygodnie wstecz
-    
-    // Tworzenie struktury kalendarza
-    const calendar = [];
-    let currentDate = new Date(startDate);
-    
-    while (currentDate <= endDate) {
-      const dateStr = currentDate.toISOString().split('T')[0];
-      const contribution = contributions.find(c => c.date === dateStr) || {
-        date: dateStr,
-        count: 0,
-        level: 0
-      };
+    // Jeśli kontrybucje są dostępne, użyj ich bezpośrednio
+    if (data.contributions.length > 0) {
+      console.log(`Otrzymano ${data.contributions.length} dni kontrybucji z API`);
       
-      calendar.push(contribution);
+      // Przygotuj dane kalendarza
+      const contributions = data.contributions.sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
       
-      // Przesuń do następnego dnia
-      currentDate.setDate(currentDate.getDate() + 1);
+      // Oblicz datę rozpoczęcia (53 tygodnie wstecz)
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 371); // Około 53 tygodnie wstecz
+      
+      // Tworzenie struktury kalendarza
+      const calendar = [];
+      let currentDate = new Date(startDate);
+      
+      while (currentDate <= endDate) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const contribution = contributions.find(c => c.date === dateStr) || {
+          date: dateStr,
+          count: 0,
+          level: 0
+        };
+        
+        calendar.push(contribution);
+        
+        // Przesuń do następnego dnia
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      return calendar;
     }
     
-    return calendar;
+    return [];
   };
   
   const calendarData = getCalendarData();
