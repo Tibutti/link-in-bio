@@ -25,6 +25,8 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
   const calendarRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    let isMounted = true;
+    
     // Funkcja do ładowania kalendarza GitHub
     const loadCalendar = async () => {
       try {
@@ -37,7 +39,7 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
         }
         
         // Załaduj skrypt jeśli jeszcze nie załadowany
-        if (!window.GitHubCalendar) {
+        if (typeof window.GitHubCalendar !== 'function') {
           // Utwórz i załaduj skrypt
           await new Promise<void>((resolve, reject) => {
             const script = document.createElement('script');
@@ -49,19 +51,27 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
           });
         }
         
-        // Inicjalizuj kalendarz po załadowaniu
-        if (calendarRef.current && profile.githubUsername && window.GitHubCalendar) {
-          window.GitHubCalendar(
-            '.github-calendar',
-            profile.githubUsername,
-            { 
-              responsive: true, 
-              tooltips: true,
-              global_stats: false,
-              summary_text: 'Podsumowanie aktywności na GitHub'
+        // Inicjalizuj kalendarz po załadowaniu (z opóźnieniem dla pewności)
+        setTimeout(() => {
+          if (!isMounted) return;
+          
+          if (calendarRef.current && profile.githubUsername && typeof window.GitHubCalendar === 'function') {
+            try {
+              window.GitHubCalendar(
+                '.calendar',
+                profile.githubUsername,
+                { 
+                  responsive: true, 
+                  tooltips: true,
+                  global_stats: false,
+                  summary_text: 'Podsumowanie aktywności na GitHub'
+                }
+              );
+            } catch (err) {
+              console.error('Błąd przy inicjalizacji kalendarza:', err);
             }
-          );
-        }
+          }
+        }, 300);
       } catch (error) {
         console.error('Błąd podczas ładowania kalendarza GitHub:', error);
       }
@@ -71,7 +81,10 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
       loadCalendar();
     }
     
-    // Funkcja czyszcząca nie usuwa skryptów i stylów, ponieważ mogą być używane w innych miejscach
+    // Funkcja czyszcząca
+    return () => {
+      isMounted = false;
+    };
   }, [profile.githubUsername]);
 
   if (!profile.githubUsername) return null;
@@ -79,7 +92,7 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
   return (
     <div className="w-full mt-4">
       <h2 className="text-lg font-semibold mb-2 text-center">Aktywność na GitHub</h2>
-      <div className="github-calendar" ref={calendarRef}>
+      <div className="calendar github-calendar" ref={calendarRef}>
         Ładowanie danych aktywności...
       </div>
     </div>

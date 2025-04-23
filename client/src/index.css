@@ -57,3 +57,65 @@
   }
 }
 
+/* Dostosowania dla kalendarza GitHub */
+.calendar {
+  @apply rounded-lg shadow-md overflow-hidden my-2;
+  width: 100%;
+  max-width: 100%;
+}
+
+.calendar .js-calendar-graph-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.calendar .width-full {
+  width: 100%;
+}
+
+.calendar .contrib-column {
+  @apply text-sm p-1;
+}
+
+.calendar .contrib-number {
+  @apply font-semibold text-primary;
+}
+
+.calendar .text-muted {
+  @apply text-muted-foreground;
+}
+
+.calendar-graph text.month {
+  @apply text-muted-foreground;
+}
+
+.calendar-graph text.wday {
+  @apply text-muted-foreground;
+}
+
+/* Kolorystyka kalendarza w stylu różowego motywu */
+.calendar .contrib-legend .legend li {
+  @apply rounded-sm;
+}
+
+.calendar .js-calendar-graph-svg rect.ContributionCalendar-day[data-level="0"] {
+  fill: hsl(var(--muted));
+}
+
+.calendar .js-calendar-graph-svg rect.ContributionCalendar-day[data-level="1"] {
+  fill: rgb(252, 196, 252);
+}
+
+.calendar .js-calendar-graph-svg rect.ContributionCalendar-day[data-level="2"] {
+  fill: rgb(241, 131, 241);
+}
+
+.calendar .js-calendar-graph-svg rect.ContributionCalendar-day[data-level="3"] {
+  fill: rgb(217, 75, 217);
+}
+
+.calendar .js-calendar-graph-svg rect.ContributionCalendar-day[data-level="4"] {
+  fill: rgb(156, 0, 121);
+}
+
