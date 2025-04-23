@@ -40,10 +40,10 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             <div style={{ 
               width: '100%', 
               maxWidth: '320px', 
-              height: '220px', 
+              height: '180px', 
               position: 'relative',
               margin: '0 auto',
-              overflowX: 'hidden'
+              overflow: 'hidden'
             }}>
               <iframe 
                 src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
@@ -54,9 +54,11 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
                   position: 'absolute',
                   left: '50%',
                   transform: 'translateX(-50%)',
+                  marginTop: '-20px' // Przesunięcie w górę, aby odciąć suwak
                 }}
                 title="TryHackMe Badge"
                 onLoad={() => setIsLoaded(true)}
+                scrolling="no" // Wyłączenie przewijania
               />
             </div>
           </div>
