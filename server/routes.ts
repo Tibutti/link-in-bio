@@ -219,13 +219,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Profile not found" });
       }
 
-      // Check if we already have contributions stored and if they're recent
+      // Check if we already have contributions stored for this username and if they're recent
       const existingContributions = await storage.getGithubContributions(profile.id);
       const now = new Date();
       const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-      // If we have recent data (less than a day old), return it
-      if (existingContributions && 
+      // If profile has a different Github username than requested one, always fetch new data
+      const profileUsername = profile.githubUsername || '';
+      const isRequestingDifferentUser = profileUsername.toLowerCase() !== username.toLowerCase();
+      
+      // If we have recent data (less than a day old) AND it's for the same username, return it
+      if (!isRequestingDifferentUser && 
+          existingContributions && 
           existingContributions.lastUpdated && 
           (now.getTime() - new Date(existingContributions.lastUpdated).getTime() < ONE_DAY)) {
         return res.json(existingContributions);
@@ -266,8 +271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           savedContribution = await storage.createGithubContributions(data);
         }
 
-        // Update the profile with the GitHub username if not already set
-        if (!profile.githubUsername) {
+        // Always update the profile with the new GitHub username
+        if (profile.githubUsername !== username) {
           await storage.updateProfile(profile.id, { githubUsername: username });
         }
 
