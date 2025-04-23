@@ -67,6 +67,12 @@ export default function GithubContributions({
   const contributions = contributionData?.contributionData || 
                         (fetchContributionsMutation.data as GithubContribution | undefined)?.contributionData;
                         
+  console.log("Contribution data:", {
+    fromProps: contributionData?.contributionData,
+    fromMutation: (fetchContributionsMutation.data as GithubContribution | undefined)?.contributionData,
+    finalValue: contributions
+  });
+                        
   if (!contributions && !fetchContributionsMutation.isPending) {
     return (
       <div className="mb-10">
