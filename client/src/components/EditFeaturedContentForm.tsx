@@ -10,11 +10,13 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 
 interface FeaturedContent {
   id: number;
@@ -23,6 +25,7 @@ interface FeaturedContent {
   imageUrl: string | null;
   linkUrl: string | null;
   order: number;
+  isVisible: boolean;
 }
 
 interface EditFeaturedContentFormProps {
@@ -37,6 +40,7 @@ const featuredContentSchema = z.object({
   description: z.string().min(5, { message: 'Opis musi zawierać min. 5 znaków' }).optional(),
   linkUrl: z.string().url({ message: 'Wprowadź poprawny adres URL' }).nullable(),
   imageUrl: z.string().url({ message: 'Wprowadź poprawny adres URL obrazu' }).nullable(),
+  isVisible: z.boolean().default(true),
 });
 
 type FeaturedContentFormValues = z.infer<typeof featuredContentSchema>;
@@ -53,6 +57,7 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
       description: '', // Opcjonalne pole
       linkUrl: content?.linkUrl || null,
       imageUrl: content?.imageUrl || null,
+      isVisible: content?.isVisible !== undefined ? content.isVisible : true,
     },
   });
 
@@ -67,6 +72,7 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
         title: values.title,
         linkUrl: values.linkUrl,
         imageUrl: values.imageUrl,
+        isVisible: values.isVisible,
       };
       
       if (isEditing && content) {
@@ -215,6 +221,27 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
                 />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="isVisible"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Widoczność</FormLabel>
+                <FormDescription>
+                  Czy treść ma być widoczna na stronie głównej?
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />
