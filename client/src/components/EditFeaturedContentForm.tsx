@@ -20,9 +20,8 @@ interface FeaturedContent {
   id: number;
   profileId: number;
   title: string;
-  description: string;
-  url: string;
   imageUrl: string | null;
+  linkUrl: string | null;
   order: number;
 }
 
@@ -35,8 +34,8 @@ interface EditFeaturedContentFormProps {
 
 const featuredContentSchema = z.object({
   title: z.string().min(2, { message: 'Tytuł musi zawierać min. 2 znaki' }),
-  description: z.string().min(5, { message: 'Opis musi zawierać min. 5 znaków' }),
-  url: z.string().url({ message: 'Wprowadź poprawny adres URL' }),
+  description: z.string().min(5, { message: 'Opis musi zawierać min. 5 znaków' }).optional(),
+  linkUrl: z.string().url({ message: 'Wprowadź poprawny adres URL' }).nullable(),
   imageUrl: z.string().url({ message: 'Wprowadź poprawny adres URL obrazu' }).nullable(),
 });
 
@@ -51,8 +50,8 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
     resolver: zodResolver(featuredContentSchema),
     defaultValues: {
       title: content?.title || '',
-      description: content?.description || '',
-      url: content?.url || '',
+      description: '', // Opcjonalne pole
+      linkUrl: content?.linkUrl || null,
       imageUrl: content?.imageUrl || null,
     },
   });
