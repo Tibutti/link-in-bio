@@ -218,6 +218,7 @@ export class DatabaseStorage implements IStorage {
     // Usuń istniejące dane przed ponowną inicjalizacją
     await db.delete(socialLinks);
     await db.delete(featuredContents);
+    await db.delete(sessions); // Najpierw usuwamy sesje, aby nie naruszać klucza obcego
     await db.delete(profiles);
     await db.delete(users);
 
