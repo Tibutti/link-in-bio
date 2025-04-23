@@ -37,10 +37,7 @@ export interface IStorage {
   updateFeaturedContent(id: number, data: Partial<FeaturedContent>): Promise<FeaturedContent>;
   deleteFeaturedContent(id: number): Promise<boolean>;
   
-  // GitHub contributions methods
-  getGithubContributions(profileId: number): Promise<GithubContribution | undefined>;
-  createGithubContributions(contribution: InsertGithubContribution): Promise<GithubContribution>;
-  updateGithubContributions(id: number, data: Partial<GithubContribution>): Promise<GithubContribution>;
+  // GitHub contributions methods have been removed
   
   // Demo data initialization
   initializeDemoData(): Promise<void>;
