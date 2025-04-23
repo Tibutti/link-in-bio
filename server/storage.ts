@@ -2,7 +2,9 @@ import {
   users, type User, type InsertUser,
   profiles, type Profile, type InsertProfile,
   socialLinks, type SocialLink, type InsertSocialLink,
-  featuredContents, type FeaturedContent, type InsertFeaturedContent
+  featuredContents, type FeaturedContent, type InsertFeaturedContent,
+  githubContributions, type GithubContribution, type InsertGithubContribution,
+  type ContributionData
 } from "@shared/schema";
 
 // Storage interface
@@ -31,6 +33,11 @@ export interface IStorage {
   createFeaturedContent(content: InsertFeaturedContent): Promise<FeaturedContent>;
   updateFeaturedContent(id: number, data: Partial<FeaturedContent>): Promise<FeaturedContent>;
   deleteFeaturedContent(id: number): Promise<boolean>;
+  
+  // GitHub contributions methods
+  getGithubContributions(profileId: number): Promise<GithubContribution | undefined>;
+  createGithubContributions(contribution: InsertGithubContribution): Promise<GithubContribution>;
+  updateGithubContributions(id: number, data: Partial<GithubContribution>): Promise<GithubContribution>;
 }
 
 export class MemStorage implements IStorage {
@@ -38,20 +45,24 @@ export class MemStorage implements IStorage {
   private profiles: Map<number, Profile>;
   private socialLinks: Map<number, SocialLink>;
   private featuredContents: Map<number, FeaturedContent>;
+  private githubContributions: Map<number, GithubContribution>;
   private currentUserId: number;
   private currentProfileId: number;
   private currentSocialLinkId: number;
   private currentFeaturedContentId: number;
+  private currentGithubContributionId: number;
 
   constructor() {
     this.users = new Map();
     this.profiles = new Map();
     this.socialLinks = new Map();
     this.featuredContents = new Map();
+    this.githubContributions = new Map();
     this.currentUserId = 1;
     this.currentProfileId = 1;
     this.currentSocialLinkId = 1;
     this.currentFeaturedContentId = 1;
+    this.currentGithubContributionId = 1;
 
     // Initialize with demo data
     this.initializeDemoData();
@@ -233,6 +244,31 @@ export class MemStorage implements IStorage {
 
   async deleteFeaturedContent(id: number): Promise<boolean> {
     return this.featuredContents.delete(id);
+  }
+
+  // GitHub contributions methods
+  async getGithubContributions(profileId: number): Promise<GithubContribution | undefined> {
+    return Array.from(this.githubContributions.values()).find(
+      (contribution) => contribution.profileId === profileId
+    );
+  }
+
+  async createGithubContributions(contribution: InsertGithubContribution): Promise<GithubContribution> {
+    const id = this.currentGithubContributionId++;
+    const newContribution: GithubContribution = { ...contribution, id };
+    this.githubContributions.set(id, newContribution);
+    return newContribution;
+  }
+
+  async updateGithubContributions(id: number, data: Partial<GithubContribution>): Promise<GithubContribution> {
+    const contribution = this.githubContributions.get(id);
+    if (!contribution) {
+      throw new Error(`GitHub contribution with ID ${id} not found`);
+    }
+    
+    const updatedContribution = { ...contribution, ...data };
+    this.githubContributions.set(id, updatedContribution);
+    return updatedContribution;
   }
 }
 
