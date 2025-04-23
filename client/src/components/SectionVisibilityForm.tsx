@@ -24,6 +24,7 @@ const sectionVisibilitySchema = z.object({
   showSocial: z.boolean().default(true),
   showKnowledge: z.boolean().default(true),
   showFeatured: z.boolean().default(true),
+  showTryHackMe: z.boolean().default(true),
 });
 
 type SectionVisibilityFormValues = z.infer<typeof sectionVisibilitySchema>;
@@ -35,6 +36,7 @@ interface SectionVisibilityFormProps {
   showSocial: boolean;
   showKnowledge: boolean;
   showFeatured: boolean;
+  showTryHackMe: boolean;
   onSuccess?: () => void;
 }
 
@@ -45,6 +47,7 @@ export function SectionVisibilityForm({
   showSocial = true,
   showKnowledge = true,
   showFeatured = true,
+  showTryHackMe = true,
   onSuccess
 }: SectionVisibilityFormProps) {
   const { toast } = useToast();
@@ -57,6 +60,7 @@ export function SectionVisibilityForm({
       showSocial,
       showKnowledge,
       showFeatured,
+      showTryHackMe,
     },
   });
   
@@ -194,6 +198,27 @@ export function SectionVisibilityForm({
                       <FormLabel className="text-base">Wyróżnione treści</FormLabel>
                       <FormDescription>
                         Pokazuj wyróżnione treści na stronie
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="showTryHackMe"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Odznaka TryHackMe</FormLabel>
+                      <FormDescription>
+                        Pokazuj odznakę i statystyki z TryHackMe na stronie
                       </FormDescription>
                     </div>
                     <FormControl>

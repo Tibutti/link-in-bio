@@ -373,6 +373,7 @@ export default function Admin() {
                 showSocial={profile.showSocial}
                 showKnowledge={profile.showKnowledge}
                 showFeatured={profile.showFeatured}
+                showTryHackMe={profile.showTryHackMe || false}
                 onSuccess={() => {
                   loadData();
                 }}
