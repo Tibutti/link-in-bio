@@ -46,15 +46,29 @@ export default function GithubContributions({
   const fetchContributionsMutation = useMutation({
     mutationFn: async (githubUsername: string) => {
       console.log("Pobieranie danych dla użytkownika GitHub:", githubUsername);
+      
+      // Add timestamp to force bypassing the cache
+      const timestamp = Date.now();
+      
       const response = await apiRequest(
         "GET", 
-        `/api/github-contributions/${githubUsername}`
+        `/api/github-contributions/${githubUsername}?t=${timestamp}`
       );
       return response;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       console.log("Pobrane dane GitHub:", data);
+      
+      // Force a refetch of the profile data so the UI gets updated
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
+      
+      // Log the year of contributions to verify we're showing current data
+      if (data?.contributionData?.days?.length > 0) {
+        const dates = data.contributionData.days.map((d: { date: string }) => d.date).sort();
+        const firstDate = new Date(dates[0]);
+        const lastDate = new Date(dates[dates.length - 1]);
+        console.log(`GitHub data range: ${firstDate.toLocaleDateString()} to ${lastDate.toLocaleDateString()}`);
+      }
     },
     onError: (error) => {
       console.error("Błąd pobierania danych GitHub:", error);
@@ -215,12 +229,27 @@ export default function GithubContributions({
   const getStats = () => {
     if (!contributions) return null;
     
+    // Always use the current date to ensure we're looking at data from 2025
     const today = new Date();
+    // Set to exactly one year ago to match GitHub's timeframe
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(today.getFullYear() - 1);
     
-    // Get dates within the last year
-    const daysInLastYear = (contributions as ContributionData).days.filter((day) => {
+    console.log(`Calculating stats for the period: ${oneYearAgo.toLocaleDateString()} to ${today.toLocaleDateString()}`);
+    
+    // Get all days from the data
+    const allDays = (contributions as ContributionData).days;
+    
+    // Log the date range in the data to help debug
+    if (allDays.length > 0) {
+      const dates = allDays.map(d => d.date).sort();
+      const firstDateInData = new Date(dates[0]);
+      const lastDateInData = new Date(dates[dates.length - 1]);
+      console.log(`Data date range: ${firstDateInData.toLocaleDateString()} to ${lastDateInData.toLocaleDateString()}`);
+    }
+    
+    // Filter to include only dates within the last year (matching GitHub's timeframe)
+    const daysInLastYear = allDays.filter((day) => {
       const date = new Date(day.date);
       return date >= oneYearAgo && date <= today;
     });
