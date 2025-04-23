@@ -223,6 +223,40 @@ export default function GithubContributions({
     return { weeks, total: data.total };
   };
 
+  // Znajdź GitHub contributions SVG bezpośrednio z GitHub
+  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const [rawCalendarData, setRawCalendarData] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (username) {
+      // Gdy mamy nazwę użytkownika, pobierz kalendarz GitHub bezpośrednio
+      const fetchGitHubCalendar = async () => {
+        try {
+          // Dodaj timestamp do zapytania, aby uniknąć cache'owania
+          const timestamp = Date.now();
+          // Użyj cors-anywhere proxy lub podobnych usług, aby obejść ograniczenia CORS
+          const proxyUrl = `https://cors-anywhere.herokuapp.com/`;
+          const gitHubUrl = `https://github.com/users/${username}/contributions?tab=overview&from=${new Date().getFullYear()-1}-12-01&to=${new Date().getFullYear()}-12-31&t=${timestamp}`;
+          
+          // Próbujemy najpierw pobrać dane bezpośrednio przez API, co daje nam statystyki
+          // potem użyjemy proxy tylko w razie potrzeby wyświetlenia oryginalnego kalendarza
+          
+          // Poinformuj użytkownika, że próbujemy pobrać dane
+          console.log(`Attempting to fetch GitHub calendar for ${username}`);
+          
+          // Zapisz dane surowe w razie potrzeby
+          if (contributions && 'contributionData' in contributions) {
+            setRawCalendarData(JSON.stringify(contributions.contributionData));
+          }
+        } catch (error) {
+          console.error("Error fetching GitHub calendar:", error);
+        }
+      };
+      
+      fetchGitHubCalendar();
+    }
+  }, [username, contributions]);
+
   const { weeks, total } = processData(contributions as ContributionData);
   
   // Calculate statistics
@@ -327,6 +361,7 @@ export default function GithubContributions({
         <TabsList className="mx-auto mb-4">
           <TabsTrigger value="graph">Activity Graph</TabsTrigger>
           <TabsTrigger value="stats">Statistics</TabsTrigger>
+          {svgContent && <TabsTrigger value="github">GitHub Calendar</TabsTrigger>}
         </TabsList>
         
         <TabsContent value="graph" className="focus-visible:outline-none focus-visible:ring-0">
@@ -404,6 +439,14 @@ export default function GithubContributions({
             </div>
           </div>
         </TabsContent>
+        
+        {svgContent && (
+          <TabsContent value="github" className="focus-visible:outline-none focus-visible:ring-0">
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-x-auto">
+              <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+            </div>
+          </TabsContent>
+        )}
         
         <TabsContent value="stats" className="focus-visible:outline-none focus-visible:ring-0">
           {stats && (
