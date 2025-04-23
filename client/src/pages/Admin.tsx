@@ -56,8 +56,7 @@ interface FeaturedContent {
   id: number;
   profileId: number;
   title: string;
-  description: string;
-  url: string;
+  linkUrl: string | null;
   imageUrl: string | null;
   order: number;
 }
@@ -487,16 +486,26 @@ export default function Admin() {
                           }}
                         >
                           <h3 className="text-lg font-medium">{content.title}</h3>
-                          <p className="text-sm text-muted-foreground">{content.description}</p>
-                          <a 
-                            href={content.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-500 hover:underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            Zobacz treść
-                          </a>
+                          {content.linkUrl && (
+                            <a 
+                              href={content.linkUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-500 hover:underline"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Zobacz treść
+                            </a>
+                          )}
+                          {content.imageUrl && (
+                            <div className="mt-2">
+                              <img 
+                                src={content.imageUrl} 
+                                alt={content.title} 
+                                className="h-20 object-cover rounded"
+                              />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
