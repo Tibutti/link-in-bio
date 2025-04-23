@@ -33,6 +33,7 @@ export const profiles = pgTable("profiles", {
     direction: string;
   }>(),
   githubUsername: text("github_username"),
+  showGithubStats: boolean("show_github_stats").default(true),
 });
 
 export const insertProfileSchema = createInsertSchema(profiles).pick({
@@ -46,6 +47,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   backgroundIndex: true,
   backgroundGradient: true,
   githubUsername: true,
+  showGithubStats: true,
 });
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;

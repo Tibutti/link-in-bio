@@ -1,7 +1,5 @@
 import { type Profile } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
 import GitHubCalendar from './GitHubCalendar';
 
 interface GitHubStatsProps {
@@ -9,20 +7,8 @@ interface GitHubStatsProps {
 }
 
 export default function GitHubStats({ profile }: GitHubStatsProps) {
-  // Zapamiętaj stan przełącznika w localStorage
-  const [showStats, setShowStats] = useState(() => {
-    const saved = localStorage.getItem('showGitHubStats');
-    return saved === 'true';
-  });
-  
-  // Aktualizacja localStorage kiedy stan się zmienia
-  const handleToggle = (value: boolean) => {
-    setShowStats(value);
-    localStorage.setItem('showGitHubStats', value.toString());
-  };
-  
-  // Jeśli użytkownik nie ma nazwy użytkownika GitHub, nie wyświetlaj tego komponentu
-  if (!profile.githubUsername) return null;
+  // Jeśli użytkownik nie ma nazwy użytkownika GitHub lub nie ma włączonych statystyk, nie wyświetlaj tego komponentu
+  if (!profile.githubUsername || profile.showGithubStats === false) return null;
 
   // Elementy graficzne ze statystykami GitHub
   const statsUrl = `https://github-readme-stats.vercel.app/api?username=${profile.githubUsername}&show_icons=true&theme=radical`;
@@ -33,44 +19,32 @@ export default function GitHubStats({ profile }: GitHubStatsProps) {
   return (
     <Card className="mb-6 overflow-hidden shadow-md">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle>Statystyki GitHub</CardTitle>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">{showStats ? 'Ukryj' : 'Pokaż'}</span>
-            <Switch
-              checked={showStats}
-              onCheckedChange={handleToggle}
-              aria-label="Pokaż statystyki GitHub"
-            />
-          </div>
-        </div>
+        <CardTitle>Statystyki GitHub</CardTitle>
       </CardHeader>
       
-      {showStats && (
-        <CardContent className="pt-2">
-          <div className="flex flex-col space-y-4 items-center w-full">
-            <img 
-              src={statsUrl} 
-              alt="GitHub Stats" 
-              className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
-            />
-            
-            <img 
-              src={languagesUrl} 
-              alt="Najczęściej używane języki" 
-              className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
-            />
-            
-            <img 
-              src={streakUrl} 
-              alt="GitHub Commit Streak" 
-              className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
-            />
+      <CardContent className="pt-2">
+        <div className="flex flex-col space-y-4 items-center w-full">
+          <img 
+            src={statsUrl} 
+            alt="GitHub Stats" 
+            className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
+          />
+          
+          <img 
+            src={languagesUrl} 
+            alt="Najczęściej używane języki" 
+            className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
+          />
+          
+          <img 
+            src={streakUrl} 
+            alt="GitHub Commit Streak" 
+            className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
+          />
 
-            <GitHubCalendar profile={profile} />
-          </div>
-        </CardContent>
-      )}
+          <GitHubCalendar profile={profile} />
+        </div>
+      </CardContent>
     </Card>
   );
 }

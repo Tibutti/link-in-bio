@@ -16,6 +16,7 @@ import { EditProfileForm } from '@/components/EditProfileForm';
 import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
 import { EditFeaturedContentForm } from '@/components/EditFeaturedContentForm';
 import { ContactDetailsForm } from '@/components/ContactDetailsForm';
+import { GitHubSettingsForm } from '@/components/GitHubSettingsForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { Plus } from 'lucide-react';
 import {
@@ -43,6 +44,7 @@ interface Profile {
   backgroundIndex: number;
   backgroundGradient: string | null;
   githubUsername: string | null;
+  showGithubStats: boolean;
 }
 
 interface SocialLink {
@@ -225,10 +227,11 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="profile">Profil</TabsTrigger>
             <TabsTrigger value="avatar">Zdjęcie</TabsTrigger>
             <TabsTrigger value="contact">Kontakt</TabsTrigger>
+            <TabsTrigger value="github">GitHub</TabsTrigger>
             <TabsTrigger value="social">Media społecznościowe</TabsTrigger>
             <TabsTrigger value="knowledge">Platformy wiedzy</TabsTrigger>
             <TabsTrigger value="featured">Wyróżnione treści</TabsTrigger>
