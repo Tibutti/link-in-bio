@@ -9,6 +9,7 @@ import FeaturedContent from "@/components/FeaturedContent";
 import ProfileSelector from "@/components/ProfileSelector";
 import BackgroundSelector from "@/components/BackgroundSelector";
 import GitHubStats from "@/components/GitHubStats";
+import TryHackMeBadge from "@/components/TryHackMeBadge";
 import ContactDetails from "@/components/ContactDetails";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -158,6 +159,12 @@ export default function Home() {
         {profile.showGithubStats && profile.githubUsername && (
           <GitHubStats 
             profile={profile} 
+          />
+        )}
+        
+        {profile.showTryHackMe && profile.tryHackMeUserId && (
+          <TryHackMeBadge 
+            userId={profile.tryHackMeUserId} 
           />
         )}
         
