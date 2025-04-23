@@ -45,10 +45,11 @@ export default function GithubContributions({
   // Fetch contributions mutation
   const fetchContributionsMutation = useMutation({
     mutationFn: async (githubUsername: string) => {
-      return apiRequest(
+      const response = await apiRequest(
         "GET", 
         `/api/github-contributions/${githubUsername}`
       );
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
@@ -64,7 +65,7 @@ export default function GithubContributions({
 
   // Get contribution data from props or from the mutation result
   const contributions = contributionData?.contributionData || 
-                        fetchContributionsMutation.data?.contributionData;
+                        (fetchContributionsMutation.data as GithubContribution | undefined)?.contributionData;
                         
   if (!contributions && !fetchContributionsMutation.isPending) {
     return (
@@ -136,7 +137,7 @@ export default function GithubContributions({
     return { weeks, total: data.total };
   };
 
-  const { weeks, total } = processData(contributions);
+  const { weeks, total } = processData(contributions as ContributionData);
   
   // Calculate statistics
   const getStats = () => {
@@ -147,7 +148,7 @@ export default function GithubContributions({
     oneYearAgo.setFullYear(today.getFullYear() - 1);
     
     // Get dates within the last year
-    const daysInLastYear = contributions.days.filter(day => {
+    const daysInLastYear = (contributions as ContributionData).days.filter((day) => {
       const date = new Date(day.date);
       return date >= oneYearAgo && date <= today;
     });

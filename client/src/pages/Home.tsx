@@ -1,16 +1,22 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 
 import ProfileHeader from "@/components/ProfileHeader";
 import SocialLinks from "@/components/SocialLinks";
 import FeaturedContent from "@/components/FeaturedContent";
+import GithubContributions from "@/components/GithubContributions";
 import ProfileSelector from "@/components/ProfileSelector";
 import BackgroundSelector from "@/components/BackgroundSelector";
 import Footer from "@/components/Footer";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 
-import { type Profile, type SocialLink, type FeaturedContent as FeaturedContentType } from "@shared/schema";
+import { 
+  type Profile, 
+  type SocialLink, 
+  type FeaturedContent as FeaturedContentType,
+  type GithubContribution 
+} from "@shared/schema";
 
 export default function Home() {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
@@ -94,6 +100,7 @@ export default function Home() {
   const profile = data.profile as Profile;
   const socialLinks = data.socialLinks as SocialLink[];
   const featuredContents = data.featuredContents as FeaturedContentType[];
+  const githubContributions = data.githubContributions as GithubContribution | undefined;
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
@@ -113,6 +120,12 @@ export default function Home() {
             onContentClick={handleLinkClick}
           />
         )}
+        
+        <GithubContributions 
+          profileId={profile.id} 
+          username={profile.githubUsername || undefined}
+          contributionData={githubContributions}
+        />
         
         <ProfileSelector 
           selectedIndex={profile.imageIndex} 
