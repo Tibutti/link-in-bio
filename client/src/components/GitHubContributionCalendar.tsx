@@ -91,7 +91,24 @@ export default function GitHubContributionCalendar({ profile }: GitHubContributi
     let week = [];
     
     if (calendarData.length === 0) {
-      return [];
+      // Jeśli brak danych, wygeneruj pustą siatkę dla widoczności
+      const emptyWeeks = [];
+      
+      // Stwórz 52 tygodnie
+      for (let w = 0; w < 53; w++) {
+        const emptyWeek = [];
+        for (let d = 0; d < 7; d++) {
+          // Stwórz pusty dzień - będzie wyświetlany jako szary kwadrat
+          emptyWeek.push({
+            date: new Date().toISOString().split('T')[0],
+            count: 0,
+            level: 0
+          });
+        }
+        emptyWeeks.push(emptyWeek);
+      }
+      
+      return emptyWeeks;
     }
     
     // Wypełnij dni przed pierwszym dniem, aby zacząć od poniedziałku
