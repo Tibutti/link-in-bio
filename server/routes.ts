@@ -46,6 +46,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to get profile" });
     }
   });
+  
+  // Get profile by ID
+  app.get("/api/profile/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const profile = await storage.getProfile(id);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      console.error("Error getting profile:", error);
+      res.status(500).json({ message: "Failed to get profile" });
+    }
+  });
 
   // Update profile
   app.patch("/api/profile/:id", async (req, res) => {
@@ -57,7 +74,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Profile not found" });
       }
       
-      const updateSchema = insertProfileSchema.partial();
+      // Create schema that accepts either part of the profile including the new backgroundGradient
+      const updateSchema = z.object({
+        name: z.string().optional(),
+        bio: z.string().optional(),
+        location: z.string().optional(),
+        imageIndex: z.number().optional(),
+        backgroundIndex: z.number().optional(),
+        backgroundGradient: z.object({
+          colorFrom: z.string(),
+          colorTo: z.string(),
+          direction: z.string(),
+        }).optional().nullable(),
+        githubUsername: z.string().optional().nullable(),
+      });
+      
       const validData = updateSchema.parse(req.body);
       
       const updatedProfile = await storage.updateProfile(id, validData);
@@ -66,6 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
+      console.error("Failed to update profile:", error);
       res.status(500).json({ message: "Failed to update profile" });
     }
   });
@@ -114,42 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Update profile
-  app.patch("/api/profile/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      
-      const profile = await storage.getProfile(id);
-      if (!profile) {
-        return res.status(404).json({ message: "Profile not found" });
-      }
-      
-      // Create schema that accepts either part of the profile including the new backgroundGradient
-      const updateSchema = z.object({
-        name: z.string().optional(),
-        bio: z.string().optional(),
-        location: z.string().optional(),
-        imageIndex: z.number().optional(),
-        backgroundIndex: z.number().optional(),
-        backgroundGradient: z.object({
-          colorFrom: z.string(),
-          colorTo: z.string(),
-          direction: z.string(),
-        }).optional(),
-        githubUsername: z.string().optional(),
-      });
-      
-      const validData = updateSchema.parse(req.body);
-      
-      const updatedProfile = await storage.updateProfile(id, validData);
-      res.json(updatedProfile);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
+
 
   // Add social link
   app.post("/api/social-links", async (req, res) => {
