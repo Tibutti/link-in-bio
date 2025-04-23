@@ -174,13 +174,13 @@ export class DatabaseStorage implements IStorage {
 
   // GitHub contributions methods have been removed
 
-  // Initialize database with demo data if empty
+  // Initialize database with demo data 
   async initializeDemoData() {
-    // Check if any users exist
-    const existingUsers = await db.select().from(users).limit(1);
-    if (existingUsers.length > 0) {
-      return; // Data already exists, do not initialize
-    }
+    // Usuń istniejące dane przed ponowną inicjalizacją
+    await db.delete(socialLinks);
+    await db.delete(featuredContents);
+    await db.delete(profiles);
+    await db.delete(users);
 
     // Create demo user
     const [demoUser] = await db.insert(users).values({

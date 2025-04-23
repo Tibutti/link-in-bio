@@ -20,9 +20,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get profile data and all associated content
   app.get("/api/profile", async (req, res) => {
     try {
-      // In a real app, we would get the user from the session
-      // Here we're just getting the demo user's profile
-      const profile = await storage.getProfileByUserId(1);
+      // Pobieramy pierwszy dostępny profil z bazy danych (demo)
+      // Najpierw pobieramy pierwszego użytkownika
+      const users = await db.select().from(schema.users).limit(1);
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found" });
+      }
+      
+      const userId = users[0].id;
+      const profile = await storage.getProfileByUserId(userId);
       
       if (!profile) {
         return res.status(404).json({ message: "Profile not found" });
