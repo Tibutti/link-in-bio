@@ -210,9 +210,14 @@ export default function Admin() {
               </p>
             )}
           </div>
-          <Button variant="outline" onClick={handleLogout}>
-            Wyloguj się
-          </Button>
+          <div className="flex space-x-2">
+            <Button variant="secondary" onClick={() => setLocation('/')}>
+              Strona główna
+            </Button>
+            <Button variant="outline" onClick={handleLogout}>
+              Wyloguj się
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="profile">
