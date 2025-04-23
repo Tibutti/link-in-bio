@@ -69,7 +69,12 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
-        <CardHeader>
+        <CardHeader className="relative">
+          <div className="absolute right-6 top-6">
+            <Button variant="ghost" size="sm" onClick={() => setLocation('/')}>
+              Powrót do strony głównej
+            </Button>
+          </div>
           <CardTitle className="text-xl font-bold">Logowanie do panelu</CardTitle>
           <CardDescription>
             Zaloguj się do panelu administracyjnego swojego profilu
