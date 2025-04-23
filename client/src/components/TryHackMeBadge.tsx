@@ -26,7 +26,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 flex items-center justify-center">
-        <div className="flex justify-center w-full">
+        <div className="flex justify-center w-full relative">
           <div 
             className={`text-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             style={{ 
@@ -37,19 +37,28 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
               overflow: 'hidden' 
             }}
           >
-            <iframe 
-              src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
-              style={{ 
-                border: 'none', 
-                width: '100%', 
-                maxWidth: '550px', 
-                height: '250px',
-                margin: '0 auto',
-                display: 'block',
-              }}
-              title="TryHackMe Badge"
-              onLoad={() => setIsLoaded(true)}
-            />
+            <div style={{ 
+              width: '100%', 
+              maxWidth: '320px', 
+              height: '220px', 
+              position: 'relative',
+              margin: '0 auto',
+              overflowX: 'hidden'
+            }}>
+              <iframe 
+                src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+                style={{ 
+                  border: 'none', 
+                  width: '300px', 
+                  height: '220px',
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                }}
+                title="TryHackMe Badge"
+                onLoad={() => setIsLoaded(true)}
+              />
+            </div>
           </div>
         </div>
       </CardContent>
