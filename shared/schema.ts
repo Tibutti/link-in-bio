@@ -56,6 +56,7 @@ export const socialLinks = pgTable("social_links", {
   url: text("url").notNull(),
   iconName: text("icon_name").notNull(),
   order: integer("order").default(0),
+  category: text("category").default("social").notNull(), // "social" lub "knowledge"
 });
 
 export const insertSocialLinkSchema = createInsertSchema(socialLinks).pick({
@@ -65,6 +66,7 @@ export const insertSocialLinkSchema = createInsertSchema(socialLinks).pick({
   url: true,
   iconName: true,
   order: true,
+  category: true,
 });
 
 export type InsertSocialLink = z.infer<typeof insertSocialLinkSchema>;
