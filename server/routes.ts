@@ -219,21 +219,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Profile not found" });
       }
 
-      // Check if we already have contributions stored for this username and if they're recent
+      // Check if we already have contributions stored for this username
       const existingContributions = await storage.getGithubContributions(profile.id);
       const now = new Date();
-      const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
+      
       // If profile has a different Github username than requested one, always fetch new data
       const profileUsername = profile.githubUsername || '';
       const isRequestingDifferentUser = profileUsername.toLowerCase() !== username.toLowerCase();
       
-      // If we have recent data (less than a day old) AND it's for the same username, return it
-      if (!isRequestingDifferentUser && 
-          existingContributions && 
-          existingContributions.lastUpdated && 
-          (now.getTime() - new Date(existingContributions.lastUpdated).getTime() < ONE_DAY)) {
-        return res.json(existingContributions);
+      // Always fetch new data to ensure we have the most up-to-date information
+      // This is important for accuracy in the current year (2025)
+      console.log(`Fetching fresh GitHub data for user: ${username}`);
+      
+      // Delete existing data if the username has changed
+      if (isRequestingDifferentUser && existingContributions) {
+        console.log(`Username changed from ${profileUsername} to ${username}, clearing old data`);
       }
 
       // Otherwise, fetch new data from GitHub
@@ -384,39 +384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }
 
-  // Generate demo contribution data if we can't get real data
-  function generateDemoContributionData(): ContributionData {
-    const days: { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }[] = [];
-    let total = 0;
-    
-    // Generate data for the last 365 days
-    const now = new Date();
-    for (let i = 364; i >= 0; i--) {
-      const date = new Date(now.getTime() - (i * 24 * 60 * 60 * 1000));
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // Generate random contribution count and level
-      // More recent days tend to have more contributions
-      const recencyFactor = 1 - (i / 365);
-      const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-      const activityFactor = isWeekend ? 0.3 : 1;
-      
-      const max = Math.floor(10 * recencyFactor * activityFactor);
-      const count = Math.floor(Math.random() * (max + 1));
-      
-      let level: 0 | 1 | 2 | 3 | 4;
-      if (count === 0) level = 0;
-      else if (count <= 2) level = 1;
-      else if (count <= 5) level = 2;
-      else if (count <= 8) level = 3;
-      else level = 4;
-      
-      days.push({ date: dateStr, count, level });
-      total += count;
-    }
-    
-    return { total, days };
-  }
+  // This function has been removed to ensure we only display authentic data from GitHub
 
   const httpServer = createServer(app);
   return httpServer;
