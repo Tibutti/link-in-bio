@@ -22,15 +22,20 @@ export default function Home() {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
 
   // Fetch profile data
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<{
+    profile: Profile;
+    socialLinks: SocialLink[];
+    featuredContents: FeaturedContentType[];
+    githubContributions?: GithubContribution;
+  }>({
     queryKey: ["/api/profile"],
   });
 
   // Update background mutation
   const updateBackgroundMutation = useMutation({
     mutationFn: async (backgroundIndex: number) => {
-      const profileId = data?.profile?.id;
-      if (!profileId) return null;
+      if (!data || !data.profile || data.profile.id === undefined) return null;
+      const profileId = data.profile.id;
       
       return apiRequest(
         "PATCH", 
@@ -46,8 +51,8 @@ export default function Home() {
   // Update profile image mutation
   const updateProfileImageMutation = useMutation({
     mutationFn: async (imageIndex: number) => {
-      const profileId = data?.profile?.id;
-      if (!profileId) return null;
+      if (!data || !data.profile || data.profile.id === undefined) return null;
+      const profileId = data.profile.id;
       
       return apiRequest(
         "PATCH", 
@@ -62,7 +67,7 @@ export default function Home() {
 
   // Set background from profile data
   useEffect(() => {
-    if (data?.profile) {
+    if (data?.profile && data.profile.backgroundIndex !== null) {
       setBackgroundIndex(data.profile.backgroundIndex);
     }
   }, [data]);
