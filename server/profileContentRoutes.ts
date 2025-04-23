@@ -118,4 +118,83 @@ export function registerProfileContentRoutes(app: Express) {
       res.status(500).json({ message: 'Failed to fetch featured content' });
     }
   });
+  
+  // Aktualizuj wyróżnioną treść
+  app.patch('/api/featured-contents/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const content = await storage.getFeaturedContent(id);
+      
+      if (!content) {
+        return res.status(404).json({ message: 'Featured content not found' });
+      }
+      
+      // Mapuj dane z formularza na dane bazy danych
+      const { title, description, linkUrl, imageUrl } = req.body;
+      const updatedContent = await storage.updateFeaturedContent(id, {
+        title,
+        linkUrl,
+        imageUrl
+      });
+      
+      res.json(updatedContent);
+    } catch (error) {
+      console.error('Error updating featured content:', error);
+      res.status(500).json({ message: 'Failed to update featured content' });
+    }
+  });
+  
+  // Usuń wyróżnioną treść
+  app.delete('/api/featured-contents/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const content = await storage.getFeaturedContent(id);
+      
+      if (!content) {
+        return res.status(404).json({ message: 'Featured content not found' });
+      }
+      
+      await storage.deleteFeaturedContent(id);
+      res.status(204).end();
+    } catch (error) {
+      console.error('Error deleting featured content:', error);
+      res.status(500).json({ message: 'Failed to delete featured content' });
+    }
+  });
+  
+  // Aktualizuj link społecznościowy
+  app.patch('/api/social-links/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const link = await storage.getSocialLink(id);
+      
+      if (!link) {
+        return res.status(404).json({ message: 'Social link not found' });
+      }
+      
+      const updatedLink = await storage.updateSocialLink(id, req.body);
+      res.json(updatedLink);
+    } catch (error) {
+      console.error('Error updating social link:', error);
+      res.status(500).json({ message: 'Failed to update social link' });
+    }
+  });
+  
+  // Usuń link społecznościowy
+  app.delete('/api/social-links/:id', authenticateToken, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const link = await storage.getSocialLink(id);
+      
+      if (!link) {
+        return res.status(404).json({ message: 'Social link not found' });
+      }
+      
+      await storage.deleteSocialLink(id);
+      res.status(204).end();
+    } catch (error) {
+      console.error('Error deleting social link:', error);
+      res.status(500).json({ message: 'Failed to delete social link' });
+    }
+  });
 }

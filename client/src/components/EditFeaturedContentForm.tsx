@@ -167,12 +167,20 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
 
         <FormField
           control={form.control}
-          name="url"
+          name="linkUrl"
           render={({ field }) => (
             <FormItem>
               <FormLabel>URL</FormLabel>
               <FormControl>
-                <Input placeholder="https://example.com/article" {...field} />
+                <Input 
+                  placeholder="https://example.com/article" 
+                  {...field} 
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.trim() === '' ? null : e.target.value;
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
