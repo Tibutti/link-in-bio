@@ -119,6 +119,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           direction: z.string(),
         }).optional().nullable(),
         githubUsername: z.string().optional().nullable(),
+        tryHackMeUserId: z.string().optional().nullable(),
+        showGithubStats: z.boolean().optional(),
+        showTryHackMe: z.boolean().optional(),
+        showImage: z.boolean().optional(),
+        showContact: z.boolean().optional(),
+        showSocial: z.boolean().optional(),
+        showKnowledge: z.boolean().optional(),
+        showFeatured: z.boolean().optional(),
       });
       
       console.log("Walidacja danych wejściowych...");
@@ -234,6 +242,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Update TryHackMe settings
+  app.patch("/api/profile/:id/tryhackme-settings", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const schema = z.object({
+        tryHackMeUserId: z.string().optional().nullable(),
+        showTryHackMe: z.boolean().optional(),
+      });
+      const validData = schema.parse(req.body);
+      
+      const profile = await storage.getProfile(id);
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      
+      const updatedProfile = await storage.updateProfile(id, validData);
+      res.json(updatedProfile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update TryHackMe settings" });
+    }
+  });
+  
   // Update section visibility
   app.patch("/api/profile/:id/section-visibility", async (req, res) => {
     try {
@@ -244,6 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showSocial: z.boolean().optional(),
         showKnowledge: z.boolean().optional(),
         showFeatured: z.boolean().optional(),
+        showTryHackMe: z.boolean().optional(),
       });
       const validData = schema.parse(req.body);
       
