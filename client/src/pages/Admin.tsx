@@ -324,6 +324,19 @@ export default function Admin() {
               />
             )}
           </TabsContent>
+          
+          <TabsContent value="github" className="mt-4">
+            {profile && (
+              <GitHubSettingsForm
+                profileId={profile.id}
+                githubUsername={profile.githubUsername || ""}
+                showGithubStats={profile.showGithubStats}
+                onSuccess={() => {
+                  loadData();
+                }}
+              />
+            )}
+          </TabsContent>
 
           <TabsContent value="social" className="mt-4">
             <Card>
