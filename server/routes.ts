@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema, users } from "@shared/schema";
+import * as schema from "@shared/schema";
+import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema } from "@shared/schema";
 import { z } from "zod";
 import fetch from "node-fetch";
 import { fetchGitHubContributions } from "./githubApi";
@@ -21,8 +22,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get profile data and all associated content
   app.get("/api/profile", async (req, res) => {
     try {
-      // Używamy stałego ID użytkownika równego 5, który wiemy, że istnieje w bazie
-      const userId = 5; // ID z bazy danych
+      // Pobieramy pierwszego użytkownika z bazy danych
+      const users = await db.select().from(schema.users).limit(1);
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found" });
+      }
+      const userId = users[0].id;
       const profile = await storage.getProfileByUserId(userId);
       
       if (!profile) {
