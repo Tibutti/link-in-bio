@@ -238,17 +238,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Otherwise, fetch new data from GitHub
       try {
+        console.log(`Fetching GitHub data for user: ${username}`);
+        
+        // Add a timestamp parameter to avoid caching issues
+        const timestamp = Date.now();
+        
         // We're using a simple approach for demo purposes
         // In a production app, you would use the GitHub GraphQL API with an auth token
-        const response = await fetch(`https://github.com/users/${username}/contributions`);
+        const url = `https://github.com/users/${username}/contributions?t=${timestamp}`;
+        console.log(`GitHub URL: ${url}`);
+        
+        // Use custom headers to prevent caching
+        const headers = {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'User-Agent': 'Mozilla/5.0 (compatible; LinkinbioApp/1.0)'
+        };
+        
+        const response = await fetch(url, { headers });
         
         if (!response.ok) {
+          console.error(`GitHub API responded with status: ${response.status} - ${response.statusText}`);
           return res.status(response.status).json({ 
             message: `Failed to fetch GitHub data: ${response.statusText}` 
           });
         }
 
         const html = await response.text();
+        console.log(`GitHub HTML size: ${html.length} bytes`);
         
         // Parse the contribution data from HTML
         // This is a simplified approach and may break if GitHub changes their HTML structure
@@ -296,31 +314,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to parse GitHub contributions from HTML
   function parseGitHubContributions(html: string): ContributionData {
     // This is a simplified version that would need to be more robust in production
-    // In a real app, you might use the GitHub GraphQL API instead
+    // In a real app, you would use the GitHub GraphQL API instead
     const days: { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }[] = [];
     let total = 0;
 
     try {
-      // Extract the data-count and data-date attributes from the HTML
-      const regex = /<td[^>]+data-date="([^"]+)"[^>]+data-level="([^"]+)"[^>]*>(.*?)<\/td>/g;
-      let match;
+      // First, extract all day cells with their data-date and data-level
+      const cellRegex = /<td[^>]+data-date="([^"]+)"[^>]+data-level="([^"]+)"[^>]+id="(contribution-day-component-[^"]+)"[^>]+class="ContributionCalendar-day"><\/td>/g;
+      let cellMatch;
       
-      while ((match = regex.exec(html)) !== null) {
-        const date = match[1];
-        const level = parseInt(match[2]) as 0 | 1 | 2 | 3 | 4;
+      // Create a map to store cell IDs and their corresponding dates and levels
+      const cellMap = new Map<string, { date: string; level: 0 | 1 | 2 | 3 | 4 }>();
+      
+      while ((cellMatch = cellRegex.exec(html)) !== null) {
+        const date = cellMatch[1];
+        const level = parseInt(cellMatch[2]) as 0 | 1 | 2 | 3 | 4;
+        const cellId = cellMatch[3];
         
-        // Extract count from the tooltip
-        let count = 0;
-        const tooltipMatch = match[3].match(/(\d+) contributions?/);
-        if (tooltipMatch) {
-          count = parseInt(tooltipMatch[1]);
+        cellMap.set(cellId, { date, level });
+      }
+      
+      // For debugging
+      console.log(`Extracted ${cellMap.size} GitHub contribution cells`);
+      
+      // Next, extract tooltips with contribution counts
+      // We need to handle both patterns: "X contributions on [date]" and "No contributions on [date]"
+      const tooltipRegex = /<tool-tip[^>]+for="(contribution-day-component-[^"]+)"[^>]*>[^>]*?((\d+) contributions?|No contributions)[^<]*<\/tool-tip>/g;
+      let tooltipMatch;
+      
+      while ((tooltipMatch = tooltipRegex.exec(html)) !== null) {
+        const cellId = tooltipMatch[1];
+        const cellData = cellMap.get(cellId);
+        
+        if (cellData) {
+          // Extract count from the tooltip
+          let count = 0;
+          // Check if we have a number in the contribution message
+          const countMatch = tooltipMatch[0].match(/(\d+) contributions?/);
+          if (countMatch) {
+            count = parseInt(countMatch[1]);
+          }
+          
+          days.push({ 
+            date: cellData.date, 
+            count, 
+            level: cellData.level 
+          });
+          
+          total += count;
         }
-        
-        days.push({ date, count, level });
-        total += count;
+      }
+      
+      // For debugging
+      console.log(`Extracted ${days.length} days with contribution data`);
+      if (days.length > 0) {
+        console.log(`Sample day data: ${JSON.stringify(days[0])}`);
       }
 
-      // If we couldn't parse the data, return an error rather than fake data
+      // If we couldn't parse the data, throw an error
       if (days.length === 0) {
         console.error("GitHub parsing failed: No contribution data found");
         throw new Error("Could not parse GitHub contribution data. HTML structure may have changed.");
@@ -329,7 +380,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return { total, days };
     } catch (error: any) {
       console.error("Error parsing GitHub contributions:", error);
-      // Do not return fake data - throw the error instead
       throw new Error(`Failed to parse GitHub contributions data: ${error.message}`);
     }
   }
