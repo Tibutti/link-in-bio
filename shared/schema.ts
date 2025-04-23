@@ -34,6 +34,11 @@ export const profiles = pgTable("profiles", {
   }>(),
   githubUsername: text("github_username"),
   showGithubStats: boolean("show_github_stats").default(true),
+  showImage: boolean("show_image").default(true),
+  showContact: boolean("show_contact").default(true),
+  showSocial: boolean("show_social").default(true),
+  showKnowledge: boolean("show_knowledge").default(true),
+  showFeatured: boolean("show_featured").default(true),
 });
 
 export const insertProfileSchema = createInsertSchema(profiles).pick({
@@ -48,6 +53,11 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   backgroundGradient: true,
   githubUsername: true,
   showGithubStats: true,
+  showImage: true,
+  showContact: true,
+  showSocial: true,
+  showKnowledge: true,
+  showFeatured: true,
 });
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
@@ -63,6 +73,7 @@ export const socialLinks = pgTable("social_links", {
   iconName: text("icon_name").notNull(),
   order: integer("order").default(0),
   category: text("category").default("social").notNull(), // "social" lub "knowledge"
+  isVisible: boolean("is_visible").default(true),
 });
 
 export const insertSocialLinkSchema = createInsertSchema(socialLinks).pick({
@@ -73,6 +84,7 @@ export const insertSocialLinkSchema = createInsertSchema(socialLinks).pick({
   iconName: true,
   order: true,
   category: true,
+  isVisible: true,
 });
 
 export type InsertSocialLink = z.infer<typeof insertSocialLinkSchema>;
@@ -86,6 +98,7 @@ export const featuredContents = pgTable("featured_contents", {
   imageUrl: text("image_url").notNull(),
   linkUrl: text("link_url"),
   order: integer("order").default(0),
+  isVisible: boolean("is_visible").default(true),
 });
 
 export const insertFeaturedContentSchema = createInsertSchema(featuredContents).pick({
@@ -94,6 +107,7 @@ export const insertFeaturedContentSchema = createInsertSchema(featuredContents).
   imageUrl: true,
   linkUrl: true,
   order: true,
+  isVisible: true,
 });
 
 export type InsertFeaturedContent = z.infer<typeof insertFeaturedContentSchema>;

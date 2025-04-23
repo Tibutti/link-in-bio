@@ -17,6 +17,7 @@ import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
 import { EditFeaturedContentForm } from '@/components/EditFeaturedContentForm';
 import { ContactDetailsForm } from '@/components/ContactDetailsForm';
 import { GitHubSettingsForm } from '@/components/GitHubSettingsForm';
+import { SectionVisibilityForm } from '@/components/SectionVisibilityForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { Plus } from 'lucide-react';
 import {
@@ -45,6 +46,11 @@ interface Profile {
   backgroundGradient: string | null;
   githubUsername: string | null;
   showGithubStats: boolean;
+  showImage: boolean;
+  showContact: boolean;
+  showSocial: boolean;
+  showKnowledge: boolean;
+  showFeatured: boolean;
 }
 
 interface SocialLink {
@@ -56,6 +62,7 @@ interface SocialLink {
   iconName: string;
   order: number;
   category: string;
+  isVisible: boolean;
 }
 
 interface FeaturedContent {
@@ -65,6 +72,7 @@ interface FeaturedContent {
   linkUrl: string | null;
   imageUrl: string | null;
   order: number;
+  isVisible: boolean;
 }
 
 interface Stats {
@@ -227,11 +235,12 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="profile">Profil</TabsTrigger>
             <TabsTrigger value="avatar">Zdjęcie</TabsTrigger>
             <TabsTrigger value="contact">Kontakt</TabsTrigger>
             <TabsTrigger value="github">GitHub</TabsTrigger>
+            <TabsTrigger value="visibility">Widoczność</TabsTrigger>
             <TabsTrigger value="social">Media społecznościowe</TabsTrigger>
             <TabsTrigger value="knowledge">Platformy wiedzy</TabsTrigger>
             <TabsTrigger value="featured">Wyróżnione treści</TabsTrigger>
@@ -331,6 +340,22 @@ export default function Admin() {
                 profileId={profile.id}
                 githubUsername={profile.githubUsername || ""}
                 showGithubStats={profile.showGithubStats}
+                onSuccess={() => {
+                  loadData();
+                }}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="visibility" className="mt-4">
+            {profile && (
+              <SectionVisibilityForm
+                profileId={profile.id}
+                showImage={profile.showImage}
+                showContact={profile.showContact}
+                showSocial={profile.showSocial}
+                showKnowledge={profile.showKnowledge}
+                showFeatured={profile.showFeatured}
                 onSuccess={() => {
                   loadData();
                 }}
