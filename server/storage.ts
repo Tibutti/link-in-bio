@@ -201,7 +201,10 @@ export class DatabaseStorage implements IStorage {
     // Create social links
     const socialLinksData = [
       { platform: "Instagram", username: "@janedoe", url: "https://instagram.com/janedoe", iconName: "instagram" },
-      { platform: "Twitter", username: "@janedoe", url: "https://twitter.com/janedoe", iconName: "twitter" },
+      { platform: "X", username: "@janedoe", url: "https://x.com/janedoe", iconName: "x" },
+      { platform: "Facebook", username: "Jane Doe", url: "https://facebook.com/janedoe", iconName: "facebook" },
+      { platform: "WhatsApp", username: "+1 234 567 890", url: "https://wa.me/1234567890", iconName: "whatsapp" },
+      { platform: "Telegram", username: "@janedoe", url: "https://t.me/janedoe", iconName: "telegram" },
       { platform: "LinkedIn", username: "in/janedoe", url: "https://linkedin.com/in/janedoe", iconName: "linkedin" },
       { platform: "YouTube", username: "@janedoecreates", url: "https://youtube.com/@janedoecreates", iconName: "youtube" },
       { platform: "TikTok", username: "@janedoe", url: "https://tiktok.com/@janedoe", iconName: "tiktok" },

@@ -1,11 +1,12 @@
 import { type SocialLink } from "@shared/schema";
 import { motion } from "framer-motion";
 import { 
-  FaInstagram, FaTwitter, FaLinkedin, FaYoutube, FaTiktok, 
+  FaInstagram, FaLinkedin, FaYoutube, FaTiktok, 
   FaDribbble, FaBehance, FaGithub, FaMedium, FaFacebook,
   FaPatreon, FaSoundcloud, FaSpotify, FaTwitch, FaReddit,
-  FaSnapchat, FaPinterest
+  FaSnapchat, FaPinterest, FaWhatsapp, FaTelegram
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 interface SocialLinksProps {
   links: SocialLink[];
@@ -14,7 +15,8 @@ interface SocialLinksProps {
 
 const iconMap: Record<string, React.ElementType> = {
   instagram: FaInstagram,
-  twitter: FaTwitter,
+  twitter: FaXTwitter, // Zaktualizowano na X (dawniej Twitter)
+  x: FaXTwitter,
   linkedin: FaLinkedin,
   youtube: FaYoutube,
   tiktok: FaTiktok,
@@ -23,6 +25,8 @@ const iconMap: Record<string, React.ElementType> = {
   github: FaGithub,
   medium: FaMedium,
   facebook: FaFacebook,
+  whatsapp: FaWhatsapp, // Dodano WhatsApp
+  telegram: FaTelegram, // Dodano Telegram
   patreon: FaPatreon,
   soundcloud: FaSoundcloud,
   spotify: FaSpotify,
