@@ -233,6 +233,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update GitHub settings" });
     }
   });
+  
+  // Update section visibility
+  app.patch("/api/profile/:id/section-visibility", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const schema = z.object({
+        showImage: z.boolean().optional(),
+        showContact: z.boolean().optional(),
+        showSocial: z.boolean().optional(),
+        showKnowledge: z.boolean().optional(),
+        showFeatured: z.boolean().optional(),
+      });
+      const validData = schema.parse(req.body);
+      
+      const profile = await storage.getProfile(id);
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      
+      const updatedProfile = await storage.updateProfile(id, validData);
+      res.json(updatedProfile);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update section visibility" });
+    }
+  });
 
 
   // Add social link
