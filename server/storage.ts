@@ -200,25 +200,39 @@ export class DatabaseStorage implements IStorage {
 
     // Create social links
     const socialLinksData = [
-      { platform: "Instagram", username: "@janedoe", url: "https://instagram.com/janedoe", iconName: "instagram" },
-      { platform: "X", username: "@janedoe", url: "https://x.com/janedoe", iconName: "x" },
-      { platform: "Facebook", username: "Jane Doe", url: "https://facebook.com/janedoe", iconName: "facebook" },
-      { platform: "WhatsApp", username: "+1 234 567 890", url: "https://wa.me/1234567890", iconName: "whatsapp" },
-      { platform: "Telegram", username: "@janedoe", url: "https://t.me/janedoe", iconName: "telegram" },
-      { platform: "LinkedIn", username: "in/janedoe", url: "https://linkedin.com/in/janedoe", iconName: "linkedin" },
-      { platform: "YouTube", username: "@janedoecreates", url: "https://youtube.com/@janedoecreates", iconName: "youtube" },
-      { platform: "TikTok", username: "@janedoe", url: "https://tiktok.com/@janedoe", iconName: "tiktok" },
+      { platform: "Instagram", username: "@janedoe", url: "https://instagram.com/janedoe", iconName: "instagram", category: "social" },
+      { platform: "X", username: "@janedoe", url: "https://x.com/janedoe", iconName: "x", category: "social" },
+      { platform: "Facebook", username: "Jane Doe", url: "https://facebook.com/janedoe", iconName: "facebook", category: "social" },
+      { platform: "WhatsApp", username: "+1 234 567 890", url: "https://wa.me/1234567890", iconName: "whatsapp", category: "social" },
+      { platform: "Telegram", username: "@janedoe", url: "https://t.me/janedoe", iconName: "telegram", category: "social" },
+      { platform: "LinkedIn", username: "in/janedoe", url: "https://linkedin.com/in/janedoe", iconName: "linkedin", category: "social" },
+      { platform: "YouTube", username: "@janedoecreates", url: "https://youtube.com/@janedoecreates", iconName: "youtube", category: "social" },
+      { platform: "TikTok", username: "@janedoe", url: "https://tiktok.com/@janedoe", iconName: "tiktok", category: "social" },
     ];
 
-    for (let i = 0; i < socialLinksData.length; i++) {
-      const link = socialLinksData[i];
+    // Platformy do dzielenia się wiedzą
+    const knowledgeLinksData = [
+      { platform: "Medium", username: "@janedoe", url: "https://medium.com/@janedoe", iconName: "medium", category: "knowledge" },
+      { platform: "Substack", username: "Jane's Newsletter", url: "https://janedoe.substack.com", iconName: "substack", category: "knowledge" },
+      { platform: "Dev.to", username: "@janedoe", url: "https://dev.to/janedoe", iconName: "devto", category: "knowledge" },
+      { platform: "Hashnode", username: "@janedoe", url: "https://hashnode.com/@janedoe", iconName: "hashnode", category: "knowledge" },
+      { platform: "Stack Overflow", username: "Jane Doe", url: "https://stackoverflow.com/users/123456/jane-doe", iconName: "stackoverflow", category: "knowledge" },
+      { platform: "Behance", username: "Jane Doe", url: "https://behance.net/janedoe", iconName: "behance", category: "knowledge" },
+    ];
+
+    // Połączenie obu list
+    const allLinksData = [...socialLinksData, ...knowledgeLinksData];
+
+    for (let i = 0; i < allLinksData.length; i++) {
+      const link = allLinksData[i];
       await db.insert(socialLinks).values({
         profileId: demoProfile.id,
         platform: link.platform,
         username: link.username,
         url: link.url,
         iconName: link.iconName,
-        order: i
+        order: i,
+        category: link.category
       });
     }
 
