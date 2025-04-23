@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema } from "@shared/schema";
 import { z } from "zod";
 import fetch from "node-fetch";
+import { fetchGitHubContributions } from "./githubApi";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get profile data and all associated content
@@ -240,7 +241,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // GitHub functionality has been removed as requested
+  // Endpoint do pobierania danych kontrybucji GitHub
+  app.get("/api/github-contributions/:username", async (req, res) => {
+    try {
+      const { username } = req.params;
+      
+      if (!username) {
+        return res.status(400).json({ message: "GitHub username is required" });
+      }
+      
+      const contributions = await fetchGitHubContributions(username);
+      res.json({ contributions });
+    } catch (error) {
+      console.error("Error fetching GitHub contributions:", error);
+      res.status(500).json({ message: "Failed to fetch GitHub contributions" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
