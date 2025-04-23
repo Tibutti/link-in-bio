@@ -283,7 +283,7 @@ export default function GithubContributions({
               <div className="relative">
                 {/* Month labels */}
                 <div className="flex justify-between text-xs text-gray-400 mb-1">
-                  {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((month, i) => (
+                  {["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"].map((month, i) => (
                     <div key={i} className="w-8 text-center">{month}</div>
                   ))}
                 </div>
@@ -306,7 +306,7 @@ export default function GithubContributions({
                               height: `${cellSize}px`,
                               margin: "1px"
                             }}
-                            title={day ? `${day.count} contributions on ${day.date}` : "No contributions"}
+                            title={day ? `${day.count} kontrybucji w dniu ${new Date(day.date).toLocaleDateString('pl-PL')}` : "Brak kontrybucji"}
                           />
                         );
                       })}
@@ -318,7 +318,7 @@ export default function GithubContributions({
             
             {/* Legend */}
             <div className="mt-2 flex items-center justify-end text-xs text-gray-500">
-              <span className="mr-1">Less</span>
+              <span className="mr-1">Mniej</span>
               {[0, 1, 2, 3, 4].map((level) => (
                 <div
                   key={level}
@@ -329,7 +329,7 @@ export default function GithubContributions({
                   style={{ width: "10px", height: "10px" }}
                 />
               ))}
-              <span className="ml-1">More</span>
+              <span className="ml-1">Więcej</span>
             </div>
           </div>
         </TabsContent>
