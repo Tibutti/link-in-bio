@@ -59,11 +59,21 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
   const onSubmit = async (values: FeaturedContentFormValues) => {
     setIsSubmitting(true);
     try {
+      // Zamień pole description na null jeśli jest puste
+      const description = values.description?.trim() === '' ? null : values.description;
+      
+      // Przygotuj dane do wysłania - używaj tylko pól, które istnieją w bazie danych
+      const dataToSend = {
+        title: values.title,
+        linkUrl: values.linkUrl,
+        imageUrl: values.imageUrl,
+      };
+      
       if (isEditing && content) {
         // Aktualizacja istniejącej treści
         await apiRequest(`/api/featured-contents/${content.id}`, {
           method: 'PATCH',
-          body: JSON.stringify(values),
+          body: JSON.stringify(dataToSend),
         });
 
         toast({
@@ -75,7 +85,7 @@ export function EditFeaturedContentForm({ profileId, content, onSuccess, onCance
         await apiRequest(`/api/profile/${profileId}/featured-contents`, {
           method: 'POST',
           body: JSON.stringify({
-            ...values,
+            ...dataToSend,
             order: 999, // domyślna wartość, serwer ustawi właściwą kolejność
           }),
         });
