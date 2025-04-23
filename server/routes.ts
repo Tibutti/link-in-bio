@@ -7,6 +7,16 @@ import fetch from "node-fetch";
 import { fetchGitHubContributions } from "./githubApi";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Endpoint do ponownej inicjalizacji danych testowych
+  app.post("/api/reinitialize-demo-data", async (req, res) => {
+    try {
+      await storage.initializeDemoData();
+      res.json({ message: "Demo data has been reinitialized successfully" });
+    } catch (error) {
+      console.error("Error reinitializing demo data:", error);
+      res.status(500).json({ message: "Failed to reinitialize demo data" });
+    }
+  });
   // Get profile data and all associated content
   app.get("/api/profile", async (req, res) => {
     try {
