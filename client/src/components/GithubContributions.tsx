@@ -296,8 +296,8 @@ export default function GithubContributions({
       
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "graph" | "stats")} className="w-full">
         <TabsList className="mx-auto mb-4">
-          <TabsTrigger value="graph">Wykres aktywności</TabsTrigger>
-          <TabsTrigger value="stats">Statystyki</TabsTrigger>
+          <TabsTrigger value="graph">Activity Graph</TabsTrigger>
+          <TabsTrigger value="stats">Statistics</TabsTrigger>
         </TabsList>
         
         <TabsContent value="graph" className="focus-visible:outline-none focus-visible:ring-0">
@@ -310,13 +310,13 @@ export default function GithubContributions({
               <div className="mt-6 pr-2 text-xs text-gray-400">
                 {Array.from({ length: 7 }).map((_, i) => (
                   <div key={i} style={{ height: `${cellSize}px` }} className="flex items-center justify-start">
-                    {i === 0 && "Ndz"}
-                    {i === 1 && "Pon"}
-                    {i === 2 && "Wt"}
-                    {i === 3 && "Śr"}
-                    {i === 4 && "Czw"}
-                    {i === 5 && "Pt"}
-                    {i === 6 && "Sob"}
+                    {i === 0 && "Sun"}
+                    {i === 1 && "Mon"}
+                    {i === 2 && "Tue"}
+                    {i === 3 && "Wed"}
+                    {i === 4 && "Thu"}
+                    {i === 5 && "Fri"}
+                    {i === 6 && "Sat"}
                   </div>
                 ))}
               </div>
@@ -325,7 +325,7 @@ export default function GithubContributions({
               <div className="relative">
                 {/* Month labels */}
                 <div className="flex justify-between text-xs text-gray-400 mb-1">
-                  {["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"].map((month, i) => (
+                  {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((month, i) => (
                     <div key={i} className="w-8 text-center">{month}</div>
                   ))}
                 </div>
@@ -348,7 +348,7 @@ export default function GithubContributions({
                               height: `${cellSize}px`,
                               margin: "1px"
                             }}
-                            title={day ? `${day.count} kontrybucji w dniu ${new Date(day.date).toLocaleDateString('pl-PL')}` : "Brak kontrybucji"}
+                            title={day ? `${day.count} contribution${day.count !== 1 ? 's' : ''} on ${new Date(day.date).toLocaleDateString('en-US')}` : "No contributions"}
                           />
                         );
                       })}
@@ -360,7 +360,7 @@ export default function GithubContributions({
             
             {/* Legend */}
             <div className="mt-2 flex items-center justify-end text-xs text-gray-500">
-              <span className="mr-1">Mniej</span>
+              <span className="mr-1">Less</span>
               {[0, 1, 2, 3, 4].map((level) => (
                 <div
                   key={level}
@@ -371,7 +371,7 @@ export default function GithubContributions({
                   style={{ width: "10px", height: "10px" }}
                 />
               ))}
-              <span className="ml-1">Więcej</span>
+              <span className="ml-1">More</span>
             </div>
           </div>
         </TabsContent>
@@ -386,11 +386,11 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Wszystkie kontrybucje</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Contributions</h3>
                   <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                     {stats.totalContributions.toLocaleString()}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">w ciągu ostatniego roku</p>
+                  <p className="text-xs text-gray-500 mt-2">in the last year</p>
                 </motion.div>
                 
                 <motion.div 
@@ -399,11 +399,11 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Aktualna seria</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Streak</h3>
                   <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                    {stats.currentStreak} {stats.currentStreak === 1 ? "dzień" : stats.currentStreak > 1 && stats.currentStreak < 5 ? "dni" : "dni"}
+                    {stats.currentStreak} {stats.currentStreak === 1 ? "day" : "days"}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">kolejnych dni z aktywnością</p>
+                  <p className="text-xs text-gray-500 mt-2">consecutive days of activity</p>
                 </motion.div>
                 
                 <motion.div 
@@ -412,11 +412,11 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Najdłuższa seria</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Longest Streak</h3>
                   <p className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">
-                    {stats.longestStreak} {stats.longestStreak === 1 ? "dzień" : stats.longestStreak > 1 && stats.longestStreak < 5 ? "dni" : "dni"}
+                    {stats.longestStreak} {stats.longestStreak === 1 ? "day" : "days"}
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">najlepsza seria aktywności</p>
+                  <p className="text-xs text-gray-500 mt-2">best activity streak</p>
                 </motion.div>
                 
                 <motion.div 
@@ -425,12 +425,12 @@ export default function GithubContributions({
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Najlepszy dzień</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Best Day</h3>
                   <p className="text-4xl font-bold text-amber-600 dark:text-amber-400 mt-2">
                     {stats.bestDay.count}
                   </p>
                   <p className="text-xs text-gray-500 mt-2">
-                    kontrybucji dnia {new Date(stats.bestDay.date).toLocaleDateString('pl-PL')}
+                    contributions on {new Date(stats.bestDay.date).toLocaleDateString('en-US')}
                   </p>
                 </motion.div>
               </div>
