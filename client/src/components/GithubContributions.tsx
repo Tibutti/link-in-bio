@@ -441,12 +441,12 @@ export default function GithubContributions({
       
       <div className="flex flex-col items-center mt-4 gap-2">
         <div className="text-xs text-gray-500">
-          Wyświetlanie danych dla użytkownika: <span className="font-semibold">{username || "nie ustawiono"}</span>
+          Showing data for user: <span className="font-semibold">{username || "not set"}</span>
         </div>
         
         <form onSubmit={handleFetchContributions} className="flex gap-2 w-full max-w-md">
           <Input
-            placeholder="Zmień nazwę użytkownika GitHub"
+            placeholder="Change GitHub username"
             value={usernameInput}
             onChange={(e) => setUsernameInput(e.target.value)}
             className="flex-1 text-sm h-8"
@@ -458,7 +458,7 @@ export default function GithubContributions({
             size="sm"
             disabled={!usernameInput || fetchContributionsMutation.isPending}
           >
-            {fetchContributionsMutation.isPending ? 'Pobieranie...' : 'Zmień'}
+            {fetchContributionsMutation.isPending ? 'Loading...' : 'Change'}
           </Button>
         </form>
       </div>
