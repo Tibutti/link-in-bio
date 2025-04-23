@@ -116,38 +116,38 @@ export default function Admin() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      // Pobierz dane profilu
+      // Pobierz dane użytkownika
       const userDataStr = localStorage.getItem('userData');
       if (!userDataStr) return;
       
       const userData = JSON.parse(userDataStr);
-      const profileId = userData.profile.id;
-
-      // Pobierz aktualny profil
-      const profileData = await apiRequest<Profile>(`/api/profile/${profileId}`);
+      const userId = userData.user.id;
+      
+      // Pobierz aktualny profil na podstawie ID użytkownika
+      const profileData = await apiRequest<Profile>(`/api/profile/user/${userId}`);
       setProfile(profileData);
-
-      // Pobierz linki społecznościowe
-      const socialLinksData = await apiRequest<SocialLink[]>(`/api/profile/${profileId}/social-links/category/social`);
-      setSocialLinks(socialLinksData);
-
-      // Pobierz linki wiedzy
-      const knowledgeLinksData = await apiRequest<SocialLink[]>(`/api/profile/${profileId}/social-links/category/knowledge`);
-      setKnowledgeLinks(knowledgeLinksData);
-
-      // Pobierz treści wyróżnione
-      const featuredContentsData = await apiRequest<FeaturedContent[]>(`/api/profile/${profileId}/featured-contents`);
-      setFeaturedContents(featuredContentsData);
-
-      // Pobierz statystyki
-      const statsData = await apiRequest<Stats>(`/api/profile/${profileId}/social-links/stats`);
-      setStats(statsData);
-
-      // Update local storage with the latest profile data
+      
+      // Aktualizuj localStorage z aktualnym profilem
       localStorage.setItem('userData', JSON.stringify({
         user: userData.user,
         profile: profileData
       }));
+
+      // Pobierz linki społecznościowe
+      const socialLinksData = await apiRequest<SocialLink[]>(`/api/profile/${profileData.id}/social-links/category/social`);
+      setSocialLinks(socialLinksData);
+
+      // Pobierz linki wiedzy
+      const knowledgeLinksData = await apiRequest<SocialLink[]>(`/api/profile/${profileData.id}/social-links/category/knowledge`);
+      setKnowledgeLinks(knowledgeLinksData);
+
+      // Pobierz treści wyróżnione
+      const featuredContentsData = await apiRequest<FeaturedContent[]>(`/api/profile/${profileData.id}/featured-contents`);
+      setFeaturedContents(featuredContentsData);
+
+      // Pobierz statystyki
+      const statsData = await apiRequest<Stats>(`/api/profile/${profileData.id}/social-links/stats`);
+      setStats(statsData);
     } catch (error) {
       console.error('Błąd podczas ładowania danych:', error);
       toast({
