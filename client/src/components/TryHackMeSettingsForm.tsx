@@ -52,7 +52,7 @@ export function TryHackMeSettingsForm({
   const updateProfileSettings = async (values: TryHackMeSettingsFormValues) => {
     setIsSubmitting(true);
     try {
-      await apiRequest(`/api/profile/${profileId}`, {
+      await apiRequest(`/api/profile/${profileId}/tryhackme-settings`, {
         method: 'PATCH',
         body: JSON.stringify({
           tryHackMeUserId: values.tryHackMeUserId,
