@@ -30,6 +30,7 @@ export const profiles = pgTable("profiles", {
     colorTo: string;
     direction: string;
   }>(),
+  githubUsername: text("github_username"),
 });
 
 export const insertProfileSchema = createInsertSchema(profiles).pick({
@@ -40,6 +41,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   imageIndex: true,
   backgroundIndex: true,
   backgroundGradient: true,
+  githubUsername: true,
 });
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;

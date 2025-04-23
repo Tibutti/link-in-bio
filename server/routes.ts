@@ -119,6 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           colorTo: z.string(),
           direction: z.string(),
         }).optional(),
+        githubUsername: z.string().optional(),
       });
       
       const validData = updateSchema.parse(req.body);
