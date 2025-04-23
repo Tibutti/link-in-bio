@@ -39,7 +39,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
           >
             <div style={{ 
               width: '100%', 
-              maxWidth: '320px', 
+              maxWidth: '350px', 
               height: '130px', 
               position: 'relative',
               margin: '0 auto',
@@ -49,7 +49,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
                 src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
                 style={{ 
                   border: 'none', 
-                  width: '300px', 
+                  width: '330px', 
                   height: '220px',
                   position: 'absolute',
                   left: '50%',
