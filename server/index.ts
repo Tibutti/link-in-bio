@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { registerAuthRoutes } from "./authRoutes";
 import { registerGithubStatsRoutes } from "./githubStatsRoutes";
 import { registerSocialCategoryRoutes } from "./socialCategoryRoutes";
+import { registerProfileContentRoutes } from "./profileContentRoutes";
 
 const app = express();
 app.use(express.json());
@@ -54,6 +55,9 @@ app.use((req, res, next) => {
   
   // Zarejestruj trasy dla kategorii linków społecznościowych
   registerSocialCategoryRoutes(app);
+  
+  // Zarejestruj trasy dla zarządzania treściami profilu
+  registerProfileContentRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
