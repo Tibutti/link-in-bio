@@ -2,7 +2,7 @@ import { type Profile } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
-import GitHubContributionCalendar from './GitHubContributionCalendar';
+import GitHubCalendar from './GitHubCalendar';
 
 interface GitHubStatsProps {
   profile: Profile;
@@ -67,7 +67,7 @@ export default function GitHubStats({ profile }: GitHubStatsProps) {
               className="max-w-full rounded-md shadow hover:shadow-lg transition-shadow"
             />
 
-            <GitHubContributionCalendar profile={profile} />
+            <GitHubCalendar profile={profile} />
           </div>
         </CardContent>
       )}
