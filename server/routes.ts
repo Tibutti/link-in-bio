@@ -84,10 +84,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update profile
   app.patch("/api/profile/:id", async (req, res) => {
     try {
+      console.log("PATCH /api/profile/:id - Otrzymano żądanie aktualizacji profilu");
+      console.log("ID profilu z parametru URL:", req.params.id);
+      console.log("Body żądania:", JSON.stringify(req.body, null, 2));
+      
       const id = parseInt(req.params.id);
+      console.log("Pobieranie profilu z ID:", id);
+      
+      // Sprawdź istniejące profile w bazie danych
+      console.log("Sprawdzam wszystkie profile w bazie:");
+      const allProfiles = await db.select().from(schema.profiles);
+      console.log("Dostępne profile:", allProfiles.map(p => ({ id: p.id, userId: p.userId, name: p.name })));
+      
       const profile = await storage.getProfile(id);
+      console.log("Wynik zapytania o profil:", profile);
       
       if (!profile) {
+        console.log("Profil nie został znaleziony. Zwracam 404.");
         return res.status(404).json({ message: "Profile not found" });
       }
       
@@ -106,12 +119,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         githubUsername: z.string().optional().nullable(),
       });
       
+      console.log("Walidacja danych wejściowych...");
       const validData = updateSchema.parse(req.body);
+      console.log("Dane po walidacji:", validData);
       
+      console.log("Aktualizacja profilu w bazie danych...");
       const updatedProfile = await storage.updateProfile(id, validData);
+      console.log("Rezultat aktualizacji:", updatedProfile);
+      
       res.json(updatedProfile);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Błąd walidacji danych:", error.errors);
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Failed to update profile:", error);

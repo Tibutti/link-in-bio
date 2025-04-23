@@ -59,6 +59,8 @@ export function EditProfileForm({ profile, onSuccess }: EditProfileFormProps) {
   const onSubmit = async (values: ProfileFormValues) => {
     setIsSubmitting(true);
     try {
+      console.log('Wysyłanie aktualizacji profilu:', { profileId: profile.id, values });
+      
       await apiRequest(`/api/profile/${profile.id}`, {
         method: 'PATCH',
         body: JSON.stringify(values),
