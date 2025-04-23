@@ -72,13 +72,55 @@ export default function GithubContributions({
   // Get contribution data from props or from the mutation result
   const contributions = contributionData?.contributionData || 
                         (fetchContributionsMutation.data as GithubContribution | undefined)?.contributionData;
+  
+  // Error handling
+  const error = fetchContributionsMutation.error as Error | null;
                         
-  console.log("Contribution data:", {
-    fromProps: contributionData?.contributionData,
-    fromMutation: (fetchContributionsMutation.data as GithubContribution | undefined)?.contributionData,
-    finalValue: contributions
-  });
-                        
+  // Handle error state
+  if (error) {
+    return (
+      <motion.div 
+        className="mb-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h2 className="text-xl font-semibold mb-4 text-center flex items-center justify-center">
+          <FaGithub className="mr-2" />
+          GitHub Contributions
+        </h2>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-red-200 dark:border-red-800">
+          <div className="text-center">
+            <div className="text-red-500 text-3xl mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-red-600 mb-2">Error fetching GitHub data</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">{error.message}</p>
+            <form onSubmit={handleFetchContributions} className="flex gap-2 max-w-md mx-auto mt-4">
+              <Input
+                placeholder="GitHub username"
+                value={usernameInput}
+                onChange={(e) => setUsernameInput(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                type="submit"
+                className="bg-gray-800 hover:bg-gray-700"
+                disabled={!usernameInput || fetchContributionsMutation.isPending}
+              >
+                <FaGithub className="mr-2" />
+                Try again
+              </Button>
+            </form>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
   if (!contributions && !fetchContributionsMutation.isPending) {
     return (
       <motion.div 

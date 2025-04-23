@@ -272,17 +272,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         res.json(savedContribution);
-      } catch (fetchError) {
+      } catch (fetchError: any) {
         console.error("GitHub API error:", fetchError);
         res.status(500).json({ 
-          message: "Error fetching GitHub data", 
+          message: "Błąd pobierania danych z GitHub. Sprawdź, czy podana nazwa użytkownika jest poprawna.", 
           error: fetchError.message 
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("GitHub contributions error:", error);
       res.status(500).json({ 
-        message: "Failed to get GitHub contributions", 
+        message: "Nie udało się pobrać danych z GitHub", 
         error: error.message 
       });
     }
@@ -297,29 +297,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       // Extract the data-count and data-date attributes from the HTML
-      const regex = /data-date="([^"]+)"[^>]+data-level="([^"]+)"[^>]*>(\d+)?/g;
+      const regex = /<td[^>]+data-date="([^"]+)"[^>]+data-level="([^"]+)"[^>]*>(.*?)<\/td>/g;
       let match;
       
       while ((match = regex.exec(html)) !== null) {
         const date = match[1];
         const level = parseInt(match[2]) as 0 | 1 | 2 | 3 | 4;
-        const count = match[3] ? parseInt(match[3]) : 0;
+        
+        // Extract count from the tooltip
+        let count = 0;
+        const tooltipMatch = match[3].match(/(\d+) contributions?/);
+        if (tooltipMatch) {
+          count = parseInt(tooltipMatch[1]);
+        }
         
         days.push({ date, count, level });
         total += count;
       }
 
-      // If we couldn't parse the data, generate some demo data
+      // If we couldn't parse the data, return an error rather than fake data
       if (days.length === 0) {
-        const demoData = generateDemoContributionData();
-        return demoData;
+        console.error("GitHub parsing failed: No contribution data found");
+        throw new Error("Could not parse GitHub contribution data. HTML structure may have changed.");
       }
 
       return { total, days };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error parsing GitHub contributions:", error);
-      // Return demo data if parsing fails
-      return generateDemoContributionData();
+      // Do not return fake data - throw the error instead
+      throw new Error(`Failed to parse GitHub contributions data: ${error.message}`);
     }
   }
 
