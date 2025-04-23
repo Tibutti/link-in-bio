@@ -21,41 +21,9 @@ export async function fetchGitHubContributions(username: string): Promise<GitHub
     const userData = await userResponse.json();
     console.log(`GitHub user data fetched successfully for ${username}`);
     
-    // Tworzymy przykładowe dane dla demonstracji, gdy nie ma rzeczywistych danych
-    // Generuj dane za ostatni rok
-    const demoContributions: GitHubContribution[] = [];
-    const today = new Date();
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(today.getFullYear() - 1);
-    
-    // Wypełniaj daty od roku temu do dziś
-    for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
-      // Losowa liczba kontrybucji (więcej w weekendy dla realizmu)
-      let count = 0;
-      const dayOfWeek = d.getDay();
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      
-      // Większe prawdopodobieństwo aktywności w pewne dni
-      const random = Math.random();
-      
-      if (isWeekend && random > 0.7) {
-        count = Math.floor(Math.random() * 8) + 1; // 1-8 kontrybucji
-      } else if (random > 0.8) {
-        count = Math.floor(Math.random() * 5) + 1; // 1-5 kontrybucji
-      }
-      
-      // Określ poziom aktywności na podstawie liczby kontrybucji
-      let level = 0;
-      if (count > 0) {
-        level = count < 2 ? 1 : count < 4 ? 2 : count < 6 ? 3 : 4;
-      }
-      
-      demoContributions.push({
-        date: d.toISOString().split('T')[0], // Format YYYY-MM-DD
-        count,
-        level
-      });
-    }
+    // Przygotowujemy pustą tablicę kontrybucji - nie będziemy generować sztucznych danych
+    const emptyContributions: GitHubContribution[] = [];
+    // Jeśli nie uda się pobrać prawdziwych danych, zwrócimy pustą tablicę
     
     // Spróbuj pobrać rzeczywiste dane z GitHub
     try {
@@ -78,7 +46,7 @@ export async function fetchGitHubContributions(username: string): Promise<GitHub
           console.log(`Parsed ${contributions.length} contribution days from SVG`);
           return contributions;
         } else {
-          console.log(`No contributions found in SVG, using demo data`);
+          console.log(`No contributions found in SVG, returning empty data`);
         }
       } else {
         console.log(`Error fetching GitHub contributions SVG: ${svgResponse.statusText}`);
@@ -87,9 +55,9 @@ export async function fetchGitHubContributions(username: string): Promise<GitHub
       console.error('Error parsing GitHub SVG:', svgError);
     }
     
-    // Jeśli nie udało się pobrać rzeczywistych danych, zwróć przykładowe
-    console.log(`Returning ${demoContributions.length} demo contributions`);
-    return demoContributions;
+    // Jeśli nie udało się pobrać rzeczywistych danych, zwróć pustą tablicę
+    console.log("Nie znaleziono danych kontrybucji GitHub");
+    return emptyContributions;
   } catch (error) {
     console.error('Error fetching GitHub data:', error);
     return []; // Pusta tablica w przypadku błędu
@@ -155,71 +123,16 @@ function parseContributionsFromSvg(svgText: string): GitHubContribution[] {
       }
     }
     
-    // Jeśli żadna opcja nie zadziałała, użyj wariantu 3 (utwórz przykładowe dane, ale z poprawną liczbą kontrybucji)
+    // Jeśli żadna opcja nie zadziałała, po prostu logujemy informację
     if (!found) {
-      // Wydobądź liczbę kontrybucji
+      // Wydobądź liczbę kontrybucji jako informację diagnostyczną
       const countMatch = contributionCountRegex.exec(svgText);
       const totalContributions = countMatch ? parseInt(countMatch[1], 10) : 0;
       
-      console.log(`Znaleziono ${totalContributions} kontrybucji w tekście HTML`);
+      console.log(`Znaleziono ${totalContributions} kontrybucji w tekście HTML, ale nie można ich dokładnie umiejscowić`);
       
-      if (totalContributions > 0) {
-        // Wydobądź zakres dat
-        const dateRangeMatch = jsonRegex.exec(svgText);
-        let startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear() - 1);
-        let endDate = new Date();
-        
-        if (dateRangeMatch) {
-          startDate = new Date(dateRangeMatch[1]);
-          endDate = new Date(dateRangeMatch[2]);
-        }
-        
-        // Utwórz kalendarz z losowo rozmieszczonymi kontrybucjami
-        const daysInRange = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        const currentDate = new Date(startDate);
-        
-        // Ile dni będzie miało kontrybucje
-        const daysWithContributions = Math.min(totalContributions, daysInRange);
-        const contributionDays = new Set();
-        
-        // Wybierz losowo dni z kontrybucjami
-        while (contributionDays.size < daysWithContributions) {
-          const randomDay = Math.floor(Math.random() * daysInRange);
-          contributionDays.add(randomDay);
-        }
-        
-        // Przydziel kontrybucje do wybranych dni
-        let remainingContributions = totalContributions;
-        
-        for (let day = 0; day < daysInRange; day++) {
-          const date = new Date(startDate);
-          date.setDate(date.getDate() + day);
-          const dateStr = date.toISOString().split('T')[0];
-          
-          if (contributionDays.has(day) && remainingContributions > 0) {
-            // Ten dzień ma kontrybucje
-            const count = Math.min(remainingContributions, Math.floor(Math.random() * 5) + 1);
-            remainingContributions -= count;
-            
-            // Określ poziom na podstawie liczby kontrybucji
-            const level = count <= 1 ? 1 : count <= 3 ? 2 : count <= 6 ? 3 : 4;
-            
-            contributions.push({
-              date: dateStr,
-              count,
-              level
-            });
-          } else {
-            // Dzień bez kontrybucji
-            contributions.push({
-              date: dateStr,
-              count: 0,
-              level: 0
-            });
-          }
-        }
-      }
+      // W przyszłości można byłoby rozwinąć ten kod o pobieranie danych z API GitHub z wykorzystaniem tokenu
+      console.log("Nie znaleziono danych kontrybucji w SVG");
     }
     
     console.log(`Rozpoznano ${contributions.length} dni kontrybucji`);
