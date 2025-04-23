@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 
 import ProfileHeader from "@/components/ProfileHeader";
 import SocialLinks from "@/components/SocialLinks";
@@ -10,6 +11,7 @@ import BackgroundSelector from "@/components/BackgroundSelector";
 import GitHubStats from "@/components/GitHubStats";
 import GitHubUsernameForm from "@/components/GitHubUsernameForm";
 import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 
 import { 
@@ -20,6 +22,7 @@ import {
 
 export default function Home() {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
+  const [_, setLocation] = useLocation();
 
   // Fetch profile data
   const { data, isLoading, isError } = useQuery<{
@@ -112,6 +115,15 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
+      <div className="absolute top-4 right-4 z-10">
+        <Button
+          variant="secondary"
+          className="shadow-md hover:shadow-lg transition-shadow"
+          onClick={() => setLocation('/login')}
+        >
+          Panel administracyjny
+        </Button>
+      </div>
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <ProfileHeader 
           profile={profile}
