@@ -48,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Get profile by ID
-  app.get("/api/profile/:id", async (req, res) => {
+  app.get("/api/profile/:id([0-9]+)", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const profile = await storage.getProfile(id);
@@ -61,6 +61,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting profile:", error);
       res.status(500).json({ message: "Failed to get profile" });
+    }
+  });
+  
+  // Get profile by user ID
+  app.get("/api/profile/user/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const profile = await storage.getProfileByUserId(userId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found for user" });
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      console.error("Error getting profile by user ID:", error);
+      res.status(500).json({ message: "Failed to get profile by user ID" });
     }
   });
 
