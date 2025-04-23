@@ -242,8 +242,7 @@ export default function Admin() {
             <TabsTrigger value="profile" className="flex-grow">Profil</TabsTrigger>
             <TabsTrigger value="avatar" className="flex-grow">Zdjęcie</TabsTrigger>
             <TabsTrigger value="contact" className="flex-grow">Kontakt</TabsTrigger>
-            <TabsTrigger value="github" className="flex-grow">GitHub</TabsTrigger>
-            <TabsTrigger value="tryhackme" className="flex-grow">TryHackMe</TabsTrigger>
+            <TabsTrigger value="integrations" className="flex-grow">Integracje</TabsTrigger>
             <TabsTrigger value="visibility" className="flex-grow">Widoczność</TabsTrigger>
             <TabsTrigger value="social" className="flex-grow">Media</TabsTrigger>
             <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
@@ -338,30 +337,48 @@ export default function Admin() {
             )}
           </TabsContent>
           
-          <TabsContent value="github" className="mt-4">
-            {profile && (
-              <GitHubSettingsForm
-                profileId={profile.id}
-                githubUsername={profile.githubUsername || ""}
-                showGithubStats={profile.showGithubStats}
-                onSuccess={() => {
-                  loadData();
-                }}
-              />
-            )}
-          </TabsContent>
-          
-          <TabsContent value="tryhackme" className="mt-4">
-            {profile && (
-              <TryHackMeSettingsForm
-                profileId={profile.id}
-                tryHackMeUserId={profile.tryHackMeUserId || ""}
-                showTryHackMe={profile.showTryHackMe || false}
-                onSuccess={() => {
-                  loadData();
-                }}
-              />
-            )}
+          <TabsContent value="integrations" className="mt-4">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Integracje zewnętrzne</CardTitle>
+                  <CardDescription>
+                    Zarządzaj integracjami z platformami zewnętrznymi
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {profile && (
+                      <>
+                        <div className="mb-6">
+                          <h3 className="text-lg font-semibold mb-4">GitHub</h3>
+                          <GitHubSettingsForm
+                            profileId={profile.id}
+                            githubUsername={profile.githubUsername || ""}
+                            showGithubStats={profile.showGithubStats}
+                            onSuccess={() => {
+                              loadData();
+                            }}
+                          />
+                        </div>
+                        
+                        <div className="pt-6 border-t">
+                          <h3 className="text-lg font-semibold mb-4">TryHackMe</h3>
+                          <TryHackMeSettingsForm
+                            profileId={profile.id}
+                            tryHackMeUserId={profile.tryHackMeUserId || ""}
+                            showTryHackMe={profile.showTryHackMe || false}
+                            onSuccess={() => {
+                              loadData();
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
           
           <TabsContent value="visibility" className="mt-4">
