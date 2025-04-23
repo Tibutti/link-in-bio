@@ -221,10 +221,14 @@ export class DatabaseStorage implements IStorage {
     await db.delete(profiles);
     await db.delete(users);
 
-    // Create demo user
+    // Create demo user with hashed password
+    // Import bezpośrednio hashPassword aby uniknąć cyklicznych zależności 
+    const { hashPassword } = await import('./auth');
+    const hashedPassword = await hashPassword("demo123");
+    
     const [demoUser] = await db.insert(users).values({
       username: "demo",
-      password: "demo123" // In production, would be hashed
+      password: hashedPassword
     }).returning();
 
     // Create demo profile
