@@ -25,6 +25,11 @@ export const profiles = pgTable("profiles", {
   location: text("location"),
   imageIndex: integer("image_index").default(0),
   backgroundIndex: integer("background_index").default(0),
+  backgroundGradient: jsonb("background_gradient").$type<{
+    colorFrom: string;
+    colorTo: string;
+    direction: string;
+  }>(),
   githubUsername: text("github_username"),
 });
 
@@ -35,6 +40,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   location: true,
   imageIndex: true,
   backgroundIndex: true,
+  backgroundGradient: true,
   githubUsername: true,
 });
 
