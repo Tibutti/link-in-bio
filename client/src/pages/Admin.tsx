@@ -17,6 +17,7 @@ import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
 import { EditFeaturedContentForm } from '@/components/EditFeaturedContentForm';
 import { ContactDetailsForm } from '@/components/ContactDetailsForm';
 import { GitHubSettingsForm } from '@/components/GitHubSettingsForm';
+import { TryHackMeSettingsForm } from '@/components/TryHackMeSettingsForm';
 import { SectionVisibilityForm } from '@/components/SectionVisibilityForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { Plus } from 'lucide-react';
@@ -45,7 +46,9 @@ interface Profile {
   backgroundIndex: number;
   backgroundGradient: string | null;
   githubUsername: string | null;
+  tryHackMeUserId: string | null;
   showGithubStats: boolean;
+  showTryHackMe: boolean;
   showImage: boolean;
   showContact: boolean;
   showSocial: boolean;
@@ -240,6 +243,7 @@ export default function Admin() {
             <TabsTrigger value="avatar" className="flex-grow">Zdjęcie</TabsTrigger>
             <TabsTrigger value="contact" className="flex-grow">Kontakt</TabsTrigger>
             <TabsTrigger value="github" className="flex-grow">GitHub</TabsTrigger>
+            <TabsTrigger value="tryhackme" className="flex-grow">TryHackMe</TabsTrigger>
             <TabsTrigger value="visibility" className="flex-grow">Widoczność</TabsTrigger>
             <TabsTrigger value="social" className="flex-grow">Media</TabsTrigger>
             <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
@@ -340,6 +344,19 @@ export default function Admin() {
                 profileId={profile.id}
                 githubUsername={profile.githubUsername || ""}
                 showGithubStats={profile.showGithubStats}
+                onSuccess={() => {
+                  loadData();
+                }}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="tryhackme" className="mt-4">
+            {profile && (
+              <TryHackMeSettingsForm
+                profileId={profile.id}
+                tryHackMeUserId={profile.tryHackMeUserId || ""}
+                showTryHackMe={profile.showTryHackMe || false}
                 onSuccess={() => {
                   loadData();
                 }}
