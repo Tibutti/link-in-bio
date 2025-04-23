@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema, insertGithubContributionSchema, type ContributionData } from "@shared/schema";
+import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema } from "@shared/schema";
 import { z } from "zod";
 import fetch from "node-fetch";
 
@@ -19,13 +19,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const socialLinks = await storage.getSocialLinks(profile.id);
       const featuredContents = await storage.getFeaturedContents(profile.id);
-      const githubContributions = await storage.getGithubContributions(profile.id);
       
       res.json({
         profile,
         socialLinks,
-        featuredContents,
-        githubContributions
+        featuredContents
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get profile" });
@@ -121,7 +119,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           colorTo: z.string(),
           direction: z.string(),
         }).optional(),
-        githubUsername: z.string().optional(),
       });
       
       const validData = updateSchema.parse(req.body);
