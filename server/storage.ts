@@ -195,8 +195,7 @@ export class DatabaseStorage implements IStorage {
       bio: "Digital creator, photographer, and tech enthusiast sharing my journey and connecting with like-minded people.",
       location: "New York, USA",
       imageIndex: 0,
-      backgroundIndex: 0,
-      githubUsername: null
+      backgroundIndex: 0
     }).returning();
 
     // Create social links
