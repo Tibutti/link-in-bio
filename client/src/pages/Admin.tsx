@@ -12,6 +12,17 @@ import {
   CardFooter 
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EditProfileForm } from '@/components/EditProfileForm';
+import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
+import { EditFeaturedContentForm } from '@/components/EditFeaturedContentForm';
+import { Plus } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface User {
   id: number;
@@ -68,6 +79,13 @@ export default function Admin() {
   const [featuredContents, setFeaturedContents] = useState<FeaturedContent[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editingSocialLink, setEditingSocialLink] = useState<SocialLink | null>(null);
+  const [editingFeaturedContent, setEditingFeaturedContent] = useState<FeaturedContent | null>(null);
+  const [showAddSocialForm, setShowAddSocialForm] = useState(false);
+  const [showAddKnowledgeForm, setShowAddKnowledgeForm] = useState(false);
+  const [showAddFeaturedForm, setShowAddFeaturedForm] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -106,6 +124,10 @@ export default function Admin() {
       const userData = JSON.parse(userDataStr);
       const profileId = userData.profile.id;
 
+      // Pobierz aktualny profil
+      const profileData = await apiRequest<Profile>(`/api/profile/${profileId}`);
+      setProfile(profileData);
+
       // Pobierz linki społecznościowe
       const socialLinksData = await apiRequest<SocialLink[]>(`/api/profile/${profileId}/social-links/category/social`);
       setSocialLinks(socialLinksData);
@@ -121,6 +143,12 @@ export default function Admin() {
       // Pobierz statystyki
       const statsData = await apiRequest<Stats>(`/api/profile/${profileId}/social-links/stats`);
       setStats(statsData);
+
+      // Update local storage with the latest profile data
+      localStorage.setItem('userData', JSON.stringify({
+        user: userData.user,
+        profile: profileData
+      }));
     } catch (error) {
       console.error('Błąd podczas ładowania danych:', error);
       toast({
@@ -147,6 +175,20 @@ export default function Admin() {
         description: 'Zostałeś pomyślnie wylogowany',
       });
     }
+  };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    setEditingSocialLink(null);
+    setEditingFeaturedContent(null);
+    setShowAddSocialForm(false);
+    setShowAddKnowledgeForm(false);
+    setShowAddFeaturedForm(false);
+  };
+
+  const handleFormSuccess = () => {
+    loadData();
+    closeDialog();
   };
 
   if (isLoading) {
@@ -191,7 +233,7 @@ export default function Admin() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {profile && (
+                {profile && !isEditingProfile ? (
                   <dl className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Imię i nazwisko</dt>
@@ -203,35 +245,96 @@ export default function Admin() {
                     </div>
                     <div className="col-span-full">
                       <dt className="text-sm font-medium text-gray-500">Bio</dt>
-                      <dd className="text-lg">{profile.bio}</dd>
+                      <dd className="text-lg whitespace-pre-line">{profile.bio}</dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-gray-500">GitHub</dt>
                       <dd className="text-lg">{profile.githubUsername || 'Nie ustawiono'}</dd>
                     </div>
                   </dl>
-                )}
+                ) : profile && isEditingProfile ? (
+                  <EditProfileForm 
+                    profile={profile} 
+                    onSuccess={() => {
+                      loadData();
+                      setIsEditingProfile(false);
+                    }} 
+                  />
+                ) : null}
               </CardContent>
-              <CardFooter>
-                <Button variant="outline" onClick={() => loadData()}>Odśwież dane</Button>
+              <CardFooter className="flex gap-2">
+                {!isEditingProfile ? (
+                  <>
+                    <Button onClick={() => setIsEditingProfile(true)}>
+                      Edytuj profil
+                    </Button>
+                    <Button variant="outline" onClick={() => loadData()}>
+                      Odśwież dane
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="outline" onClick={() => setIsEditingProfile(false)}>
+                    Anuluj edycję
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           </TabsContent>
 
           <TabsContent value="social" className="mt-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Media społecznościowe</CardTitle>
-                <CardDescription>
-                  Lista Twoich profili w mediach społecznościowych
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Media społecznościowe</CardTitle>
+                  <CardDescription>
+                    Lista Twoich profili w mediach społecznościowych
+                  </CardDescription>
+                </div>
+                <Dialog open={isDialogOpen && (!!editingSocialLink || showAddSocialForm)} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="ml-auto flex items-center gap-1"
+                      onClick={() => {
+                        setEditingSocialLink(null);
+                        setShowAddSocialForm(true);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Plus size={16} /> Dodaj nowy
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingSocialLink ? 'Edytuj link' : 'Dodaj nowy link'}
+                      </DialogTitle>
+                    </DialogHeader>
+                    {profile && (showAddSocialForm || editingSocialLink) && (
+                      <EditSocialLinkForm
+                        profileId={profile.id}
+                        link={editingSocialLink || undefined}
+                        category="social"
+                        onSuccess={handleFormSuccess}
+                        onCancel={closeDialog}
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {socialLinks.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2">
                       {socialLinks.map((link) => (
-                        <div key={link.id} className="rounded-lg border p-4">
+                        <div 
+                          key={link.id} 
+                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer"
+                          onClick={() => {
+                            setEditingSocialLink(link);
+                            setIsDialogOpen(true);
+                          }}
+                        >
                           <h3 className="text-lg font-medium">{link.platform}</h3>
                           <p className="text-sm text-muted-foreground">{link.username}</p>
                           <a 
@@ -239,6 +342,7 @@ export default function Admin() {
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-sm text-blue-500 hover:underline"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {link.url}
                           </a>
@@ -255,18 +359,58 @@ export default function Admin() {
 
           <TabsContent value="knowledge" className="mt-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Platformy wiedzy</CardTitle>
-                <CardDescription>
-                  Lista Twoich profili na platformach dzielenia się wiedzą
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Platformy wiedzy</CardTitle>
+                  <CardDescription>
+                    Lista Twoich profili na platformach dzielenia się wiedzą
+                  </CardDescription>
+                </div>
+                <Dialog open={isDialogOpen && (!!editingSocialLink || showAddKnowledgeForm)} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="ml-auto flex items-center gap-1"
+                      onClick={() => {
+                        setEditingSocialLink(null);
+                        setShowAddKnowledgeForm(true);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Plus size={16} /> Dodaj nowy
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingSocialLink ? 'Edytuj link' : 'Dodaj nowy link'}
+                      </DialogTitle>
+                    </DialogHeader>
+                    {profile && (showAddKnowledgeForm || editingSocialLink) && (
+                      <EditSocialLinkForm
+                        profileId={profile.id}
+                        link={editingSocialLink || undefined}
+                        category="knowledge"
+                        onSuccess={handleFormSuccess}
+                        onCancel={closeDialog}
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {knowledgeLinks.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2">
                       {knowledgeLinks.map((link) => (
-                        <div key={link.id} className="rounded-lg border p-4">
+                        <div 
+                          key={link.id} 
+                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer"
+                          onClick={() => {
+                            setEditingSocialLink(link);
+                            setIsDialogOpen(true);
+                          }}
+                        >
                           <h3 className="text-lg font-medium">{link.platform}</h3>
                           <p className="text-sm text-muted-foreground">{link.username}</p>
                           <a 
@@ -274,6 +418,7 @@ export default function Admin() {
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-sm text-blue-500 hover:underline"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {link.url}
                           </a>
@@ -290,18 +435,57 @@ export default function Admin() {
 
           <TabsContent value="featured" className="mt-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Wyróżnione treści</CardTitle>
-                <CardDescription>
-                  Lista Twoich wyróżnionych treści i postów
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Wyróżnione treści</CardTitle>
+                  <CardDescription>
+                    Lista Twoich wyróżnionych treści i postów
+                  </CardDescription>
+                </div>
+                <Dialog open={isDialogOpen && (!!editingFeaturedContent || showAddFeaturedForm)} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="ml-auto flex items-center gap-1"
+                      onClick={() => {
+                        setEditingFeaturedContent(null);
+                        setShowAddFeaturedForm(true);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Plus size={16} /> Dodaj nową
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingFeaturedContent ? 'Edytuj treść' : 'Dodaj nową treść'}
+                      </DialogTitle>
+                    </DialogHeader>
+                    {profile && (showAddFeaturedForm || editingFeaturedContent) && (
+                      <EditFeaturedContentForm
+                        profileId={profile.id}
+                        content={editingFeaturedContent || undefined}
+                        onSuccess={handleFormSuccess}
+                        onCancel={closeDialog}
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {featuredContents.length > 0 ? (
                     <div className="grid gap-4 md:grid-cols-2">
                       {featuredContents.map((content) => (
-                        <div key={content.id} className="rounded-lg border p-4">
+                        <div 
+                          key={content.id} 
+                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer"
+                          onClick={() => {
+                            setEditingFeaturedContent(content);
+                            setIsDialogOpen(true);
+                          }}
+                        >
                           <h3 className="text-lg font-medium">{content.title}</h3>
                           <p className="text-sm text-muted-foreground">{content.description}</p>
                           <a 
@@ -309,6 +493,7 @@ export default function Admin() {
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-sm text-blue-500 hover:underline"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             Zobacz treść
                           </a>
