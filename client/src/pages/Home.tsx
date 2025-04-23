@@ -7,6 +7,8 @@ import SocialLinks from "@/components/SocialLinks";
 import FeaturedContent from "@/components/FeaturedContent";
 import ProfileSelector from "@/components/ProfileSelector";
 import BackgroundSelector from "@/components/BackgroundSelector";
+import GitHubStats from "@/components/GitHubStats";
+import GitHubUsernameForm from "@/components/GitHubUsernameForm";
 import Footer from "@/components/Footer";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 
@@ -127,6 +129,10 @@ export default function Home() {
           />
         )}
         
+        <GitHubStats 
+          profile={profile} 
+        />
+        
         <ProfileSelector 
           selectedIndex={profile.imageIndex ?? 0} 
           onSelect={handleProfileImageChange} 
@@ -135,6 +141,11 @@ export default function Home() {
         <BackgroundSelector 
           selectedIndex={backgroundIndex} 
           onSelect={handleBackgroundChange} 
+        />
+        
+        <GitHubUsernameForm 
+          profileId={profile.id} 
+          initialUsername={profile.githubUsername} 
         />
         
         <Footer 
