@@ -8,6 +8,7 @@ import FeaturedContent from "@/components/FeaturedContent";
 import GithubContributions from "@/components/GithubContributions";
 import ProfileSelector from "@/components/ProfileSelector";
 import BackgroundSelector from "@/components/BackgroundSelector";
+import GradientGenerator from "@/components/GradientGenerator";
 import Footer from "@/components/Footer";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 
@@ -107,8 +108,35 @@ export default function Home() {
   const featuredContents = data.featuredContents as FeaturedContentType[];
   const githubContributions = data.githubContributions as GithubContribution | undefined;
 
+  // Decide which background style to use - gradient or preset
+  const getBackgroundStyle = () => {
+    // If custom gradient is set, use it
+    if (profile.backgroundGradient) {
+      const { colorFrom, colorTo, direction } = profile.backgroundGradient;
+      const directionValue = 
+        direction === "to-r" ? "to right" :
+        direction === "to-l" ? "to left" :
+        direction === "to-b" ? "to bottom" :
+        direction === "to-t" ? "to top" :
+        direction === "to-tr" ? "to top right" :
+        direction === "to-tl" ? "to top left" :
+        direction === "to-br" ? "to bottom right" :
+        "to bottom left";
+        
+      return {
+        background: `linear-gradient(${directionValue}, ${colorFrom}, ${colorTo})`,
+      };
+    }
+    
+    // Otherwise use preset background
+    return {}; // Empty style, will use className instead
+  };
+
   return (
-    <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
+    <div 
+      className={`min-h-screen ${profile.backgroundGradient ? '' : BACKGROUND_OPTIONS[backgroundIndex].className}`}
+      style={getBackgroundStyle()}
+    >
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <ProfileHeader 
           profile={profile}
@@ -131,6 +159,9 @@ export default function Home() {
           username={profile.githubUsername || undefined}
           contributionData={githubContributions}
         />
+        
+        {/* Add Gradient Generator component */}
+        <GradientGenerator profile={profile} />
         
         <ProfileSelector 
           selectedIndex={profile.imageIndex} 
