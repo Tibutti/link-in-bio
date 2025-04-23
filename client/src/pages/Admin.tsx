@@ -235,15 +235,15 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="profile">Profil</TabsTrigger>
-            <TabsTrigger value="avatar">Zdjęcie</TabsTrigger>
-            <TabsTrigger value="contact">Kontakt</TabsTrigger>
-            <TabsTrigger value="github">GitHub</TabsTrigger>
-            <TabsTrigger value="visibility">Widoczność</TabsTrigger>
-            <TabsTrigger value="social">Media społecznościowe</TabsTrigger>
-            <TabsTrigger value="knowledge">Platformy wiedzy</TabsTrigger>
-            <TabsTrigger value="featured">Wyróżnione treści</TabsTrigger>
+          <TabsList className="flex flex-wrap w-full gap-1">
+            <TabsTrigger value="profile" className="flex-grow">Profil</TabsTrigger>
+            <TabsTrigger value="avatar" className="flex-grow">Zdjęcie</TabsTrigger>
+            <TabsTrigger value="contact" className="flex-grow">Kontakt</TabsTrigger>
+            <TabsTrigger value="github" className="flex-grow">GitHub</TabsTrigger>
+            <TabsTrigger value="visibility" className="flex-grow">Widoczność</TabsTrigger>
+            <TabsTrigger value="social" className="flex-grow">Media</TabsTrigger>
+            <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
+            <TabsTrigger value="featured" className="flex-grow">Treści</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="mt-4">
