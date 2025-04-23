@@ -93,4 +93,35 @@ export const insertFeaturedContentSchema = createInsertSchema(featuredContents).
 export type InsertFeaturedContent = z.infer<typeof insertFeaturedContentSchema>;
 export type FeaturedContent = typeof featuredContents.$inferSelect;
 
-// GitHub contributions functionality has been removed
+// GitHub contributions 
+export interface GithubContribution {
+  date: string;
+  count: number;
+  level: number; // 0-4 poziom aktywności
+}
+
+export interface ContributionData {
+  contributions: GithubContribution[];
+  totalContributions?: number;
+  longestStreak?: number;
+  currentStreak?: number;
+}
+
+// Sesje użytkowników
+export const sessions = pgTable("sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  token: text("token").notNull().unique(),
+  expiresAt: text("expires_at").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const insertSessionSchema = createInsertSchema(sessions).pick({
+  userId: true,
+  token: true,
+  expiresAt: true,
+  createdAt: true,
+});
+
+export type InsertSession = z.infer<typeof insertSessionSchema>;
+export type Session = typeof sessions.$inferSelect;
