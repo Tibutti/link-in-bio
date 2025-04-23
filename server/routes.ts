@@ -305,6 +305,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const html = await response.text();
         console.log(`GitHub HTML size: ${html.length} bytes`);
         
+        // Ekstrakcja SVG kalendarza na potrzeby bezpośredniego wyświetlania
+        let svgCalendar = null;
+        try {
+          // Wyszukanie elementu SVG kalendarza
+          const svgMatch = html.match(/<svg[^>]*class="js-calendar-graph-svg"[^>]*>([\s\S]*?)<\/svg>/i);
+          if (svgMatch && svgMatch[0]) {
+            svgCalendar = svgMatch[0];
+            // Dodanie dodatkowych stylów dla lepszego wyświetlania
+            svgCalendar = svgCalendar.replace('<svg', '<svg style="width:100%;height:auto;max-width:780px" ');
+            console.log("Successfully extracted GitHub calendar SVG");
+          }
+        } catch (svgError) {
+          console.error("Error extracting GitHub calendar SVG:", svgError);
+        }
+        
         // Parse the contribution data from HTML
         // This is a simplified approach and may break if GitHub changes their HTML structure
         const contributionData = parseGitHubContributions(html);
@@ -331,6 +346,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.updateProfile(profile.id, { githubUsername: username });
         }
 
+        // Dodanie SVG kalendarza do odpowiedzi
+        if (svgCalendar) {
+          (savedContribution as any).svgCalendar = svgCalendar;
+        }
+
         res.json(savedContribution);
       } catch (fetchError: any) {
         console.error("GitHub API error:", fetchError);
@@ -343,6 +363,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("GitHub contributions error:", error);
       res.status(500).json({ 
         message: "Nie udało się pobrać danych z GitHub", 
+        error: error.message 
+      });
+    }
+  });
+  
+  // Proxy dla GitHub - pomoże ominąć problemy CORS przy bezpośrednim pobieraniu danych
+  app.get("/api/github-proxy/:username", async (req, res) => {
+    try {
+      const { username } = req.params;
+      if (!username) {
+        return res.status(400).json({ message: "GitHub username is required" });
+      }
+      
+      // Dodaj timestamp do zapytania, aby uniknąć cache'owania
+      const timestamp = Date.now();
+      const url = `https://github.com/${username}?t=${timestamp}`;
+      
+      console.log(`Proxying GitHub request for: ${url}`);
+      
+      const headers = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'User-Agent': 'Mozilla/5.0 (compatible; LinkinbioApp/1.0)'
+      };
+      
+      const response = await fetch(url, { headers });
+      
+      if (!response.ok) {
+        return res.status(response.status).send(response.statusText);
+      }
+      
+      const html = await response.text();
+      
+      // Dodaj nagłówki CORS, aby zezwolić na żądania cross-origin
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error: any) {
+      console.error("GitHub proxy error:", error);
+      res.status(500).json({ 
+        message: "Failed to proxy GitHub request", 
         error: error.message 
       });
     }

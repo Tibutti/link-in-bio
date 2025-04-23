@@ -12,7 +12,7 @@ import { type GithubContribution, type ContributionData } from "@shared/schema";
 interface GithubContributionsProps {
   profileId: number;
   username?: string;
-  contributionData?: GithubContribution;
+  contributionData?: GithubContribution | any; // Używamy any, ponieważ API zwraca rozszerzony typ
 }
 
 export default function GithubContributions({ 
@@ -234,19 +234,22 @@ export default function GithubContributions({
         try {
           // Dodaj timestamp do zapytania, aby uniknąć cache'owania
           const timestamp = Date.now();
-          // Użyj cors-anywhere proxy lub podobnych usług, aby obejść ograniczenia CORS
-          const proxyUrl = `https://cors-anywhere.herokuapp.com/`;
-          const gitHubUrl = `https://github.com/users/${username}/contributions?tab=overview&from=${new Date().getFullYear()-1}-12-01&to=${new Date().getFullYear()}-12-31&t=${timestamp}`;
-          
-          // Próbujemy najpierw pobrać dane bezpośrednio przez API, co daje nam statystyki
-          // potem użyjemy proxy tylko w razie potrzeby wyświetlenia oryginalnego kalendarza
           
           // Poinformuj użytkownika, że próbujemy pobrać dane
           console.log(`Attempting to fetch GitHub calendar for ${username}`);
           
-          // Zapisz dane surowe w razie potrzeby
-          if (contributions && 'contributionData' in contributions) {
-            setRawCalendarData(JSON.stringify(contributions.contributionData));
+          // Wykorzystamy nowe API, które dostarcza nam SVG kalendarza
+          if (contributions) {
+            // Sprawdź, czy mamy już SVG kalendarza z serwera
+            const contributionsWithSvg = contributions as any;
+            if (contributionsWithSvg.svgCalendar) {
+              setSvgContent(contributionsWithSvg.svgCalendar);
+            }
+            
+            // Zapisz również dane surowe dla celów analitycznych
+            if (contributionsWithSvg.contributionData) {
+              setRawCalendarData(JSON.stringify(contributionsWithSvg.contributionData));
+            }
           }
         } catch (error) {
           console.error("Error fetching GitHub calendar:", error);

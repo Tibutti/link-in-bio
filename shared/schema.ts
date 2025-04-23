@@ -106,7 +106,14 @@ export const insertGithubContributionSchema = createInsertSchema(githubContribut
 });
 
 export type InsertGithubContribution = z.infer<typeof insertGithubContributionSchema>;
-export type GithubContribution = typeof githubContributions.$inferSelect;
+
+// Podstawowy typ wyboru z tabeli bazy danych
+export type GithubContributionBase = typeof githubContributions.$inferSelect;
+
+// Rozszerzony typ, który uwzględnia dodatkowe pola zwracane przez API
+export type GithubContribution = GithubContributionBase & {
+  svgCalendar?: string; // To pole jest dodawane dynamicznie przez API, nie jest przechowywane w bazie danych
+};
 
 // Custom type for GitHub contribution data structure
 export type ContributionDay = {
