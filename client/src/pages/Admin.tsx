@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EditProfileForm } from '@/components/EditProfileForm';
 import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
 import { EditFeaturedContentForm } from '@/components/EditFeaturedContentForm';
+import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { Plus } from 'lucide-react';
 import {
   Dialog,
@@ -221,8 +222,9 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile">Profil</TabsTrigger>
+            <TabsTrigger value="avatar">Zdjęcie</TabsTrigger>
             <TabsTrigger value="social">Media społecznościowe</TabsTrigger>
             <TabsTrigger value="knowledge">Platformy wiedzy</TabsTrigger>
             <TabsTrigger value="featured">Wyróżnione treści</TabsTrigger>
@@ -283,6 +285,24 @@ export default function Admin() {
                 )}
               </CardFooter>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="avatar" className="mt-4">
+            {profile && (
+              <ProfileImageSelector
+                profileId={profile.id}
+                currentImageIndex={profile.imageIndex}
+                onImageChange={(newIndex) => {
+                  // Aktualizujemy profil lokalnie aby uniknąć konieczności przeładowania strony
+                  setProfile({
+                    ...profile,
+                    imageIndex: newIndex
+                  });
+                  // Dodatkowo przeładujemy dane z serwera dla pewności
+                  loadData();
+                }}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="social" className="mt-4">
