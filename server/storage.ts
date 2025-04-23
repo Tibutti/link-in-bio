@@ -1,22 +1,16 @@
 import { 
-  users, type User, type InsertUser,
-  profiles, type Profile, type InsertProfile,
-  socialLinks, type SocialLink, type InsertSocialLink,
-  featuredContents, type FeaturedContent, type InsertFeaturedContent,
-  githubContributions, type GithubContribution, type InsertGithubContribution,
-  type ContributionData
-} from "@shared/schema";
-
-// Storage interface
-import { 
   users, profiles, socialLinks, featuredContents, githubContributions,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
   type FeaturedContent, type InsertFeaturedContent,
-  type GithubContribution, type InsertGithubContribution
+  type GithubContribution, type InsertGithubContribution,
+  type ContributionData
 } from '@shared/schema';
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
+// Storage interface
 export interface IStorage {
   // User methods
   getUser(id: number): Promise<User | undefined>;
@@ -51,9 +45,6 @@ export interface IStorage {
   // Demo data initialization
   initializeDemoData(): Promise<void>;
 }
-
-import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   // User methods
