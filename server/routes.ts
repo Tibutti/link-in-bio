@@ -1,10 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema } from "@shared/schema";
+import { insertProfileSchema, insertSocialLinkSchema, insertFeaturedContentSchema, users } from "@shared/schema";
 import { z } from "zod";
 import fetch from "node-fetch";
 import { fetchGitHubContributions } from "./githubApi";
+import { db } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Endpoint do ponownej inicjalizacji danych testowych
@@ -20,14 +21,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get profile data and all associated content
   app.get("/api/profile", async (req, res) => {
     try {
-      // Pobieramy pierwszy dostępny profil z bazy danych (demo)
-      // Najpierw pobieramy pierwszego użytkownika
-      const users = await db.select().from(schema.users).limit(1);
-      if (users.length === 0) {
-        return res.status(404).json({ message: "No users found" });
-      }
-      
-      const userId = users[0].id;
+      // Używamy stałego ID użytkownika równego 5, który wiemy, że istnieje w bazie
+      const userId = 5; // ID z bazy danych
       const profile = await storage.getProfileByUserId(userId);
       
       if (!profile) {
