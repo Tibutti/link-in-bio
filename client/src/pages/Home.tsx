@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import ProfileHeader from "@/components/ProfileHeader";
 import SocialLinks from "@/components/SocialLinks";
 import FeaturedContent from "@/components/FeaturedContent";
-import GithubContributions from "@/components/GithubContributions";
 import ProfileSelector from "@/components/ProfileSelector";
 import BackgroundSelector from "@/components/BackgroundSelector";
 import Footer from "@/components/Footer";
@@ -14,8 +13,7 @@ import { BACKGROUND_OPTIONS } from "@/lib/constants";
 import { 
   type Profile, 
   type SocialLink, 
-  type FeaturedContent as FeaturedContentType,
-  type GithubContribution 
+  type FeaturedContent as FeaturedContentType
 } from "@shared/schema";
 
 export default function Home() {
@@ -26,7 +24,6 @@ export default function Home() {
     profile: Profile;
     socialLinks: SocialLink[];
     featuredContents: FeaturedContentType[];
-    githubContributions?: GithubContribution;
   }>({
     queryKey: ["/api/profile"],
   });
@@ -110,7 +107,6 @@ export default function Home() {
   const profile = data.profile;
   const socialLinks = data.socialLinks;
   const featuredContents = data.featuredContents;
-  const githubContributions = data.githubContributions;
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
@@ -130,12 +126,6 @@ export default function Home() {
             onContentClick={handleLinkClick}
           />
         )}
-        
-        <GithubContributions 
-          profileId={profile.id} 
-          username={profile.githubUsername || undefined}
-          contributionData={githubContributions}
-        />
         
         <ProfileSelector 
           selectedIndex={profile.imageIndex ?? 0} 
