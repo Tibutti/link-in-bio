@@ -1,11 +1,9 @@
 import { 
-  users, profiles, socialLinks, featuredContents, githubContributions,
+  users, profiles, socialLinks, featuredContents,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
-  type FeaturedContent, type InsertFeaturedContent,
-  type GithubContribution, type InsertGithubContribution,
-  type ContributionData
+  type FeaturedContent, type InsertFeaturedContent
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -174,38 +172,7 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
-  // GitHub contributions methods
-  async getGithubContributions(profileId: number): Promise<GithubContribution | undefined> {
-    const [contribution] = await db
-      .select()
-      .from(githubContributions)
-      .where(eq(githubContributions.profileId, profileId));
-    
-    return contribution;
-  }
-
-  async createGithubContributions(contribution: InsertGithubContribution): Promise<GithubContribution> {
-    const [newContribution] = await db
-      .insert(githubContributions)
-      .values(contribution)
-      .returning();
-    
-    return newContribution;
-  }
-
-  async updateGithubContributions(id: number, data: Partial<GithubContribution>): Promise<GithubContribution> {
-    const [updatedContribution] = await db
-      .update(githubContributions)
-      .set(data)
-      .where(eq(githubContributions.id, id))
-      .returning();
-    
-    if (!updatedContribution) {
-      throw new Error(`GitHub contribution with ID ${id} not found`);
-    }
-    
-    return updatedContribution;
-  }
+  // GitHub contributions methods have been removed
 
   // Initialize database with demo data if empty
   async initializeDemoData() {
