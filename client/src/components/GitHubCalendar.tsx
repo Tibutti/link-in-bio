@@ -25,66 +25,60 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
   const calendarRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    let isMounted = true;
-    
-    // Funkcja do ładowania kalendarza GitHub
+    // Funkcja do ładowania kalendarza GitHub ściśle według oficjalnej dokumentacji
     const loadCalendar = async () => {
       try {
-        // Dodaj CSS jeśli jeszcze nie istnieje
-        if (!document.querySelector('link[href*="github-calendar-responsive.css"]')) {
+        // Załaduj skrypt i style
+        if (!document.querySelector('script[src*="github-calendar.min.js"]')) {
+          // Dodaj skrypt
+          const script = document.createElement('script');
+          script.src = 'https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js';
+          script.async = true;
+          document.head.appendChild(script);
+          
+          // Dodaj style
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = 'https://unpkg.com/github-calendar@latest/dist/github-calendar-responsive.css';
           document.head.appendChild(link);
-        }
-        
-        // Załaduj skrypt jeśli jeszcze nie załadowany
-        if (typeof window.GitHubCalendar !== 'function') {
-          // Utwórz i załaduj skrypt
-          await new Promise<void>((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js';
-            script.async = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Nie udało się załadować skryptu GitHub Calendar'));
-            document.body.appendChild(script);
+          
+          // Poczekaj na załadowanie skryptu
+          await new Promise((resolve) => {
+            script.onload = resolve;
           });
         }
         
-        // Inicjalizuj kalendarz po załadowaniu (z opóźnieniem dla pewności)
+        // Wywołaj inicjalizację kalendarza po załadowaniu skryptu
         setTimeout(() => {
-          if (!isMounted) return;
-          
-          if (calendarRef.current && profile.githubUsername && typeof window.GitHubCalendar === 'function') {
+          if (window.GitHubCalendar && calendarRef.current) {
             try {
-              window.GitHubCalendar(
-                '.calendar',
-                profile.githubUsername,
-                { 
-                  responsive: true, 
-                  tooltips: true,
-                  global_stats: false,
-                  summary_text: 'Podsumowanie aktywności na GitHub'
-                }
-              );
+              // Inicjalizacja według dokumentacji
+              window.GitHubCalendar(".calendar", profile.githubUsername, {
+                responsive: true,
+                tooltips: true,
+                global_stats: true,
+                summary_text: 'Podsumowanie aktywności na GitHub'
+              });
+              
+              console.log("Kalendarz GitHub zainicjalizowany pomyślnie");
             } catch (err) {
-              console.error('Błąd przy inicjalizacji kalendarza:', err);
+              console.error("Błąd podczas inicjalizacji kalendarza:", err);
             }
+          } else {
+            console.error("GitHubCalendar nie został załadowany lub element nie jest dostępny");
           }
-        }, 300);
+        }, 500);
       } catch (error) {
         console.error('Błąd podczas ładowania kalendarza GitHub:', error);
       }
     };
 
+    // Załaduj kalendarz po zamontowaniu komponentu
     if (profile.githubUsername) {
       loadCalendar();
     }
     
-    // Funkcja czyszcząca
-    return () => {
-      isMounted = false;
-    };
+    // Funkcja czyszcząca - nic nie robimy, ponieważ skrypty i style są globalne
   }, [profile.githubUsername]);
 
   if (!profile.githubUsername) return null;
@@ -92,8 +86,9 @@ export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
   return (
     <div className="w-full mt-4">
       <h2 className="text-lg font-semibold mb-2 text-center">Aktywność na GitHub</h2>
-      <div className="calendar github-calendar" ref={calendarRef}>
-        Ładowanie danych aktywności...
+      {/* Dokładna struktura według dokumentacji */}
+      <div className="calendar" ref={calendarRef}>
+        Ładowanie danych aktywności na GitHub...
       </div>
     </div>
   );
