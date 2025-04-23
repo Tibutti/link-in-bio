@@ -12,6 +12,7 @@ import GitHubStats from "@/components/GitHubStats";
 import TryHackMeBadge from "@/components/TryHackMeBadge";
 import ContactDetails from "@/components/ContactDetails";
 import Footer from "@/components/Footer";
+import { QuickShareButtons } from "@/components/QuickShareButtons";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 
@@ -114,6 +115,9 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
+      <QuickShareButtons 
+        title={`Profil ${profile.name}`} 
+      />
       <div className="absolute top-4 right-4 z-10">
         <Button
           variant="secondary"
