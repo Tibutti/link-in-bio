@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Shield, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import AccordionSection from './AccordionSection';
+import { useTranslation } from 'react-i18next';
 
 interface TryHackMeBadgeProps {
   userId?: string;
@@ -10,6 +11,7 @@ interface TryHackMeBadgeProps {
 
 export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Ustawienie flagi załadowania po renderze iFrame (tylko gdy mamy userId)
@@ -29,9 +31,11 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
         <Shield className="h-10 w-10 text-primary" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-lg font-medium">Konto TryHackMe nie połączone</h3>
+        <h3 className="text-lg font-medium text-foreground">
+          {t('ui.noData')}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Połącz swoje konto TryHackMe, aby wyświetlić swoje osiągnięcia i odznaki.
+          Skonfiguruj konto TryHackMe w ustawieniach profilu, aby wyświetlić odznaki.
         </p>
       </div>
       <Button 
@@ -39,7 +43,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
         className="mt-2"
         onClick={() => window.open("https://tryhackme.com/", "_blank")}
       >
-        Odwiedź TryHackMe
+        TryHackMe
         <ExternalLink className="ml-2 h-4 w-4" />
       </Button>
     </div>
@@ -88,7 +92,7 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
 
   return (
     <AccordionSection
-      title="TryHackMe"
+      title={t('sections.tryHackMe')}
       value="tryhackme"
       badge={userId ? (
         <Badge variant="outline" className="ml-2 bg-primary/10">
