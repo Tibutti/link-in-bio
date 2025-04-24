@@ -11,6 +11,7 @@ import {
   CardDescription,
   CardFooter 
 } from '@/components/ui/card';
+import ErrorTestButton from '@/components/ErrorTestButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EditProfileForm } from '@/components/EditProfileForm';
 import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
@@ -359,7 +360,7 @@ export default function Admin() {
                   />
                 ) : null}
               </CardContent>
-              <CardFooter className="flex gap-2">
+              <CardFooter className="flex gap-2 flex-wrap">
                 {!isEditingProfile ? (
                   <>
                     <Button onClick={() => setIsEditingProfile(true)}>
@@ -368,6 +369,9 @@ export default function Admin() {
                     <Button variant="outline" onClick={() => loadData()}>
                       Odśwież dane
                     </Button>
+                    <div className="ml-auto">
+                      <ErrorTestButton variant="secondary" />
+                    </div>
                   </>
                 ) : (
                   <Button variant="outline" onClick={() => setIsEditingProfile(false)}>
