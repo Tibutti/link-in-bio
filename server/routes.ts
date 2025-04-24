@@ -142,6 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showKnowledge: z.boolean().optional(),
         showFeatured: z.boolean().optional(),
         showTechnologies: z.boolean().optional(),
+        sectionOrder: z.array(z.string()).optional(),
       });
       
       console.log("Walidacja danych wejściowych...");
@@ -295,6 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showFeatured: z.boolean().optional(),
         showTryHackMe: z.boolean().optional(),
         showTechnologies: z.boolean().optional(),
+        sectionOrder: z.array(z.string()).optional(),
       });
       const validData = schema.parse(req.body);
       
