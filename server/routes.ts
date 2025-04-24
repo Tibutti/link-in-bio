@@ -111,6 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         location: z.string().optional(),
         email: z.string().optional().nullable(),
         phone: z.string().optional().nullable(),
+        cvUrl: z.string().optional().nullable(),
         imageIndex: z.number().optional(),
         backgroundIndex: z.number().optional(),
         backgroundGradient: z.object({
@@ -199,6 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const schema = z.object({
         email: z.string().email().optional().nullable(),
         phone: z.string().optional().nullable(),
+        cvUrl: z.string().url().optional().nullable(),
       });
       const validData = schema.parse(req.body);
       
