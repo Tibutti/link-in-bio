@@ -74,39 +74,32 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
         </Badge>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-8">
         {categoriesWithTechnologies.map((category) => (
-          <Accordion 
-            key={category} 
-            type="single" 
-            collapsible 
-            className="w-full rounded-lg border border-gray-200 shadow-sm overflow-hidden"
-          >
-            <AccordionItem value={category} className="border-0">
-              <AccordionTrigger className="px-4 py-3 bg-gradient-to-r from-white to-gray-50 hover:no-underline">
-                <div className="flex items-center">
-                  <span className="font-medium">{getCategoryDisplayName(category)}</span>
-                  <Badge variant="outline" className="ml-2 bg-primary/10">
-                    {technologiesByCategory[category].length}
-                  </Badge>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <motion.div 
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
-                  variants={container}
-                  initial="hidden"
-                  animate="show"
-                >
-                  {technologiesByCategory[category]?.map((tech: Technology) => (
-                    <motion.div key={tech.id} variants={item}>
-                      <TechnologyCard technology={tech} />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <div key={category} className="rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gradient-to-r from-white to-gray-50 flex items-center justify-between">
+              <div className="flex items-center">
+                <h3 className="font-medium text-lg">{getCategoryDisplayName(category)}</h3>
+                <Badge variant="outline" className="ml-2 bg-primary/10">
+                  {technologiesByCategory[category].length}
+                </Badge>
+              </div>
+            </div>
+            <div className="p-4">
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                {technologiesByCategory[category]?.map((tech: Technology) => (
+                  <motion.div key={tech.id} variants={item}>
+                    <TechnologyCard technology={tech} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          </div>
         ))}
       </div>
     </AccordionSection>
