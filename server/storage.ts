@@ -323,7 +323,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTechnology(insertTechnology: InsertTechnology): Promise<Technology> {
-    const [technology] = await db.insert(technologies).values(insertTechnology).returning();
+    // Konwersja kategorii na odpowiedni typ
+    const validatedData = {
+      ...insertTechnology,
+      category: insertTechnology.category as TechnologyCategory
+    };
+    
+    const [technology] = await db.insert(technologies).values(validatedData).returning();
     return technology;
   }
 
