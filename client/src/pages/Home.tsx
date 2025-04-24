@@ -17,6 +17,7 @@ import { QuickShareButtons } from "@/components/QuickShareButtons";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 import SectionNavHints from "@/components/SectionNavHints";
+import SkipToContent from "@/components/SkipToContent";
 
 import { 
   type Profile, 
@@ -209,12 +210,9 @@ export default function Home() {
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
       {/* Dostępna nawigacja pomijająca dla użytkowników klawiatury */}
-      <a 
-        href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:z-50 focus:shadow-lg focus:rounded-md"
-      >
+      <SkipToContent>
         Przejdź do głównej treści
-      </a>
+      </SkipToContent>
       
       <QuickShareButtons 
         title={`Profil ${profile.name}`} 
@@ -230,7 +228,7 @@ export default function Home() {
         </Button>
       </div>
       
-      {/* Przycisk przewijania do góry i wskazówki dostępności */}
+      {/* Przycisk przewijania do góry */}
       <SectionNavHints />
       
       <main id="main-content" tabIndex={-1} className="outline-none">
