@@ -22,6 +22,9 @@ interface Profile {
   name: string;
   bio: string;
   location: string;
+  email: string | null;
+  phone: string | null;
+  cvUrl: string | null;
   imageIndex: number;
   backgroundIndex: number;
   backgroundGradient: string | null;
@@ -37,6 +40,9 @@ const profileSchema = z.object({
   name: z.string().min(2, { message: 'Imię i nazwisko musi zawierać min. 2 znaki' }),
   bio: z.string().min(10, { message: 'Bio musi zawierać min. 10 znaków' }),
   location: z.string().min(2, { message: 'Lokalizacja musi zawierać min. 2 znaki' }),
+  email: z.string().email({ message: 'Nieprawidłowy format email' }).nullable(),
+  phone: z.string().nullable(),
+  cvUrl: z.string().url({ message: 'Nieprawidłowy format URL' }).nullable(),
   githubUsername: z.string().nullable(),
 });
 
@@ -52,6 +58,9 @@ export function EditProfileForm({ profile, onSuccess }: EditProfileFormProps) {
       name: profile.name,
       bio: profile.bio,
       location: profile.location,
+      email: profile.email,
+      phone: profile.phone,
+      cvUrl: profile.cvUrl,
       githubUsername: profile.githubUsername,
     },
   });
@@ -127,6 +136,72 @@ export function EditProfileForm({ profile, onSuccess }: EditProfileFormProps) {
               <FormLabel>Lokalizacja</FormLabel>
               <FormControl>
                 <Input placeholder="New York, USA" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="jane@example.com" 
+                  {...field} 
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.trim() === '' ? null : e.target.value;
+                    field.onChange(value);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Telefon</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="+48 123 456 789" 
+                  {...field} 
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.trim() === '' ? null : e.target.value;
+                    field.onChange(value);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="cvUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>URL do CV (PDF)</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="https://example.com/cv.pdf" 
+                  {...field} 
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value.trim() === '' ? null : e.target.value;
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

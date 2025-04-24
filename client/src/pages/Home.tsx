@@ -136,6 +136,7 @@ export default function Home() {
           <ContactDetails 
             email={profile.email || ""}
             phone={profile.phone || ""}
+            cvUrl={profile.cvUrl || ""}
           />
         )}
         
