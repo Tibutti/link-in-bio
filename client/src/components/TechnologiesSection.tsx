@@ -84,8 +84,8 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
               key={category}
               className={`px-6 py-3 font-medium text-center focus:outline-none transition-colors ${
                 activeCategory === category
-                  ? "bg-background dark:bg-background border-b-2 border-primary"
-                  : "bg-muted/30 hover:bg-muted/50 dark:bg-muted/10 dark:hover:bg-muted/20"
+                  ? "bg-background dark:bg-background/80 border-b-2 border-primary text-foreground dark:text-foreground"
+                  : "bg-muted/30 hover:bg-muted/50 dark:bg-gray-800 dark:hover:bg-gray-700 text-foreground dark:text-gray-100"
               }`}
               onClick={() => setActiveCategory(category)}
               aria-selected={activeCategory === category}
@@ -125,7 +125,7 @@ function TechnologyCard({ technology }: TechnologyCardProps) {
   const { t } = useTranslation();
   
   return (
-    <div className="flex flex-col p-4 border rounded-lg bg-card hover:shadow-md transition-shadow">
+    <div className="flex flex-col p-4 border rounded-lg bg-card dark:bg-gray-800 dark:border-gray-700 hover:shadow-md transition-shadow">
       <div className="flex items-center mb-3">
         {technology.logoUrl && (
           <div className="h-10 w-10 mr-3 flex items-center justify-center">
