@@ -208,7 +208,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
-      {/* Dostępna nawigacja pomijająca */}
+      {/* Dostępna nawigacja pomijająca dla użytkowników klawiatury */}
       <a 
         href="#main-content" 
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:z-50 focus:shadow-lg focus:rounded-md"
@@ -230,7 +230,7 @@ export default function Home() {
         </Button>
       </div>
       
-      {/* Wskazówki nawigacyjne do sekcji */}
+      {/* Przycisk przewijania do góry i wskazówki dostępności */}
       <SectionNavHints />
       
       <main id="main-content" tabIndex={-1} className="outline-none">
