@@ -16,8 +16,6 @@ import Footer from "@/components/Footer";
 import { QuickShareButtons } from "@/components/QuickShareButtons";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
-import SectionNavHints from "@/components/SectionNavHints";
-import SkipToContent from "@/components/SkipToContent";
 
 import { 
   type Profile, 
@@ -140,7 +138,7 @@ export default function Home() {
     switch(sectionId) {
       case 'image':
         return profile.showImage && (
-          <div key="image" className="mb-6" id="profile-header" tabIndex={-1}>
+          <div key="image" className="mb-6">
             <ProfileHeader profile={profile} />
           </div>
         );
@@ -209,11 +207,6 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
-      {/* Dostępna nawigacja pomijająca dla użytkowników klawiatury */}
-      <SkipToContent>
-        Przejdź do głównej treści
-      </SkipToContent>
-      
       <QuickShareButtons 
         title={`Profil ${profile.name}`} 
       />
@@ -228,10 +221,7 @@ export default function Home() {
         </Button>
       </div>
       
-      {/* Przycisk przewijania do góry */}
-      <SectionNavHints />
-      
-      <main id="main-content" tabIndex={-1} className="outline-none">
+      <main className="outline-none">
         <div className="container mx-auto px-4 py-10 max-w-2xl">
           {/* Renderujemy sekcje zgodnie z ustawioną kolejnością */}
           {sectionOrder.map(sectionId => renderSection(sectionId))}
