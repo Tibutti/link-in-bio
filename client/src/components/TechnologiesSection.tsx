@@ -1,14 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Technology, TechnologyCategory, technologyCategories } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { motion } from "framer-motion";
 import AccordionSection from "./AccordionSection";
 
@@ -39,14 +33,19 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
     technologiesByCategory[category].sort((a: Technology, b: Technology) => (a.order || 0) - (b.order || 0));
   });
 
-  if (!showTechnologies) return null;
-  if (isLoading) return <div className="py-6 px-4 text-center">Ładowanie technologii...</div>;
-  if (technologies.length === 0) return null;
-
   // Znajdujemy kategorie, które mają przypisane technologie
   const categoriesWithTechnologies = Object.keys(technologiesByCategory).filter(
     category => technologiesByCategory[category]?.length > 0
   ) as TechnologyCategory[];
+
+  // Stan aktywnej kategorii - używamy pierwszej kategorii jako domyślnej
+  const [activeCategory, setActiveCategory] = useState<string>(() => {
+    return categoriesWithTechnologies.length > 0 ? categoriesWithTechnologies[0] : "";
+  });
+
+  if (!showTechnologies) return null;
+  if (isLoading) return <div className="py-6 px-4 text-center">Ładowanie technologii...</div>;
+  if (technologies.length === 0) return null;
 
   // Animacje dla kart technologii
   const container = {
@@ -74,33 +73,42 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
         </Badge>
       }
     >
-      <div className="space-y-8">
-        {categoriesWithTechnologies.map((category) => (
-          <div key={category} className="rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-4 py-3 bg-gradient-to-r from-white to-gray-50 flex items-center justify-between">
-              <div className="flex items-center">
-                <h3 className="font-medium text-lg">{getCategoryDisplayName(category)}</h3>
-                <Badge variant="outline" className="ml-2 bg-primary/10">
-                  {technologiesByCategory[category].length}
-                </Badge>
-              </div>
-            </div>
-            <div className="p-4">
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
-                {technologiesByCategory[category]?.map((tech: Technology) => (
-                  <motion.div key={tech.id} variants={item}>
-                    <TechnologyCard technology={tech} />
-                  </motion.div>
-                ))}
+      <div className="space-y-4">
+        {/* Zakładki kategorii */}
+        <div className="flex flex-wrap border border-gray-200 rounded-lg overflow-hidden">
+          {categoriesWithTechnologies.map((category) => (
+            <button
+              key={category}
+              className={`px-6 py-3 font-medium text-center focus:outline-none transition-colors ${
+                activeCategory === category
+                  ? "bg-white"
+                  : "bg-gray-50 hover:bg-gray-100"
+              }`}
+              onClick={() => setActiveCategory(category)}
+              aria-selected={activeCategory === category}
+              role="tab"
+            >
+              {getCategoryDisplayName(category)}
+            </button>
+          ))}
+        </div>
+
+        {/* Zawartość aktywnej kategorii */}
+        {activeCategory && (
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            variants={container}
+            initial="hidden"
+            animate="show"
+            key={activeCategory} // Ważne dla animacji przy zmianie kategorii
+          >
+            {technologiesByCategory[activeCategory]?.map((tech: Technology) => (
+              <motion.div key={tech.id} variants={item}>
+                <TechnologyCard technology={tech} />
               </motion.div>
-            </div>
-          </div>
-        ))}
+            ))}
+          </motion.div>
+        )}
       </div>
     </AccordionSection>
   );
