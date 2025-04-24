@@ -253,11 +253,15 @@ function SortableTechnologyItem({ technology, onToggleVisibility, onEdit, onDele
     transition,
   };
 
+  // W schemacie widzimy, że isVisible ma domyślną wartość true
+  // Dlatego bezpiecznie ustawiamy false jako fallback, choć w bazie domyślnie jest true
+  const isVisible = typeof technology.isVisible === 'boolean' ? technology.isVisible : true;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center justify-between p-3 border rounded-md ${technology.isVisible ? 'bg-white' : 'bg-gray-50'}`}
+      className={`flex items-center justify-between p-3 border rounded-md ${isVisible ? 'bg-white' : 'bg-gray-50'}`}
     >
       <div className="flex items-center flex-1">
         <div {...attributes} {...listeners} className="cursor-grab pr-3">
@@ -297,9 +301,9 @@ function SortableTechnologyItem({ technology, onToggleVisibility, onEdit, onDele
 
       <div className="flex items-center gap-2">
         <Switch
-          checked={technology.isVisible}
+          checked={isVisible}
           onCheckedChange={() => onToggleVisibility(technology)}
-          aria-label={technology.isVisible ? "Ukryj" : "Pokaż"}
+          aria-label={isVisible ? "Ukryj" : "Pokaż"}
         />
         <Button variant="ghost" size="icon" onClick={onEdit} title="Edytuj">
           <Edit className="h-4 w-4" />
