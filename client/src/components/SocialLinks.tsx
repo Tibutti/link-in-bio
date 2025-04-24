@@ -88,16 +88,16 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
       >
         <div className="flex items-center">
           <div className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary group-hover:bg-primary transition-colors duration-300">
-            <Icon className="text-gray-600 group-hover:text-white transition-colors duration-300" />
+            <Icon className="text-muted-foreground group-hover:text-white transition-colors duration-300" />
           </div>
           <div className="ml-4">
-            <span className="font-medium text-gray-800">{link.platform}</span>
-            <p className="text-sm text-gray-500">{link.username}</p>
+            <span className="font-medium text-foreground">{link.platform}</span>
+            <p className="text-sm text-muted-foreground">{link.username}</p>
           </div>
           <div className="ml-auto">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors duration-300" 
+              className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" 
               viewBox="0 0 20 20" 
               fill="currentColor"
             >
