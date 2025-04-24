@@ -42,7 +42,7 @@ export default function ContactDetails({
     >
       <Card className="overflow-hidden shadow-md border-0">
         <CardContent className="p-0">
-          <div className={`grid grid-cols-1 ${cvUrl ? 'md:grid-cols-3' : 'md:grid-cols-2'} divide-y md:divide-y-0 md:divide-x`}>
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
             <div className="flex items-center p-4 gap-3">
               <div className="flex h-10 w-10 rounded-full bg-primary/10 items-center justify-center">
                 <Mail className="h-5 w-5 text-primary" />
@@ -81,15 +81,15 @@ export default function ContactDetails({
               </Button>
             </div>
             
-            {cvUrl && (
-              <div className="flex items-center p-4 gap-3">
-                <div className="flex h-10 w-10 rounded-full bg-primary/10 items-center justify-center">
-                  <FileText className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-muted-foreground">CV</p>
-                  <p className="text-sm font-medium truncate">Pobierz CV</p>
-                </div>
+            <div className="flex items-center p-4 gap-3">
+              <div className="flex h-10 w-10 rounded-full bg-primary/10 items-center justify-center">
+                <FileText className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-muted-foreground">CV</p>
+                <p className="text-sm font-medium truncate">{cvUrl ? "Pobierz CV" : "CV niedostępne"}</p>
+              </div>
+              {cvUrl ? (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -99,8 +99,18 @@ export default function ContactDetails({
                 >
                   <Download className="h-4 w-4" />
                 </Button>
-              </div>
-            )}
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 opacity-50 cursor-not-allowed"
+                  disabled
+                  aria-label="CV niedostępne"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
