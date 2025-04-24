@@ -428,13 +428,15 @@ export class DatabaseStorage implements IStorage {
 
   // Initialize database with demo data 
   async initializeDemoData() {
-    // Usuń istniejące dane przed ponowną inicjalizacją
-    await db.delete(technologies);
-    await db.delete(socialLinks);
-    await db.delete(featuredContents);
-    await db.delete(sessions); // Najpierw usuwamy sesje, aby nie naruszać klucza obcego
-    await db.delete(profiles);
-    await db.delete(users);
+    // Sprawdź, czy użytkownik demo już istnieje
+    const existingDemoUser = await this.getUserByUsername("demo");
+    
+    if (existingDemoUser) {
+      console.log("Demo user already exists, skipping initialization");
+      return;
+    }
+    
+    console.log("Initializing demo data with demo user");
 
     // Create demo user with hashed password
     // Import bezpośrednio hashPassword aby uniknąć cyklicznych zależności 
@@ -454,7 +456,17 @@ export class DatabaseStorage implements IStorage {
       location: "New York, USA",
       imageIndex: 0,
       backgroundIndex: 0,
-      githubUsername: "octocat" // zawsze dodaj nazwę użytkownika GitHub
+      githubUsername: "Tibutti", // Używamy podanej nazwy użytkownika GitHub
+      tryHackMeUserId: "2135753", // Dodajemy ID TryHackMe
+      showGithubStats: true,
+      showTryHackMe: true,
+      showContact: true,
+      showSocial: true,
+      showKnowledge: true,
+      showFeatured: true,
+      showTechnologies: true,
+      showImage: true,
+      sectionOrder: ["image", "contact", "github", "social", "knowledge", "featured", "tryhackme", "technologies"]
     }).returning();
 
     // Create social links
