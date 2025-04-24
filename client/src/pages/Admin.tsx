@@ -23,6 +23,7 @@ import { TryHackMeSettingsForm } from '@/components/TryHackMeSettingsForm';
 import { SectionVisibilityForm } from '@/components/SectionVisibilityForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { SortableList } from '@/components/SortableList';
+import TechnologiesAdminPanel from '@/components/TechnologiesAdminPanel';
 import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
@@ -321,6 +322,7 @@ export default function Admin() {
             <TabsTrigger value="social" className="flex-grow">Media</TabsTrigger>
             <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
             <TabsTrigger value="featured" className="flex-grow">Treści</TabsTrigger>
+            <TabsTrigger value="technologies" className="flex-grow">Technologie</TabsTrigger>
             <TabsTrigger value="diagnostics" className="flex-grow bg-amber-50">Diagnostyka</TabsTrigger>
           </TabsList>
 
@@ -412,6 +414,12 @@ export default function Admin() {
             )}
           </TabsContent>
           
+          <TabsContent value="technologies" className="mt-4">
+            {profile && (
+              <TechnologiesAdminPanel profileId={profile.id} />
+            )}
+          </TabsContent>
+
           <TabsContent value="diagnostics" className="mt-4">
             <SentryTestPanel />
           </TabsContent>
