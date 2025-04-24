@@ -180,15 +180,15 @@ export default function Home() {
           </div>
         );
       case 'github':
-        return profile.showGithubStats && profile.githubUsername && (
+        return profile.showGithubStats && (
           <div key="github" className="mb-6">
             <GitHubStats profile={profile} />
           </div>
         );
       case 'tryhackme':
-        return profile.showTryHackMe && profile.tryHackMeUserId && (
+        return profile.showTryHackMe && (
           <div key="tryhackme" className="mb-6">
-            <TryHackMeBadge userId={profile.tryHackMeUserId} />
+            <TryHackMeBadge userId={profile.tryHackMeUserId || undefined} />
           </div>
         );
       case 'technologies':
