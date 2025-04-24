@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
+import AccordionSection from "./AccordionSection";
 
 interface TechnologiesSectionProps {
   profileId: number;
@@ -64,56 +65,51 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
   };
 
   return (
-    <div className="mb-6">
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="technologies" className="border-b border-t-0 border-x-0">
-          <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
-            Umiejętności techniczne
-            <div className="ml-2 text-primary">
-              <span className="text-sm">{technologies.length}</span>
-            </div>
-          </AccordionTrigger>
-          
-          <AccordionContent>
-            <div className="py-2">
-              {categoriesWithTechnologies.map((category) => (
-                <Accordion 
-                  key={category} 
-                  type="single" 
-                  collapsible 
-                  className="w-full mb-2 border rounded-lg overflow-hidden"
+    <AccordionSection
+      title="Umiejętności techniczne"
+      value="technologies"
+      badge={
+        <Badge variant="outline" className="ml-2 bg-primary/10">
+          {technologies.length}
+        </Badge>
+      }
+    >
+      <div className="space-y-4">
+        {categoriesWithTechnologies.map((category) => (
+          <Accordion 
+            key={category} 
+            type="single" 
+            collapsible 
+            className="w-full rounded-lg border border-gray-200 shadow-sm overflow-hidden"
+          >
+            <AccordionItem value={category} className="border-0">
+              <AccordionTrigger className="px-4 py-3 bg-gradient-to-r from-white to-gray-50 hover:no-underline">
+                <div className="flex items-center">
+                  <span className="font-medium">{getCategoryDisplayName(category)}</span>
+                  <Badge variant="outline" className="ml-2 bg-primary/10">
+                    {technologiesByCategory[category].length}
+                  </Badge>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
+                  variants={container}
+                  initial="hidden"
+                  animate="show"
                 >
-                  <AccordionItem value={category} className="border-0">
-                    <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:no-underline">
-                      <div className="flex items-center">
-                        <span className="font-medium">{getCategoryDisplayName(category)}</span>
-                        <Badge variant="outline" className="ml-2">
-                          {technologiesByCategory[category].length}
-                        </Badge>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <motion.div 
-                        className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
-                        variants={container}
-                        initial="hidden"
-                        animate="show"
-                      >
-                        {technologiesByCategory[category]?.map((tech: Technology) => (
-                          <motion.div key={tech.id} variants={item}>
-                            <TechnologyCard technology={tech} />
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
+                  {technologiesByCategory[category]?.map((tech: Technology) => (
+                    <motion.div key={tech.id} variants={item}>
+                      <TechnologyCard technology={tech} />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        ))}
+      </div>
+    </AccordionSection>
   );
 }
 

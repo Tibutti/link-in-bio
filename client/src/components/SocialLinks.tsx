@@ -9,13 +9,8 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiHashnode, SiSubstack } from "react-icons/si";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import AccordionSection from "./AccordionSection";
 
 interface SocialLinksProps {
   links: SocialLink[];
@@ -117,52 +112,50 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
   };
 
   return (
-    <div className="space-y-6 mb-8">
-      <Accordion type="single" collapsible className="w-full">
-        {/* Sekcja mediów społecznościowych */}
-        {socialLinks.length > 0 && (
-          <AccordionItem value="social" className="border-b border-t-0 border-x-0">
-            <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
-              Media społecznościowe
-              <div className="ml-2 text-primary">
-                <span className="text-sm">{socialLinks.length}</span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <motion.section 
-                className="space-y-4 py-2"
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
-                {socialLinks.map(renderLinkItem)}
-              </motion.section>
-            </AccordionContent>
-          </AccordionItem>
-        )}
-        
-        {/* Sekcja platform wiedzy i twórczości */}
-        {knowledgeLinks.length > 0 && (
-          <AccordionItem value="knowledge" className="border-b border-t-0 border-x-0">
-            <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
-              Publikacje i twórczość
-              <div className="ml-2 text-primary">
-                <span className="text-sm">{knowledgeLinks.length}</span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <motion.section 
-                className="space-y-4 py-2"
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
-                {knowledgeLinks.map(renderLinkItem)}
-              </motion.section>
-            </AccordionContent>
-          </AccordionItem>
-        )}
-      </Accordion>
+    <div className="space-y-6">
+      {/* Sekcja mediów społecznościowych */}
+      {socialLinks.length > 0 && (
+        <AccordionSection 
+          title="Media społecznościowe" 
+          value="social"
+          badge={
+            <Badge variant="outline" className="ml-2 bg-primary/10">
+              {socialLinks.length}
+            </Badge>
+          }
+        >
+          <motion.section 
+            className="space-y-4"
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
+            {socialLinks.map(renderLinkItem)}
+          </motion.section>
+        </AccordionSection>
+      )}
+      
+      {/* Sekcja platform wiedzy i twórczości */}
+      {knowledgeLinks.length > 0 && (
+        <AccordionSection 
+          title="Publikacje i twórczość" 
+          value="knowledge"
+          badge={
+            <Badge variant="outline" className="ml-2 bg-primary/10">
+              {knowledgeLinks.length}
+            </Badge>
+          }
+        >
+          <motion.section 
+            className="space-y-4"
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
+            {knowledgeLinks.map(renderLinkItem)}
+          </motion.section>
+        </AccordionSection>
+      )}
     </div>
   );
 }

@@ -1,12 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Shield, ExternalLink } from 'lucide-react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Badge } from '@/components/ui/badge';
+import AccordionSection from './AccordionSection';
 
 interface TryHackMeBadgeProps {
   userId?: string;
@@ -91,24 +87,16 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
   );
 
   return (
-    <div className="mb-6">
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="tryhackme" className="border-b border-t-0 border-x-0">
-          <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
-            TryHackMe
-            {userId && (
-              <div className="ml-2 text-primary">
-                <span className="text-sm text-gray-600">ID: {userId}</span>
-              </div>
-            )}
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="py-4">
-              {userId ? renderUserContent() : renderNoUserContent()}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
+    <AccordionSection
+      title="TryHackMe"
+      value="tryhackme"
+      badge={userId ? (
+        <Badge variant="outline" className="ml-2 bg-primary/10">
+          ID: {userId}
+        </Badge>
+      ) : undefined}
+    >
+      {userId ? renderUserContent() : renderNoUserContent()}
+    </AccordionSection>
   );
 }
