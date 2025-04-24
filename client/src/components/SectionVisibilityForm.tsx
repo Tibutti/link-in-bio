@@ -25,6 +25,7 @@ const sectionVisibilitySchema = z.object({
   showKnowledge: z.boolean().default(true),
   showFeatured: z.boolean().default(true),
   showTryHackMe: z.boolean().default(true),
+  showTechnologies: z.boolean().default(true),
 });
 
 type SectionVisibilityFormValues = z.infer<typeof sectionVisibilitySchema>;
@@ -37,6 +38,7 @@ interface SectionVisibilityFormProps {
   showKnowledge: boolean;
   showFeatured: boolean;
   showTryHackMe: boolean;
+  showTechnologies: boolean;
   onSuccess?: () => void;
 }
 
@@ -48,6 +50,7 @@ export function SectionVisibilityForm({
   showKnowledge = true,
   showFeatured = true,
   showTryHackMe = true,
+  showTechnologies = true,
   onSuccess
 }: SectionVisibilityFormProps) {
   const { toast } = useToast();
@@ -61,6 +64,7 @@ export function SectionVisibilityForm({
       showKnowledge,
       showFeatured,
       showTryHackMe,
+      showTechnologies,
     },
   });
   
@@ -219,6 +223,27 @@ export function SectionVisibilityForm({
                       <FormLabel className="text-base">Odznaka TryHackMe</FormLabel>
                       <FormDescription>
                         Pokazuj odznakę i statystyki z TryHackMe na stronie
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="showTechnologies"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Technologie</FormLabel>
+                      <FormDescription>
+                        Pokazuj sekcję technologii i umiejętności na stronie
                       </FormDescription>
                     </div>
                     <FormControl>
