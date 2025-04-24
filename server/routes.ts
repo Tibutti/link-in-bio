@@ -296,6 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showFeatured: z.boolean().optional(),
         showTryHackMe: z.boolean().optional(),
         showTechnologies: z.boolean().optional(),
+        showGithubStats: z.boolean().optional(),
         sectionOrder: z.array(z.string()).optional(),
       });
       const validData = schema.parse(req.body);
