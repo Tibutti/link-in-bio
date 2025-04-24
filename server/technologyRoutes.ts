@@ -81,7 +81,7 @@ export function registerTechnologyRoutes(app: Express) {
       
       // Sprawdź, czy profil należy do zalogowanego użytkownika
       const profile = await storage.getProfile(profileId);
-      if (!profile || profile.userId !== req.user.userId) {
+      if (!profile || !req.user || profile.userId !== req.user.userId) {
         return res.status(403).json({ error: 'Unauthorized access to profile' });
       }
       
@@ -106,7 +106,7 @@ export function registerTechnologyRoutes(app: Express) {
       }
       
       const profile = await storage.getProfile(technology.profileId);
-      if (!profile || profile.userId !== req.user.userId) {
+      if (!profile || !req.user || profile.userId !== req.user.userId) {
         return res.status(403).json({ error: 'Unauthorized access to technology' });
       }
       
@@ -130,7 +130,7 @@ export function registerTechnologyRoutes(app: Express) {
       }
       
       const profile = await storage.getProfile(technology.profileId);
-      if (!profile || profile.userId !== req.user.userId) {
+      if (!profile || !req.user || profile.userId !== req.user.userId) {
         return res.status(403).json({ error: 'Unauthorized access to technology' });
       }
       
@@ -155,7 +155,7 @@ export function registerTechnologyRoutes(app: Express) {
       
       // Sprawdź, czy profil należy do zalogowanego użytkownika
       const profile = await storage.getProfile(profileId);
-      if (!profile || profile.userId !== req.user.userId) {
+      if (!profile || !req.user || profile.userId !== req.user.userId) {
         return res.status(403).json({ error: 'Unauthorized access to profile' });
       }
       
