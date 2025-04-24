@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import * as Sentry from "@sentry/react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle, AlertTriangle, BugPlay } from "lucide-react";
+import { AlertCircle, AlertTriangle, BugPlay, ServerCrash, MessageSquare } from "lucide-react";
 
 export default function SentryTestPanel() {
   const { toast } = useToast();
@@ -128,6 +128,32 @@ export default function SentryTestPanel() {
     return activeTest === testType ? "secondary" : "default";
   };
 
+  const handleServerErrorTest = () => {
+    setActiveTest("servererror");
+    fetch('/api/test-server-error')
+      .catch(error => {
+        showToast("Błąd serwera", "Wygenerowano błąd na serwerze");
+      })
+      .finally(() => {
+        setTimeout(() => setActiveTest(null), 3000);
+      });
+  };
+
+  const handleServerMessageTest = () => {
+    setActiveTest("servermessage");
+    fetch('/api/test-server-message')
+      .then(response => response.json())
+      .then(data => {
+        showToast("Wiadomość serwera", data.message || "Wiadomość została wysłana z serwera");
+      })
+      .catch(error => {
+        console.error("Błąd podczas wysyłania wiadomości z serwera:", error);
+      })
+      .finally(() => {
+        setTimeout(() => setActiveTest(null), 3000);
+      });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -142,7 +168,7 @@ export default function SentryTestPanel() {
       <CardContent>
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-semibold mb-3">Raportowanie wiadomości</h3>
+            <h3 className="text-lg font-semibold mb-3">Raportowanie wiadomości (Frontend)</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Button 
                 variant={getButtonStatus("info")} 
@@ -171,7 +197,7 @@ export default function SentryTestPanel() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-3">Raportowanie wyjątków</h3>
+            <h3 className="text-lg font-semibold mb-3">Raportowanie wyjątków (Frontend)</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Button 
                 variant={getButtonStatus("exception")}
@@ -198,7 +224,7 @@ export default function SentryTestPanel() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-3">Błędy asynchroniczne</h3>
+            <h3 className="text-lg font-semibold mb-3">Błędy asynchroniczne (Frontend)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Button 
                 variant={getButtonStatus("apierror")} 
@@ -216,8 +242,30 @@ export default function SentryTestPanel() {
               </Button>
             </div>
           </div>
+          
+          <div className="pt-4 border-t border-gray-200">
+            <h3 className="text-lg font-semibold mb-3">Błędy serwera (Backend)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Button 
+                variant={getButtonStatus("servererror")} 
+                onClick={handleServerErrorTest}
+                className="w-full"
+              >
+                <ServerCrash className="mr-2 h-4 w-4" />
+                Błąd serwera
+              </Button>
+              <Button 
+                variant={getButtonStatus("servermessage")} 
+                onClick={handleServerMessageTest}
+                className="w-full"
+              >
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Wiadomość serwera
+              </Button>
+            </div>
+          </div>
 
-          <div>
+          <div className="pt-4 border-t border-gray-200">
             <h3 className="text-lg font-semibold mb-3">Prawdziwa awaria aplikacji</h3>
             <div className="flex justify-center">
               <Button 

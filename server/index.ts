@@ -6,8 +6,16 @@ import { registerAuthRoutes } from "./authRoutes";
 import { registerGithubStatsRoutes } from "./githubStatsRoutes";
 import { registerSocialCategoryRoutes } from "./socialCategoryRoutes";
 import { registerProfileContentRoutes } from "./profileContentRoutes";
+import { initSentry, sentryRequestHandler, sentryErrorHandler, captureException, createTestServerErrorRoute } from "./sentry";
+
+// Inicjalizacja Sentry na początku
+initSentry();
 
 const app = express();
+
+// Dodaj Sentry middleware przed innymi middleware'ami
+app.use(sentryRequestHandler());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -58,13 +66,26 @@ app.use((req, res, next) => {
   
   // Zarejestruj trasy dla zarządzania treściami profilu
   registerProfileContentRoutes(app);
+  
+  // Dodaj trasy testowe dla Sentry
+  createTestServerErrorRoute(app);
 
+  // Dodaj middleware Sentry do przechwytywania błędów
+  app.use(sentryErrorHandler());
+  
+  // Nasza własna obsługa błędów - uruchamiana po sentryErrorHandler()
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    // Logowanie błędów do konsoli dla dodatkowej widoczności
+    console.error("Server error:", err);
+    
+    // Zgłaszanie błędów do Sentry
+    captureException(err);
+    
+    // Wysyłamy odpowiedź do klienta
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after
