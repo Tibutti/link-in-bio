@@ -74,7 +74,7 @@ export function TechnologyForm({ profileId, technology, onSuccess, onCancel }: T
       category: technology?.category || "frontend",
       proficiencyLevel: technology?.proficiencyLevel || 50,
       yearsOfExperience: technology?.yearsOfExperience || 0,
-      isVisible: technology?.isVisible !== undefined ? technology.isVisible : true,
+      isVisible: technology?.isVisible === false ? false : true,
     },
   });
 
@@ -85,13 +85,19 @@ export function TechnologyForm({ profileId, technology, onSuccess, onCancel }: T
         // Aktualizacja istniejącej technologii
         await apiRequest(`/api/technologies/${technology.id}`, {
           method: "PATCH",
-          data: values,
+          body: JSON.stringify(values),
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
       } else {
         // Dodawanie nowej technologii
         await apiRequest(`/api/profile/${profileId}/technologies`, {
           method: "POST",
-          data: values,
+          body: JSON.stringify(values),
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
       }
       onSuccess();
