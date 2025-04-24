@@ -5,6 +5,7 @@ import { Technology, TechnologyCategory, technologyCategories } from "@shared/sc
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import AccordionSection from "./AccordionSection";
+import { useTranslation } from "react-i18next";
 
 interface TechnologiesSectionProps {
   profileId: number;
@@ -12,6 +13,8 @@ interface TechnologiesSectionProps {
 }
 
 export default function TechnologiesSection({ profileId, showTechnologies = true }: TechnologiesSectionProps) {
+  const { t } = useTranslation();
+  
   // Pobieranie wszystkich technologii
   const { data: technologies = [], isLoading } = useQuery<Technology[]>({
     queryKey: [`/api/profile/${profileId}/technologies`],
@@ -44,7 +47,7 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
   });
 
   if (!showTechnologies) return null;
-  if (isLoading) return <div className="py-6 px-4 text-center">Ładowanie technologii...</div>;
+  if (isLoading) return <div className="py-6 px-4 text-center">{t('ui.loading')}</div>;
   if (technologies.length === 0) return null;
 
   // Animacje dla kart technologii
@@ -65,7 +68,7 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
 
   return (
     <AccordionSection
-      title="Umiejętności techniczne"
+      title={t('sections.technologies')}
       value="technologies"
       badge={
         <Badge variant="outline" className="ml-2 bg-primary/10">

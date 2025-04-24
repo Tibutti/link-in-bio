@@ -60,6 +60,12 @@ const resources = {
       ui: {
         loading: "Loading...",
         noData: "No data available"
+      },
+      // Panel administracyjny
+      admin: {
+        panel: "Admin Panel",
+        login: "Login",
+        logout: "Logout"
       }
     }
   },
@@ -119,6 +125,12 @@ const resources = {
       ui: {
         loading: "Ładowanie...",
         noData: "Brak dostępnych danych"
+      },
+      // Panel administracyjny
+      admin: {
+        panel: "Panel administracyjny",
+        login: "Zaloguj się",
+        logout: "Wyloguj się"
       }
     }
   }
