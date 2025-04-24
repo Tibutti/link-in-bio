@@ -3,6 +3,7 @@ import { Mail, Phone, Copy, Check, FileText, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 interface ContactDetailsProps {
   email?: string;
@@ -17,6 +18,7 @@ export default function ContactDetails({
 }: ContactDetailsProps) {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
+  const { t } = useTranslation();
 
   const copyToClipboard = async (text: string, type: 'email' | 'phone') => {
     try {
@@ -48,7 +50,7 @@ export default function ContactDetails({
                 <Mail className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('profile.contact.email')}</p>
                 <p className="text-sm font-medium truncate">{email}</p>
               </div>
               <Button 
@@ -67,7 +69,7 @@ export default function ContactDetails({
                 <Phone className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-muted-foreground">Telefon</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('profile.contact.phone')}</p>
                 <p className="text-sm font-medium truncate">{phone}</p>
               </div>
               <Button
@@ -86,8 +88,8 @@ export default function ContactDetails({
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-muted-foreground">CV</p>
-                <p className="text-sm font-medium truncate">{cvUrl ? "Pobierz CV" : "CV niedostępne"}</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('profile.contact.cv')}</p>
+                <p className="text-sm font-medium truncate">{cvUrl ? t('profile.contact.cv') : t('ui.noData')}</p>
               </div>
               {cvUrl ? (
                 <Button
