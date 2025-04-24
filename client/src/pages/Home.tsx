@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 
 import ProfileHeader from "@/components/ProfileHeader";
 import SocialLinks from "@/components/SocialLinks";
@@ -14,6 +15,8 @@ import ContactDetails from "@/components/ContactDetails";
 import TechnologiesSection from "@/components/TechnologiesSection";
 import Footer from "@/components/Footer";
 import { QuickShareButtons } from "@/components/QuickShareButtons";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 
@@ -27,6 +30,7 @@ import {
 export default function Home() {
   const [backgroundIndex, setBackgroundIndex] = useState(0);
   const [_, setLocation] = useLocation();
+  const { t } = useTranslation();
 
   // Fetch profile data
   const { data, isLoading, isError } = useQuery<{
@@ -211,13 +215,16 @@ export default function Home() {
         title={`Profil ${profile.name}`} 
       />
       
-      <div className="absolute top-4 right-4 z-10">
+      {/* Przyciski administracyjne, przełącznik motywu i języka */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        <ThemeToggle />
+        <LanguageToggle />
         <Button
           variant="secondary"
           className="shadow-md hover:shadow-lg transition-shadow"
           onClick={() => setLocation('/login')}
         >
-          Panel administracyjny
+          {t('admin.panel')}
         </Button>
       </div>
       
