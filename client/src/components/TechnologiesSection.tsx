@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Technology, TechnologyCategory, technologyCategories } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { motion } from "framer-motion";
 
 interface TechnologiesSectionProps {
   profileId: number;
@@ -11,8 +17,6 @@ interface TechnologiesSectionProps {
 }
 
 export default function TechnologiesSection({ profileId, showTechnologies = true }: TechnologiesSectionProps) {
-  const [activeCategory, setActiveCategory] = useState<TechnologyCategory>('frontend');
-
   // Pobieranie wszystkich technologii
   const { data: technologies = [], isLoading } = useQuery<Technology[]>({
     queryKey: [`/api/profile/${profileId}/technologies`],
@@ -43,29 +47,72 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
     category => technologiesByCategory[category]?.length > 0
   ) as TechnologyCategory[];
 
-  return (
-    <div className="py-6 px-4 bg-white rounded-xl shadow-sm">
-      <h2 className="text-xl font-bold mb-4 text-center">Umiejętności techniczne</h2>
-      
-      <Tabs defaultValue={activeCategory} onValueChange={(value) => setActiveCategory(value as TechnologyCategory)}>
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-6">
-          {categoriesWithTechnologies.map(category => (
-            <TabsTrigger key={category} value={category} className="capitalize">
-              {getCategoryDisplayName(category)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+  // Animacje dla kart technologii
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
 
-        {categoriesWithTechnologies.map(category => (
-          <TabsContent key={category} value={category} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {technologiesByCategory[category]?.map((tech: Technology) => (
-                <TechnologyCard key={tech.id} technology={tech} />
+  return (
+    <div className="mb-6">
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="technologies" className="border-b border-t-0 border-x-0">
+          <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
+            Umiejętności techniczne
+            <div className="ml-2 text-primary">
+              <span className="text-sm">{technologies.length}</span>
+            </div>
+          </AccordionTrigger>
+          
+          <AccordionContent>
+            <div className="py-2">
+              {categoriesWithTechnologies.map((category) => (
+                <Accordion 
+                  key={category} 
+                  type="single" 
+                  collapsible 
+                  className="w-full mb-2 border rounded-lg overflow-hidden"
+                >
+                  <AccordionItem value={category} className="border-0">
+                    <AccordionTrigger className="px-4 py-3 bg-gray-50 hover:no-underline">
+                      <div className="flex items-center">
+                        <span className="font-medium">{getCategoryDisplayName(category)}</span>
+                        <Badge variant="outline" className="ml-2">
+                          {technologiesByCategory[category].length}
+                        </Badge>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <motion.div 
+                        className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
+                        variants={container}
+                        initial="hidden"
+                        animate="show"
+                      >
+                        {technologiesByCategory[category]?.map((tech: Technology) => (
+                          <motion.div key={tech.id} variants={item}>
+                            <TechnologyCard technology={tech} />
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               ))}
             </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
