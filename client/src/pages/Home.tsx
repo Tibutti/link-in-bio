@@ -116,6 +116,93 @@ export default function Home() {
   const socialLinks = data.socialLinks;
   const featuredContents = data.featuredContents;
 
+  // Domyślna kolejność sekcji
+  const defaultSectionOrder = [
+    'image',
+    'contact',
+    'social',
+    'knowledge',
+    'featured',
+    'github',
+    'tryhackme',
+    'technologies'
+  ];
+
+  // Używamy kolejności zapisanej w profilu lub domyślnej
+  const sectionOrder = profile.sectionOrder || defaultSectionOrder;
+  
+  // Funkcja renderująca sekcję na podstawie jej ID
+  const renderSection = (sectionId: string) => {
+    switch(sectionId) {
+      case 'image':
+        return profile.showImage && (
+          <div key="image" className="mb-6">
+            <ProfileHeader profile={profile} />
+          </div>
+        );
+      case 'contact':
+        return profile.showContact && (
+          <div key="contact" className="mb-6">
+            <ContactDetails 
+              email={profile.email || ""}
+              phone={profile.phone || ""}
+              cvUrl={profile.cvUrl || ""}
+            />
+          </div>
+        );
+      case 'social':
+        return profile.showSocial && (
+          <div key="social" className="mb-6">
+            <SocialLinks 
+              links={socialLinks.filter(link => link.isVisible && link.category === 'social')} 
+              onLinkClick={handleLinkClick}
+            />
+          </div>
+        );
+      case 'knowledge':
+        return profile.showKnowledge && (
+          <div key="knowledge" className="mb-6">
+            <SocialLinks 
+              links={socialLinks.filter(link => link.isVisible && link.category === 'knowledge')} 
+              onLinkClick={handleLinkClick}
+            />
+          </div>
+        );
+      case 'featured':
+        return profile.showFeatured && featuredContents.length > 0 && (
+          <div key="featured" className="mb-6">
+            <FeaturedContent 
+              contents={featuredContents.filter(content => content.isVisible)} 
+              onContentClick={handleLinkClick}
+            />
+          </div>
+        );
+      case 'github':
+        return profile.showGithubStats && profile.githubUsername && (
+          <div key="github" className="mb-6">
+            <GitHubStats profile={profile} />
+          </div>
+        );
+      case 'tryhackme':
+        return profile.showTryHackMe && profile.tryHackMeUserId && (
+          <div key="tryhackme" className="mb-6">
+            <TryHackMeBadge userId={profile.tryHackMeUserId} />
+          </div>
+        );
+      case 'technologies':
+        return profile.showTechnologies && (
+          <div key="technologies" className="mb-6">
+            <TechnologiesSection 
+              profileId={profile.id} 
+              showTechnologies={profile.showTechnologies} 
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
       <QuickShareButtons 
@@ -131,73 +218,25 @@ export default function Home() {
         </Button>
       </div>
       <div className="container mx-auto px-4 py-10 max-w-2xl">
-        <ProfileHeader 
-          profile={profile}
-        />
+        {/* Renderujemy sekcje zgodnie z ustawioną kolejnością */}
+        {sectionOrder.map(sectionId => renderSection(sectionId))}
         
-        {profile.showContact && (
-          <ContactDetails 
-            email={profile.email || ""}
-            phone={profile.phone || ""}
-            cvUrl={profile.cvUrl || ""}
-          />
-        )}
-        
-        {profile.showSocial && (
-          <SocialLinks 
-            links={socialLinks.filter(link => link.isVisible && link.category === 'social')} 
-            onLinkClick={handleLinkClick}
-          />
-        )}
-        
-        {profile.showKnowledge && (
-          <SocialLinks 
-            links={socialLinks.filter(link => link.isVisible && link.category === 'knowledge')} 
-            onLinkClick={handleLinkClick}
-          />
-        )}
-        
-        {profile.showFeatured && featuredContents.length > 0 && (
-          <FeaturedContent 
-            contents={featuredContents.filter(content => content.isVisible)} 
-            onContentClick={handleLinkClick}
-          />
-        )}
-        
-        {profile.showGithubStats && profile.githubUsername && (
-          <GitHubStats 
-            profile={profile} 
-          />
-        )}
-        
-        {profile.showTryHackMe && profile.tryHackMeUserId && (
-          <TryHackMeBadge 
-            userId={profile.tryHackMeUserId} 
-          />
-        )}
-        
-        {profile.showTechnologies && (
-          <TechnologiesSection 
-            profileId={profile.id} 
-            showTechnologies={profile.showTechnologies} 
-          />
-        )}
-        
-        {profile.showImage && (
+        {/* Zawsze wyświetlamy selektory i stopkę na końcu */}
+        <div className="mt-10">
           <ProfileSelector 
             selectedIndex={profile.imageIndex ?? 0} 
             onSelect={handleProfileImageChange} 
           />
-        )}
-        
-        <BackgroundSelector 
-          selectedIndex={backgroundIndex} 
-          onSelect={handleBackgroundChange} 
-        />
-        
-        <Footer 
-          name={profile.name} 
-        />
+          
+          <BackgroundSelector 
+            selectedIndex={backgroundIndex} 
+            onSelect={handleBackgroundChange} 
+          />
+          
+          <Footer 
+            name={profile.name} 
+          />
+        </div>
       </div>
     </div>
   );
