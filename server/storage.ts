@@ -28,6 +28,8 @@ export interface IStorage {
   createSocialLink(link: InsertSocialLink): Promise<SocialLink>;
   updateSocialLink(id: number, data: Partial<SocialLink>): Promise<SocialLink>;
   deleteSocialLink(id: number): Promise<boolean>;
+  updateSocialLinkOrder(id: number, newOrder: number): Promise<SocialLink>;
+  reorderSocialLinks(profileId: number, category: string, orderedIds: number[]): Promise<SocialLink[]>;
   
   // Featured content methods
   getFeaturedContents(profileId: number): Promise<FeaturedContent[]>;
@@ -35,6 +37,8 @@ export interface IStorage {
   createFeaturedContent(content: InsertFeaturedContent): Promise<FeaturedContent>;
   updateFeaturedContent(id: number, data: Partial<FeaturedContent>): Promise<FeaturedContent>;
   deleteFeaturedContent(id: number): Promise<boolean>;
+  updateFeaturedContentOrder(id: number, newOrder: number): Promise<FeaturedContent>;
+  reorderFeaturedContents(profileId: number, orderedIds: number[]): Promise<FeaturedContent[]>;
   
   // GitHub contributions methods have been removed
   
@@ -148,6 +152,53 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
+  async updateSocialLinkOrder(id: number, newOrder: number): Promise<SocialLink> {
+    const [updatedLink] = await db
+      .update(socialLinks)
+      .set({ order: newOrder })
+      .where(eq(socialLinks.id, id))
+      .returning();
+    
+    if (!updatedLink) {
+      throw new Error(`Social link with ID ${id} not found`);
+    }
+    
+    return updatedLink;
+  }
+
+  async reorderSocialLinks(profileId: number, category: string, orderedIds: number[]): Promise<SocialLink[]> {
+    // Pobierz wszystkie linki dla danego profilu i kategorii
+    const links = await db
+      .select()
+      .from(socialLinks)
+      .where(and(
+        eq(socialLinks.profileId, profileId),
+        eq(socialLinks.category, category)
+      ));
+    
+    // Sprawdź, czy wszystkie przekazane ID należą do profilu
+    const linkMap = new Map(links.map(link => [link.id, link]));
+    const validIds = orderedIds.filter(id => linkMap.has(id));
+    
+    // Aktualizuj kolejność dla każdego linku
+    const updatedLinks: SocialLink[] = [];
+    for (let i = 0; i < validIds.length; i++) {
+      const id = validIds[i];
+      const [updatedLink] = await db
+        .update(socialLinks)
+        .set({ order: i })
+        .where(eq(socialLinks.id, id))
+        .returning();
+      
+      if (updatedLink) {
+        updatedLinks.push(updatedLink);
+      }
+    }
+    
+    // Zwróć zaktualizowane linki posortowane według kolejności
+    return updatedLinks.sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+
   // Featured content methods
   async getFeaturedContents(profileId: number): Promise<FeaturedContent[]> {
     return db
@@ -188,6 +239,50 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return !!deleted;
+  }
+
+  async updateFeaturedContentOrder(id: number, newOrder: number): Promise<FeaturedContent> {
+    const [updatedContent] = await db
+      .update(featuredContents)
+      .set({ order: newOrder })
+      .where(eq(featuredContents.id, id))
+      .returning();
+    
+    if (!updatedContent) {
+      throw new Error(`Featured content with ID ${id} not found`);
+    }
+    
+    return updatedContent;
+  }
+
+  async reorderFeaturedContents(profileId: number, orderedIds: number[]): Promise<FeaturedContent[]> {
+    // Pobierz wszystkie wyróżnione treści dla danego profilu
+    const contents = await db
+      .select()
+      .from(featuredContents)
+      .where(eq(featuredContents.profileId, profileId));
+    
+    // Sprawdź, czy wszystkie przekazane ID należą do profilu
+    const contentMap = new Map(contents.map(content => [content.id, content]));
+    const validIds = orderedIds.filter(id => contentMap.has(id));
+    
+    // Aktualizuj kolejność dla każdej treści
+    const updatedContents: FeaturedContent[] = [];
+    for (let i = 0; i < validIds.length; i++) {
+      const id = validIds[i];
+      const [updatedContent] = await db
+        .update(featuredContents)
+        .set({ order: i })
+        .where(eq(featuredContents.id, id))
+        .returning();
+      
+      if (updatedContent) {
+        updatedContents.push(updatedContent);
+      }
+    }
+    
+    // Zwróć zaktualizowane treści posortowane według kolejności
+    return updatedContents.sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
   // GitHub contributions methods have been removed
