@@ -481,6 +481,7 @@ export default function Admin() {
                 showFeatured={profile.showFeatured}
                 showTryHackMe={profile.showTryHackMe || false}
                 showTechnologies={profile.showTechnologies || false}
+                showGithubStats={profile.showGithubStats || false}
                 sectionOrder={profile.sectionOrder || undefined}
                 onSuccess={() => {
                   loadData();

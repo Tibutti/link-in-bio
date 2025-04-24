@@ -41,6 +41,7 @@ const sectionVisibilitySchema = z.object({
   showFeatured: z.boolean().default(true),
   showTryHackMe: z.boolean().default(true),
   showTechnologies: z.boolean().default(true),
+  showGithubStats: z.boolean().default(true),
 });
 
 type SectionVisibilityFormValues = z.infer<typeof sectionVisibilitySchema>;
@@ -64,6 +65,7 @@ interface SectionVisibilityFormProps {
   showFeatured: boolean;
   showTryHackMe: boolean;
   showTechnologies: boolean;
+  showGithubStats: boolean;
   sectionOrder?: string[]; // Lista ID sekcji w odpowiedniej kolejności
   onSuccess?: () => void;
 }
@@ -123,6 +125,7 @@ export function SectionVisibilityForm({
   showFeatured = true,
   showTryHackMe = true,
   showTechnologies = true,
+  showGithubStats = true,
   sectionOrder: initialSectionOrder,
   onSuccess
 }: SectionVisibilityFormProps) {
@@ -168,18 +171,25 @@ export function SectionVisibilityForm({
       order: 5
     },
     {
+      id: 'github',
+      name: 'Statystyki GitHub',
+      description: 'Pokazuj statystyki i aktywność z GitHub na stronie',
+      fieldName: 'showGithubStats',
+      order: 6
+    },
+    {
       id: 'tryhackme',
       name: 'Odznaka TryHackMe',
       description: 'Pokazuj odznakę i statystyki z TryHackMe na stronie',
       fieldName: 'showTryHackMe',
-      order: 6
+      order: 7
     },
     {
       id: 'technologies',
       name: 'Technologie',
       description: 'Pokazuj sekcję technologii i umiejętności na stronie',
       fieldName: 'showTechnologies',
-      order: 7
+      order: 8
     }
   ];
   
@@ -269,6 +279,7 @@ export function SectionVisibilityForm({
       showFeatured,
       showTryHackMe,
       showTechnologies,
+      showGithubStats,
     },
   });
   
