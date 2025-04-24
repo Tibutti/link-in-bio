@@ -600,16 +600,21 @@ export default function Admin() {
               <CardContent>
                 <div className="space-y-4">
                   {knowledgeLinks.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {knowledgeLinks.map((link) => (
+                    <SortableList 
+                      items={knowledgeLinks}
+                      onReorder={(items) => handleReorderSocialLinks(items, 'knowledge')}
+                      className="grid gap-4 md:grid-cols-2"
+                      renderItem={(link) => (
                         <div 
-                          key={link.id} 
-                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer"
+                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer relative"
                           onClick={() => {
                             setEditingSocialLink(link);
                             setIsDialogOpen(true);
                           }}
                         >
+                          <div className="absolute top-2 right-2 text-gray-400">
+                            <GripVertical size={16} />
+                          </div>
                           <h3 className="text-lg font-medium">{link.platform}</h3>
                           <p className="text-sm text-muted-foreground">{link.username}</p>
                           <a 
@@ -621,9 +626,14 @@ export default function Admin() {
                           >
                             {link.url}
                           </a>
+                          {!link.isVisible && (
+                            <div className="mt-2 text-xs text-gray-500 italic">
+                              (Ukryty)
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    />
                   ) : (
                     <p>Brak linków do platform wiedzy.</p>
                   )}
@@ -675,16 +685,21 @@ export default function Admin() {
               <CardContent>
                 <div className="space-y-4">
                   {featuredContents.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {featuredContents.map((content) => (
+                    <SortableList 
+                      items={featuredContents}
+                      onReorder={handleReorderFeaturedContents}
+                      className="grid gap-4 md:grid-cols-2"
+                      renderItem={(content) => (
                         <div 
-                          key={content.id} 
-                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer"
+                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer relative"
                           onClick={() => {
                             setEditingFeaturedContent(content);
                             setIsDialogOpen(true);
                           }}
                         >
+                          <div className="absolute top-2 right-2 text-gray-400">
+                            <GripVertical size={16} />
+                          </div>
                           <h3 className="text-lg font-medium">{content.title}</h3>
                           {content.linkUrl && (
                             <a 
@@ -706,9 +721,14 @@ export default function Admin() {
                               />
                             </div>
                           )}
+                          {!content.isVisible && (
+                            <div className="mt-2 text-xs text-gray-500 italic">
+                              (Ukryty)
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    />
                   ) : (
                     <p>Brak wyróżnionych treści.</p>
                   )}
