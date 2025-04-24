@@ -25,6 +25,7 @@ export const profiles = pgTable("profiles", {
   location: text("location"),
   email: text("email"),
   phone: text("phone"),
+  cvUrl: text("cv_url"),
   imageIndex: integer("image_index").default(0),
   backgroundIndex: integer("background_index").default(0),
   backgroundGradient: jsonb("background_gradient").$type<{
@@ -50,6 +51,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   location: true,
   email: true,
   phone: true,
+  cvUrl: true,
   imageIndex: true,
   backgroundIndex: true,
   backgroundGradient: true,
