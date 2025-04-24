@@ -11,6 +11,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { SiHashnode, SiSubstack } from "react-icons/si";
 import { Badge } from "@/components/ui/badge";
 import AccordionSection from "./AccordionSection";
+import { useTranslation } from "react-i18next";
 
 interface SocialLinksProps {
   links: SocialLink[];
@@ -48,6 +49,7 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
+  const { t } = useTranslation();
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -79,7 +81,7 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
           e.preventDefault(); 
           onLinkClick(link.url); 
         }}
-        className="block w-full p-4 bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 border border-gray-100 group"
+        className="block w-full p-4 bg-background dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 border border-border dark:border-gray-700 group"
         variants={item}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
@@ -116,7 +118,7 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
       {/* Sekcja mediów społecznościowych */}
       {socialLinks.length > 0 && (
         <AccordionSection 
-          title="Media społecznościowe" 
+          title={t('sections.social')}
           value="social"
           badge={
             <Badge variant="outline" className="ml-2 bg-primary/10">
@@ -138,7 +140,7 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
       {/* Sekcja platform wiedzy i twórczości */}
       {knowledgeLinks.length > 0 && (
         <AccordionSection 
-          title="Publikacje i twórczość" 
+          title={t('sections.knowledge')}
           value="knowledge"
           badge={
             <Badge variant="outline" className="ml-2 bg-primary/10">
