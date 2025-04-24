@@ -9,6 +9,13 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiHashnode, SiSubstack } from "react-icons/si";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { ChevronDown } from "lucide-react";
 
 interface SocialLinksProps {
   links: SocialLink[];
@@ -110,36 +117,52 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
   };
 
   return (
-    <div className="space-y-8 mb-8">
-      {/* Sekcja mediów społecznościowych */}
-      {socialLinks.length > 0 && (
-        <div>
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Media społecznościowe</h2>
-          <motion.section 
-            className="space-y-4"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            {socialLinks.map(renderLinkItem)}
-          </motion.section>
-        </div>
-      )}
-      
-      {/* Sekcja platform wiedzy i twórczości */}
-      {knowledgeLinks.length > 0 && (
-        <div>
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Publikacje i twórczość</h2>
-          <motion.section 
-            className="space-y-4"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            {knowledgeLinks.map(renderLinkItem)}
-          </motion.section>
-        </div>
-      )}
+    <div className="space-y-6 mb-8">
+      <Accordion type="single" collapsible className="w-full">
+        {/* Sekcja mediów społecznościowych */}
+        {socialLinks.length > 0 && (
+          <AccordionItem value="social" className="border-b border-t-0 border-x-0">
+            <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
+              Media społecznościowe
+              <div className="ml-2 text-primary">
+                <span className="text-sm">{socialLinks.length}</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <motion.section 
+                className="space-y-4 py-2"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                {socialLinks.map(renderLinkItem)}
+              </motion.section>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+        
+        {/* Sekcja platform wiedzy i twórczości */}
+        {knowledgeLinks.length > 0 && (
+          <AccordionItem value="knowledge" className="border-b border-t-0 border-x-0">
+            <AccordionTrigger className="py-4 text-xl font-bold text-gray-800 hover:no-underline">
+              Publikacje i twórczość
+              <div className="ml-2 text-primary">
+                <span className="text-sm">{knowledgeLinks.length}</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <motion.section 
+                className="space-y-4 py-2"
+                variants={container}
+                initial="hidden"
+                animate="show"
+              >
+                {knowledgeLinks.map(renderLinkItem)}
+              </motion.section>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+      </Accordion>
     </div>
   );
 }
