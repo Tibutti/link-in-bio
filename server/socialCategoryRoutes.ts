@@ -13,6 +13,11 @@ const updateCategorySchema = z.object({
   category: z.enum(['social', 'knowledge'])
 });
 
+// Schemat walidacji dla zmiany kolejności linków
+const reorderSchema = z.object({
+  orderedIds: z.array(z.number())
+});
+
 export function registerSocialCategoryRoutes(app: Express) {
   // Pobierz linki społecznościowe według kategorii
   app.get('/api/profile/:profileId/social-links/category/:category', async (req, res) => {
@@ -114,6 +119,55 @@ export function registerSocialCategoryRoutes(app: Express) {
     } catch (error) {
       console.error('Error fetching link stats:', error);
       res.status(500).json({ message: 'Failed to fetch link statistics' });
+    }
+  });
+  
+  // Zmień kolejność linków społecznościowych
+  app.post('/api/profile/:profileId/social-links/category/:category/reorder', authenticateToken, async (req, res) => {
+    try {
+      const profileId = parseInt(req.params.profileId);
+      const userId = (req as any).userId;
+      
+      // Walidacja kategorii
+      try {
+        categoryFilterSchema.parse({ category: req.params.category });
+      } catch (error) {
+        return res.status(400).json({ 
+          message: 'Invalid category. Must be either "social" or "knowledge"'
+        });
+      }
+      
+      const category = req.params.category as 'social' | 'knowledge';
+      
+      // Pobierz profil
+      const profile = await storage.getProfile(profileId);
+      
+      // Sprawdź czy profil istnieje i należy do zalogowanego użytkownika
+      if (!profile) {
+        return res.status(404).json({ message: 'Profile not found' });
+      }
+      
+      if (profile.userId !== userId) {
+        return res.status(403).json({ message: 'You can only reorder your own links' });
+      }
+      
+      // Walidacja danych wejściowych
+      const validData = reorderSchema.parse(req.body);
+      
+      // Zmiana kolejności linków
+      const updatedLinks = await storage.reorderSocialLinks(profileId, category, validData.orderedIds);
+      
+      res.json(updatedLinks);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: 'Validation error', 
+          errors: error.errors 
+        });
+      }
+      
+      console.error('Reorder social links error:', error);
+      res.status(500).json({ message: 'Error reordering social links' });
     }
   });
 }

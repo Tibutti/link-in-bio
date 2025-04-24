@@ -4,6 +4,11 @@ import { storage } from './storage';
 import { insertSocialLinkSchema, insertFeaturedContentSchema } from '@shared/schema';
 import { authenticateToken, optionalAuthentication } from './auth';
 
+// Schemat walidacji dla zmiany kolejności wyróżnionych treści
+const reorderFeaturedContentsSchema = z.object({
+  orderedIds: z.array(z.number())
+});
+
 export function registerProfileContentRoutes(app: Express) {
   // Pobierz wyróżnione treści dla profilu
   app.get('/api/profile/:profileId/featured-contents', async (req, res) => {
@@ -195,6 +200,44 @@ export function registerProfileContentRoutes(app: Express) {
     } catch (error) {
       console.error('Error deleting social link:', error);
       res.status(500).json({ message: 'Failed to delete social link' });
+    }
+  });
+  
+  // Zmień kolejność wyróżnionych treści
+  app.post('/api/profile/:profileId/featured-contents/reorder', authenticateToken, async (req, res) => {
+    try {
+      const profileId = parseInt(req.params.profileId);
+      const userId = (req as any).userId;
+      
+      // Pobierz profil
+      const profile = await storage.getProfile(profileId);
+      
+      // Sprawdź czy profil istnieje i należy do zalogowanego użytkownika
+      if (!profile) {
+        return res.status(404).json({ message: 'Profile not found' });
+      }
+      
+      if (profile.userId !== userId) {
+        return res.status(403).json({ message: 'You can only reorder your own content' });
+      }
+      
+      // Walidacja danych wejściowych
+      const validData = reorderFeaturedContentsSchema.parse(req.body);
+      
+      // Zmiana kolejności wyróżnionych treści
+      const updatedContents = await storage.reorderFeaturedContents(profileId, validData.orderedIds);
+      
+      res.json(updatedContents);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: 'Validation error', 
+          errors: error.errors 
+        });
+      }
+      
+      console.error('Reorder featured contents error:', error);
+      res.status(500).json({ message: 'Error reordering featured contents' });
     }
   });
 }
