@@ -14,20 +14,20 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
   const [activeCategory, setActiveCategory] = useState<TechnologyCategory>('frontend');
 
   // Pobieranie wszystkich technologii
-  const { data: technologies, isLoading } = useQuery({
+  const { data: technologies = [], isLoading } = useQuery<Technology[]>({
     queryKey: [`/api/profile/${profileId}/technologies`],
     enabled: showTechnologies,
     staleTime: 1000 * 60 * 5, // 5 minut
   });
 
   // Grupowanie technologii według kategorii
-  const technologiesByCategory = technologies?.reduce((acc: Record<string, Technology[]>, tech: Technology) => {
+  const technologiesByCategory = technologies.reduce((acc: Record<string, Technology[]>, tech: Technology) => {
     if (!acc[tech.category]) {
       acc[tech.category] = [];
     }
     acc[tech.category].push(tech);
     return acc;
-  }, {} as Record<string, Technology[]>) || {} as Record<string, Technology[]>;
+  }, {} as Record<string, Technology[]>);
 
   // Sortowanie technologii według ich kolejności
   Object.keys(technologiesByCategory).forEach(category => {
@@ -36,7 +36,7 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
 
   if (!showTechnologies) return null;
   if (isLoading) return <div className="py-6 px-4 text-center">Ładowanie technologii...</div>;
-  if (!technologies?.length) return null;
+  if (technologies.length === 0) return null;
 
   // Znajdujemy kategorie, które mają przypisane technologie
   const categoriesWithTechnologies = Object.keys(technologiesByCategory).filter(
