@@ -4,12 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Github, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import AccordionSection from './AccordionSection';
+import { useTranslation } from 'react-i18next';
 
 interface GitHubStatsProps {
   profile: Profile;
 }
 
 export default function GitHubStats({ profile }: GitHubStatsProps) {
+  const { t } = useTranslation();
+  
   // Elementy graficzne ze statystykami GitHub
   const username = profile.githubUsername || "";
   const statsUrl = `https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=radical`;
@@ -18,7 +21,7 @@ export default function GitHubStats({ profile }: GitHubStatsProps) {
 
   return (
     <AccordionSection
-      title="Statystyki GitHub"
+      title={t('sections.github')}
       value="github"
       badge={profile.githubUsername ? (
         <Badge variant="outline" className="ml-2 bg-primary/10">
@@ -54,9 +57,11 @@ export default function GitHubStats({ profile }: GitHubStatsProps) {
             <Github className="h-10 w-10 text-primary" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-medium">Konto GitHub nie połączone</h3>
+            <h3 className="text-lg font-medium text-foreground">
+              {t('ui.noData')}
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Połącz swoje konto GitHub, aby wyświetlić statystyki i aktywność.
+              Skonfiguruj użytkownika GitHub w ustawieniach profilu, aby wyświetlić statystyki.
             </p>
           </div>
           <Button 
@@ -64,7 +69,7 @@ export default function GitHubStats({ profile }: GitHubStatsProps) {
             className="mt-2"
             onClick={() => window.open("https://github.com/", "_blank")}
           >
-            Odwiedź GitHub
+            GitHub
             <ExternalLink className="ml-2 h-4 w-4" />
           </Button>
         </div>

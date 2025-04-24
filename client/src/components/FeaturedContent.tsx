@@ -2,6 +2,7 @@ import { type FeaturedContent as FeaturedContentType } from "@shared/schema";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import AccordionSection from "./AccordionSection";
+import { useTranslation } from "react-i18next";
 
 interface FeaturedContentProps {
   contents: FeaturedContentType[];
@@ -9,9 +10,11 @@ interface FeaturedContentProps {
 }
 
 export default function FeaturedContent({ contents, onContentClick }: FeaturedContentProps) {
+  const { t } = useTranslation();
+  
   return (
     <AccordionSection
-      title="Wybrane projekty"
+      title={t('sections.featured')}
       value="featured"
       badge={
         <Badge variant="outline" className="ml-2 bg-primary/10">
