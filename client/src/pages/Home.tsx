@@ -129,7 +129,9 @@ export default function Home() {
   ];
 
   // Używamy kolejności zapisanej w profilu lub domyślnej
-  const sectionOrder = profile.sectionOrder || defaultSectionOrder;
+  // Dodajemy console.log aby zobaczyć, co otrzymujemy z API
+  console.log("sectionOrder z profilu:", profile.sectionOrder);
+  const sectionOrder = Array.isArray(profile.sectionOrder) ? profile.sectionOrder : defaultSectionOrder;
   
   // Funkcja renderująca sekcję na podstawie jej ID
   const renderSection = (sectionId: string) => {
