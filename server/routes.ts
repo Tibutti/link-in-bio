@@ -7,8 +7,19 @@ import { z } from "zod";
 import fetch from "node-fetch";
 import { fetchGitHubContributions } from "./githubApi";
 import { db } from "./db";
+import { registerAuthRoutes } from "./authRoutes";
+import { registerGithubStatsRoutes } from "./githubStatsRoutes";
+import { registerProfileContentRoutes } from "./profileContentRoutes";
+import { registerSocialCategoryRoutes } from "./socialCategoryRoutes";
+import { registerTechnologyRoutes } from "./technologyRoutes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Rejestruj wszystkie ścieżki API
+  registerAuthRoutes(app);
+  registerGithubStatsRoutes(app);
+  registerProfileContentRoutes(app);
+  registerSocialCategoryRoutes(app);
+  registerTechnologyRoutes(app);
   // Endpoint do ponownej inicjalizacji danych testowych
   app.post("/api/reinitialize-demo-data", async (req, res) => {
     try {

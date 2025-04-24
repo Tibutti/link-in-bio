@@ -1,10 +1,12 @@
 import { 
-  users, profiles, socialLinks, featuredContents, sessions,
+  users, profiles, socialLinks, featuredContents, sessions, technologies,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
   type FeaturedContent, type InsertFeaturedContent,
-  type Session, type InsertSession
+  type Session, type InsertSession,
+  type Technology, type InsertTechnology,
+  type TechnologyCategory
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -39,6 +41,16 @@ export interface IStorage {
   deleteFeaturedContent(id: number): Promise<boolean>;
   updateFeaturedContentOrder(id: number, newOrder: number): Promise<FeaturedContent>;
   reorderFeaturedContents(profileId: number, orderedIds: number[]): Promise<FeaturedContent[]>;
+  
+  // Technology methods
+  getTechnologies(profileId: number): Promise<Technology[]>;
+  getTechnologiesByCategory(profileId: number, category: TechnologyCategory): Promise<Technology[]>;
+  getTechnology(id: number): Promise<Technology | undefined>;
+  createTechnology(technology: InsertTechnology): Promise<Technology>;
+  updateTechnology(id: number, data: Partial<Technology>): Promise<Technology>;
+  deleteTechnology(id: number): Promise<boolean>;
+  updateTechnologyOrder(id: number, newOrder: number): Promise<Technology>;
+  reorderTechnologies(profileId: number, category: TechnologyCategory, orderedIds: number[]): Promise<Technology[]>;
   
   // GitHub contributions methods have been removed
   
@@ -285,6 +297,106 @@ export class DatabaseStorage implements IStorage {
     return updatedContents.sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
+  // Technology methods
+  async getTechnologies(profileId: number): Promise<Technology[]> {
+    return db
+      .select()
+      .from(technologies)
+      .where(eq(technologies.profileId, profileId))
+      .orderBy(technologies.order);
+  }
+
+  async getTechnologiesByCategory(profileId: number, category: TechnologyCategory): Promise<Technology[]> {
+    return db
+      .select()
+      .from(technologies)
+      .where(and(
+        eq(technologies.profileId, profileId),
+        eq(technologies.category, category)
+      ))
+      .orderBy(technologies.order);
+  }
+
+  async getTechnology(id: number): Promise<Technology | undefined> {
+    const [technology] = await db.select().from(technologies).where(eq(technologies.id, id));
+    return technology;
+  }
+
+  async createTechnology(insertTechnology: InsertTechnology): Promise<Technology> {
+    const [technology] = await db.insert(technologies).values(insertTechnology).returning();
+    return technology;
+  }
+
+  async updateTechnology(id: number, data: Partial<Technology>): Promise<Technology> {
+    const [updatedTechnology] = await db
+      .update(technologies)
+      .set(data)
+      .where(eq(technologies.id, id))
+      .returning();
+    
+    if (!updatedTechnology) {
+      throw new Error(`Technology with ID ${id} not found`);
+    }
+    
+    return updatedTechnology;
+  }
+
+  async deleteTechnology(id: number): Promise<boolean> {
+    const [deleted] = await db
+      .delete(technologies)
+      .where(eq(technologies.id, id))
+      .returning();
+    
+    return !!deleted;
+  }
+
+  async updateTechnologyOrder(id: number, newOrder: number): Promise<Technology> {
+    const [updatedTechnology] = await db
+      .update(technologies)
+      .set({ order: newOrder })
+      .where(eq(technologies.id, id))
+      .returning();
+    
+    if (!updatedTechnology) {
+      throw new Error(`Technology with ID ${id} not found`);
+    }
+    
+    return updatedTechnology;
+  }
+
+  async reorderTechnologies(profileId: number, category: TechnologyCategory, orderedIds: number[]): Promise<Technology[]> {
+    // Pobierz wszystkie technologie dla danego profilu i kategorii
+    const techs = await db
+      .select()
+      .from(technologies)
+      .where(and(
+        eq(technologies.profileId, profileId),
+        eq(technologies.category, category)
+      ));
+    
+    // Sprawdź, czy wszystkie przekazane ID należą do profilu
+    const techMap = new Map(techs.map(tech => [tech.id, tech]));
+    const validIds = orderedIds.filter(id => techMap.has(id));
+    
+    // Aktualizuj kolejność dla każdej technologii
+    const updatedTechs: Technology[] = [];
+    for (let i = 0; i < validIds.length; i++) {
+      const id = validIds[i];
+      const [updatedTech] = await db
+        .update(technologies)
+        .set({ order: i })
+        .where(eq(technologies.id, id))
+        .returning();
+      
+      if (updatedTech) {
+        updatedTechs.push(updatedTech);
+      }
+    }
+    
+    // Zwróć zaktualizowane technologie posortowane według kolejności
+    return updatedTechs.sort((a, b) => (a.order || 0) - (b.order || 0));
+  }
+
   // GitHub contributions methods have been removed
 
   // Session methods
@@ -311,6 +423,7 @@ export class DatabaseStorage implements IStorage {
   // Initialize database with demo data 
   async initializeDemoData() {
     // Usuń istniejące dane przed ponowną inicjalizacją
+    await db.delete(technologies);
     await db.delete(socialLinks);
     await db.delete(featuredContents);
     await db.delete(sessions); // Najpierw usuwamy sesje, aby nie naruszać klucza obcego
@@ -398,6 +511,83 @@ export class DatabaseStorage implements IStorage {
         imageUrl: content.imageUrl,
         linkUrl: content.linkUrl,
         order: i
+      });
+    }
+
+    // Dodaj przykładowe technologie
+    const technologiesData = [
+      // Frontend
+      { 
+        name: "React", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", 
+        category: "frontend", 
+        proficiencyLevel: 90,
+        yearsOfExperience: 3
+      },
+      { 
+        name: "TypeScript", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg", 
+        category: "frontend", 
+        proficiencyLevel: 85,
+        yearsOfExperience: 2
+      },
+      { 
+        name: "Tailwind CSS", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg", 
+        category: "frontend", 
+        proficiencyLevel: 80,
+        yearsOfExperience: 2
+      },
+      // Backend
+      { 
+        name: "Node.js", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg", 
+        category: "backend", 
+        proficiencyLevel: 85,
+        yearsOfExperience: 4
+      },
+      { 
+        name: "Express", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/Expressjs.png", 
+        category: "backend", 
+        proficiencyLevel: 80,
+        yearsOfExperience: 3
+      },
+      { 
+        name: "PostgreSQL", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg", 
+        category: "database", 
+        proficiencyLevel: 75,
+        yearsOfExperience: 3
+      },
+      // DevOps
+      { 
+        name: "Docker", 
+        logoUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Docker_%28container_engine%29_logo.svg", 
+        category: "devops", 
+        proficiencyLevel: 70,
+        yearsOfExperience: 2
+      },
+      { 
+        name: "GitHub Actions", 
+        logoUrl: "https://github.githubassets.com/images/modules/site/features/actions-icon-actions.svg", 
+        category: "devops", 
+        proficiencyLevel: 65,
+        yearsOfExperience: 1
+      }
+    ];
+
+    for (let i = 0; i < technologiesData.length; i++) {
+      const tech = technologiesData[i];
+      await db.insert(technologies).values({
+        profileId: demoProfile.id,
+        name: tech.name,
+        logoUrl: tech.logoUrl,
+        category: tech.category as TechnologyCategory,
+        proficiencyLevel: tech.proficiencyLevel,
+        yearsOfExperience: tech.yearsOfExperience,
+        order: i,
+        isVisible: true
       });
     }
   }

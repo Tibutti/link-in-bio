@@ -151,3 +151,45 @@ export const insertSessionSchema = createInsertSchema(sessions).pick({
 
 export type InsertSession = z.infer<typeof insertSessionSchema>;
 export type Session = typeof sessions.$inferSelect;
+
+// Technology categories
+export const technologyCategories = [
+  "frontend",
+  "backend",
+  "mobile",
+  "devops",
+  "database",
+  "cloud",
+  "testing",
+  "design",
+  "other"
+] as const;
+
+export type TechnologyCategory = typeof technologyCategories[number];
+
+// Technology schema
+export const technologies = pgTable("technologies", {
+  id: serial("id").primaryKey(),
+  profileId: integer("profile_id").notNull().references(() => profiles.id),
+  name: text("name").notNull(),
+  logoUrl: text("logo_url"),
+  category: text("category").$type<TechnologyCategory>().notNull(),
+  proficiencyLevel: integer("proficiency_level").default(0), // 0-100 poziom umiejętności
+  yearsOfExperience: integer("years_of_experience"),
+  isVisible: boolean("is_visible").default(true),
+  order: integer("order").default(0),
+});
+
+export const insertTechnologySchema = createInsertSchema(technologies).pick({
+  profileId: true,
+  name: true,
+  logoUrl: true,
+  category: true,
+  proficiencyLevel: true,
+  yearsOfExperience: true,
+  isVisible: true,
+  order: true,
+});
+
+export type InsertTechnology = z.infer<typeof insertTechnologySchema>;
+export type Technology = typeof technologies.$inferSelect;
