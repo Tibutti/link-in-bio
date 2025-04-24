@@ -20,7 +20,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { Edit, Eye, EyeOff, Trash, GripVertical, Code, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { TechnologyForm } from "./TechnologyForm";
+// Importując po nazwie funkcji (nie jako domyślny eksport)
+import { TechnologyForm } from "@/components/TechnologyForm";
 
 interface TechnologiesAdminPanelProps {
   profileId: number;
@@ -33,22 +34,22 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
   const queryClient = useQueryClient();
 
   // Pobieranie wszystkich technologii
-  const { data: technologies, isLoading } = useQuery({
+  const { data: technologies = [], isLoading } = useQuery<Technology[]>({
     queryKey: [`/api/profile/${profileId}/technologies`],
   });
 
   // Grupowanie technologii według kategorii
-  const technologiesByCategory = technologies?.reduce((acc, tech) => {
+  const technologiesByCategory = technologies.reduce((acc: Record<string, Technology[]>, tech: Technology) => {
     if (!acc[tech.category]) {
       acc[tech.category] = [];
     }
     acc[tech.category].push(tech);
     return acc;
-  }, {} as Record<string, Technology[]>) || {};
+  }, {} as Record<string, Technology[]>);
 
   // Sortowanie technologii według ich kolejności
   Object.keys(technologiesByCategory).forEach(category => {
-    technologiesByCategory[category].sort((a, b) => (a.order || 0) - (b.order || 0));
+    technologiesByCategory[category].sort((a: Technology, b: Technology) => (a.order || 0) - (b.order || 0));
   });
 
   // Ustawienie dostępnych kategorii dla zakładek
@@ -70,10 +71,10 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
     
     if (over && active.id !== over.id) {
       const oldIndex = technologiesByCategory[activeCategory].findIndex(
-        t => t.id === active.id
+        (t: Technology) => t.id === active.id
       );
       const newIndex = technologiesByCategory[activeCategory].findIndex(
-        t => t.id === over.id
+        (t: Technology) => t.id === over.id
       );
 
       if (oldIndex !== -1 && newIndex !== -1) {
@@ -83,13 +84,16 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
         newTechnologies.splice(newIndex, 0, removed);
 
         // Przygotowanie ID do przesortowania
-        const orderedIds = newTechnologies.map(tech => tech.id);
+        const orderedIds = newTechnologies.map((tech: Technology) => tech.id);
 
         // Wysyłamy do serwera nową kolejność
         try {
           await apiRequest(`/api/profile/${profileId}/technologies/category/${activeCategory}/reorder`, {
             method: "POST",
-            data: { orderedIds }
+            body: JSON.stringify({ orderedIds }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
           });
 
           // Odświeżamy dane
@@ -108,7 +112,10 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
     try {
       await apiRequest(`/api/technologies/${technology.id}`, {
         method: "PATCH",
-        data: { isVisible: !technology.isVisible }
+        body: JSON.stringify({ isVisible: !technology.isVisible }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       // Odświeżamy dane
@@ -165,7 +172,9 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
   }
 
   // Dodajemy wszystkie kategorie, nawet jeśli nie mają jeszcze technologii
-  const allCategories = [...new Set([...categoriesWithTechnologies, ...technologyCategories])];
+  // Tworzymy zbiór kategorii jako zwykłą tablicę, aby uniknąć problemów z typowaniem Set
+  const allCategoriesSet = new Set([...categoriesWithTechnologies, ...technologyCategories]);
+  const allCategories = Array.from(allCategoriesSet) as TechnologyCategory[];
 
   return (
     <Card>
@@ -198,11 +207,11 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={technologiesByCategory[category]?.map(tech => tech.id) || []}
+                    items={technologiesByCategory[category]?.map((tech: Technology) => tech.id) || []}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-2">
-                      {technologiesByCategory[category]?.map(technology => (
+                      {technologiesByCategory[category]?.map((technology: Technology) => (
                         <SortableTechnologyItem
                           key={technology.id}
                           technology={technology}
