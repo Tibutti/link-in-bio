@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { QRCodeSVG } from 'qrcode.react';
 import { 
   Share2, 
   Twitter, 
@@ -7,10 +8,18 @@ import {
   Linkedin, 
   Copy, 
   Check,
-  X
+  X,
+  QrCode
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface QuickShareButtonsProps {
   url?: string;
@@ -23,6 +32,7 @@ export function QuickShareButtons({
 }: QuickShareButtonsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showQR, setShowQR] = useState(false);
   const { toast } = useToast();
 
   // Encoded data for sharing
@@ -142,6 +152,39 @@ export function QuickShareButtons({
               >
                 {isCopied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
               </Button>
+            </motion.div>
+            
+            <motion.div variants={buttonVariants}>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    size="icon" 
+                    variant="outline" 
+                    className="bg-white h-10 w-10 rounded-full shadow-md hover:bg-purple-100 hover:text-purple-600 transition-colors"
+                    aria-label="Pokaż kod QR"
+                  >
+                    <QrCode size={18} />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Kod QR</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col items-center justify-center p-4">
+                    <QRCodeSVG 
+                      value={url}
+                      size={200}
+                      bgColor={"#ffffff"}
+                      fgColor={"#000000"}
+                      level={"L"}
+                      includeMargin={false}
+                    />
+                    <p className="mt-4 text-sm text-center text-gray-500">
+                      Zeskanuj kod QR, aby otworzyć link
+                    </p>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </motion.div>
           </motion.div>
         )}
