@@ -60,6 +60,7 @@ interface Profile {
   showKnowledge: boolean;
   showFeatured: boolean;
   showTechnologies: boolean;
+  sectionOrder: string[] | null;
 }
 
 interface SocialLink {
@@ -480,6 +481,7 @@ export default function Admin() {
                 showFeatured={profile.showFeatured}
                 showTryHackMe={profile.showTryHackMe || false}
                 showTechnologies={profile.showTechnologies || false}
+                sectionOrder={profile.sectionOrder || undefined}
                 onSuccess={() => {
                   loadData();
                 }}
