@@ -47,11 +47,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const socialLinks = await storage.getSocialLinks(profile.id);
       const featuredContents = await storage.getFeaturedContents(profile.id);
+      const technologies = await storage.getTechnologies(profile.id);
       
       res.json({
         profile,
         socialLinks,
-        featuredContents
+        featuredContents,
+        technologies
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get profile" });
@@ -139,6 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showSocial: z.boolean().optional(),
         showKnowledge: z.boolean().optional(),
         showFeatured: z.boolean().optional(),
+        showTechnologies: z.boolean().optional(),
       });
       
       console.log("Walidacja danych wejściowych...");
@@ -291,6 +294,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showKnowledge: z.boolean().optional(),
         showFeatured: z.boolean().optional(),
         showTryHackMe: z.boolean().optional(),
+        showTechnologies: z.boolean().optional(),
       });
       const validData = schema.parse(req.body);
       

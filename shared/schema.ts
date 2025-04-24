@@ -42,6 +42,7 @@ export const profiles = pgTable("profiles", {
   showSocial: boolean("show_social").default(true),
   showKnowledge: boolean("show_knowledge").default(true),
   showFeatured: boolean("show_featured").default(true),
+  showTechnologies: boolean("show_technologies").default(true),
 });
 
 export const insertProfileSchema = createInsertSchema(profiles).pick({
@@ -64,6 +65,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   showSocial: true,
   showKnowledge: true,
   showFeatured: true,
+  showTechnologies: true,
 });
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;

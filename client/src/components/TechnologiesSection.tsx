@@ -16,21 +16,22 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
   // Pobieranie wszystkich technologii
   const { data: technologies, isLoading } = useQuery({
     queryKey: [`/api/profile/${profileId}/technologies`],
-    enabled: showTechnologies
+    enabled: showTechnologies,
+    staleTime: 1000 * 60 * 5, // 5 minut
   });
 
   // Grupowanie technologii według kategorii
-  const technologiesByCategory = technologies?.reduce((acc, tech) => {
+  const technologiesByCategory = technologies?.reduce((acc: Record<string, Technology[]>, tech: Technology) => {
     if (!acc[tech.category]) {
       acc[tech.category] = [];
     }
     acc[tech.category].push(tech);
     return acc;
-  }, {} as Record<string, Technology[]>) || {};
+  }, {} as Record<string, Technology[]>) || {} as Record<string, Technology[]>;
 
   // Sortowanie technologii według ich kolejności
   Object.keys(technologiesByCategory).forEach(category => {
-    technologiesByCategory[category].sort((a, b) => (a.order || 0) - (b.order || 0));
+    technologiesByCategory[category].sort((a: Technology, b: Technology) => (a.order || 0) - (b.order || 0));
   });
 
   if (!showTechnologies) return null;
@@ -58,7 +59,7 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
         {categoriesWithTechnologies.map(category => (
           <TabsContent key={category} value={category} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {technologiesByCategory[category]?.map(tech => (
+              {technologiesByCategory[category]?.map((tech: Technology) => (
                 <TechnologyCard key={tech.id} technology={tech} />
               ))}
             </div>
@@ -96,7 +97,7 @@ function TechnologyCard({ technology }: TechnologyCardProps) {
         </div>
       </div>
       
-      {technology.proficiencyLevel !== undefined && technology.proficiencyLevel > 0 && (
+      {technology.proficiencyLevel !== undefined && technology.proficiencyLevel !== null && technology.proficiencyLevel > 0 && (
         <div className="mt-2">
           <div className="flex justify-between text-sm mb-1">
             <span>Poziom umiejętności</span>
