@@ -78,20 +78,20 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
     >
       <div className="space-y-4">
         {/* Zakładki kategorii */}
-        <div className="flex flex-wrap border border-gray-200 rounded-lg overflow-hidden">
+        <div className="flex flex-wrap border border-border rounded-lg overflow-hidden">
           {categoriesWithTechnologies.map((category) => (
             <button
               key={category}
               className={`px-6 py-3 font-medium text-center focus:outline-none transition-colors ${
                 activeCategory === category
-                  ? "bg-white"
-                  : "bg-gray-50 hover:bg-gray-100"
+                  ? "bg-background dark:bg-background border-b-2 border-primary"
+                  : "bg-muted/30 hover:bg-muted/50 dark:bg-muted/10 dark:hover:bg-muted/20"
               }`}
               onClick={() => setActiveCategory(category)}
               aria-selected={activeCategory === category}
               role="tab"
             >
-              {getCategoryDisplayName(category)}
+              {getCategoryDisplayName(category, t)}
             </button>
           ))}
         </div>
@@ -122,8 +122,10 @@ interface TechnologyCardProps {
 }
 
 function TechnologyCard({ technology }: TechnologyCardProps) {
+  const { t } = useTranslation();
+  
   return (
-    <div className="flex flex-col p-4 border rounded-lg bg-gray-50 hover:shadow-md transition-shadow">
+    <div className="flex flex-col p-4 border rounded-lg bg-card hover:shadow-md transition-shadow">
       <div className="flex items-center mb-3">
         {technology.logoUrl && (
           <div className="h-10 w-10 mr-3 flex items-center justify-center">
@@ -138,8 +140,8 @@ function TechnologyCard({ technology }: TechnologyCardProps) {
           <h3 className="font-semibold text-lg leading-tight">{technology.name}</h3>
           <Badge variant="outline" className="mt-1">
             {technology.yearsOfExperience 
-              ? `${technology.yearsOfExperience} ${technology.yearsOfExperience === 1 ? 'rok' : 'lat'} doświadczenia` 
-              : getCategoryDisplayName(technology.category)}
+              ? t('technology.yearsOfExperience', { count: technology.yearsOfExperience })
+              : t(`technology.categories.${technology.category.toLowerCase()}`)}
           </Badge>
         </div>
       </div>
@@ -147,7 +149,7 @@ function TechnologyCard({ technology }: TechnologyCardProps) {
       {technology.proficiencyLevel !== undefined && technology.proficiencyLevel !== null && technology.proficiencyLevel > 0 && (
         <div className="mt-2">
           <div className="flex justify-between text-sm mb-1">
-            <span>Poziom umiejętności</span>
+            <span>{t('technology.proficiencyLevel')}</span>
             <span>{technology.proficiencyLevel}%</span>
           </div>
           <Progress value={technology.proficiencyLevel} className="h-2" />
@@ -157,19 +159,13 @@ function TechnologyCard({ technology }: TechnologyCardProps) {
   );
 }
 
-// Funkcja pomocnicza do formatowania nazw kategorii
-function getCategoryDisplayName(category: string): string {
-  const displayNames: Record<string, string> = {
-    frontend: 'Frontend',
-    backend: 'Backend',
-    mobile: 'Mobile',
-    devops: 'DevOps',
-    database: 'Bazy danych',
-    cloud: 'Chmura',
-    testing: 'Testowanie',
-    design: 'Design',
-    other: 'Inne'
-  };
-  
-  return displayNames[category] || category;
+// Musimy usunąć hook useTranslation z tej funkcji - zamiast tego będziemy
+// przekazywać funkcję t z komponentu
+function getCategoryDisplayName(category: string, t: any): string {
+  try {
+    return t(`technology.categories.${category.toLowerCase()}`);
+  } catch (error) {
+    // Fallback w razie gdyby tłumaczenie nie istniało
+    return category;
+  }
 }
