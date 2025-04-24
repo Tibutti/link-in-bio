@@ -20,7 +20,8 @@ import { GitHubSettingsForm } from '@/components/GitHubSettingsForm';
 import { TryHackMeSettingsForm } from '@/components/TryHackMeSettingsForm';
 import { SectionVisibilityForm } from '@/components/SectionVisibilityForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
-import { Plus } from 'lucide-react';
+import { SortableList } from '@/components/SortableList';
+import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -42,6 +43,7 @@ interface Profile {
   location: string;
   email: string | null;
   phone: string | null;
+  cvUrl: string | null;
   imageIndex: number;
   backgroundIndex: number;
   backgroundGradient: string | null;
@@ -205,6 +207,76 @@ export default function Admin() {
   const handleFormSuccess = () => {
     loadData();
     closeDialog();
+  };
+  
+  // Funkcja obsługująca zmianę kolejności linków społecznościowych
+  const handleReorderSocialLinks = async (links: SocialLink[], category: 'social' | 'knowledge') => {
+    if (!profile) return;
+    
+    try {
+      const orderedIds = links.map(link => link.id);
+      
+      // Zaktualizuj lokalny stan tymczasowo
+      if (category === 'social') {
+        setSocialLinks(links);
+      } else {
+        setKnowledgeLinks(links);
+      }
+      
+      // Wyślij żądanie do serwera
+      await apiRequest(`/api/profile/${profile.id}/social-links/category/${category}/reorder`, {
+        method: 'POST',
+        body: JSON.stringify({ orderedIds })
+      });
+      
+      toast({
+        title: 'Sukces',
+        description: 'Kolejność linków została zaktualizowana',
+      });
+    } catch (error) {
+      console.error('Błąd podczas zmiany kolejności linków:', error);
+      toast({
+        title: 'Błąd',
+        description: 'Nie udało się zmienić kolejności linków',
+        variant: 'destructive',
+      });
+      
+      // Cofnij zmiany lokalne w przypadku błędu
+      loadData();
+    }
+  };
+  
+  // Funkcja obsługująca zmianę kolejności wyróżnionych treści
+  const handleReorderFeaturedContents = async (contents: FeaturedContent[]) => {
+    if (!profile) return;
+    
+    try {
+      const orderedIds = contents.map(content => content.id);
+      
+      // Zaktualizuj lokalny stan tymczasowo
+      setFeaturedContents(contents);
+      
+      // Wyślij żądanie do serwera
+      await apiRequest(`/api/profile/${profile.id}/featured-contents/reorder`, {
+        method: 'POST',
+        body: JSON.stringify({ orderedIds })
+      });
+      
+      toast({
+        title: 'Sukces',
+        description: 'Kolejność treści została zaktualizowana',
+      });
+    } catch (error) {
+      console.error('Błąd podczas zmiany kolejności treści:', error);
+      toast({
+        title: 'Błąd',
+        description: 'Nie udało się zmienić kolejności treści',
+        variant: 'destructive',
+      });
+      
+      // Cofnij zmiany lokalne w przypadku błędu
+      loadData();
+    }
   };
 
   if (isLoading) {
@@ -442,16 +514,21 @@ export default function Admin() {
               <CardContent>
                 <div className="space-y-4">
                   {socialLinks.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {socialLinks.map((link) => (
+                    <SortableList 
+                      items={socialLinks}
+                      onReorder={(items) => handleReorderSocialLinks(items, 'social')}
+                      className="grid gap-4 md:grid-cols-2"
+                      renderItem={(link) => (
                         <div 
-                          key={link.id} 
-                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer"
+                          className="rounded-lg border p-4 hover:border-primary/50 transition-colors cursor-pointer relative"
                           onClick={() => {
                             setEditingSocialLink(link);
                             setIsDialogOpen(true);
                           }}
                         >
+                          <div className="absolute top-2 right-2 text-gray-400">
+                            <GripVertical size={16} />
+                          </div>
                           <h3 className="text-lg font-medium">{link.platform}</h3>
                           <p className="text-sm text-muted-foreground">{link.username}</p>
                           <a 
@@ -463,9 +540,14 @@ export default function Admin() {
                           >
                             {link.url}
                           </a>
+                          {!link.isVisible && (
+                            <div className="mt-2 text-xs text-gray-500 italic">
+                              (Ukryty)
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    />
                   ) : (
                     <p>Brak linków do mediów społecznościowych.</p>
                   )}
