@@ -33,6 +33,7 @@ export default function Home() {
     profile: Profile;
     socialLinks: SocialLink[];
     featuredContents: FeaturedContentType[];
+    technologies?: Technology[];
   }>({
     queryKey: ["/api/profile"],
   });
@@ -172,6 +173,13 @@ export default function Home() {
         {profile.showTryHackMe && profile.tryHackMeUserId && (
           <TryHackMeBadge 
             userId={profile.tryHackMeUserId} 
+          />
+        )}
+        
+        {profile.showTechnologies && (
+          <TechnologiesSection 
+            profileId={profile.id} 
+            showTechnologies={profile.showTechnologies} 
           />
         )}
         
