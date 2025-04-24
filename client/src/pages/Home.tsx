@@ -16,6 +16,7 @@ import Footer from "@/components/Footer";
 import { QuickShareButtons } from "@/components/QuickShareButtons";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
+import SectionNavHints from "@/components/SectionNavHints";
 
 import { 
   type Profile, 
@@ -138,7 +139,7 @@ export default function Home() {
     switch(sectionId) {
       case 'image':
         return profile.showImage && (
-          <div key="image" className="mb-6">
+          <div key="image" className="mb-6" id="profile-header" tabIndex={-1}>
             <ProfileHeader profile={profile} />
           </div>
         );
@@ -207,9 +208,18 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
+      {/* Dostępna nawigacja pomijająca */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:z-50 focus:shadow-lg focus:rounded-md"
+      >
+        Przejdź do głównej treści
+      </a>
+      
       <QuickShareButtons 
         title={`Profil ${profile.name}`} 
       />
+      
       <div className="absolute top-4 right-4 z-10">
         <Button
           variant="secondary"
@@ -219,27 +229,33 @@ export default function Home() {
           Panel administracyjny
         </Button>
       </div>
-      <div className="container mx-auto px-4 py-10 max-w-2xl">
-        {/* Renderujemy sekcje zgodnie z ustawioną kolejnością */}
-        {sectionOrder.map(sectionId => renderSection(sectionId))}
-        
-        {/* Zawsze wyświetlamy selektory i stopkę na końcu */}
-        <div className="mt-10">
-          <ProfileSelector 
-            selectedIndex={profile.imageIndex ?? 0} 
-            onSelect={handleProfileImageChange} 
-          />
+      
+      {/* Wskazówki nawigacyjne do sekcji */}
+      <SectionNavHints />
+      
+      <main id="main-content" tabIndex={-1} className="outline-none">
+        <div className="container mx-auto px-4 py-10 max-w-2xl">
+          {/* Renderujemy sekcje zgodnie z ustawioną kolejnością */}
+          {sectionOrder.map(sectionId => renderSection(sectionId))}
           
-          <BackgroundSelector 
-            selectedIndex={backgroundIndex} 
-            onSelect={handleBackgroundChange} 
-          />
-          
-          <Footer 
-            name={profile.name} 
-          />
+          {/* Zawsze wyświetlamy selektory i stopkę na końcu */}
+          <div className="mt-10">
+            <ProfileSelector 
+              selectedIndex={profile.imageIndex ?? 0} 
+              onSelect={handleProfileImageChange} 
+            />
+            
+            <BackgroundSelector 
+              selectedIndex={backgroundIndex} 
+              onSelect={handleBackgroundChange} 
+            />
+            
+            <Footer 
+              name={profile.name} 
+            />
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

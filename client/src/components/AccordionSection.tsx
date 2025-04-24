@@ -22,7 +22,11 @@ export default function AccordionSection({
   defaultOpen = false
 }: AccordionSectionProps) {
   return (
-    <div className="mb-6">
+    <div 
+      className="mb-6" 
+      id={value}
+      tabIndex={-1} // Umożliwia ustawienie fokusa na sekcji dla dostępności
+    >
       <Accordion 
         type="single" 
         collapsible 
@@ -32,6 +36,8 @@ export default function AccordionSection({
         <AccordionItem value={value} className="border-b-0 border-t-0 border-x-0 transition-all duration-300">
           <AccordionTrigger 
             className="py-4 px-5 text-xl font-bold text-gray-800 hover:no-underline bg-gradient-to-r from-white to-gray-50 group-data-[state=open]:rounded-b-none"
+            aria-controls={`content-${value}`}
+            aria-expanded="false"
           >
             <div className="flex items-center">
               {title}
@@ -42,7 +48,10 @@ export default function AccordionSection({
               )}
             </div>
           </AccordionTrigger>
-          <AccordionContent className="bg-white">
+          <AccordionContent 
+            className="bg-white"
+            id={`content-${value}`}
+          >
             <div className="pt-2 pb-4 px-5">
               {children}
             </div>
