@@ -12,6 +12,7 @@ import {
   CardFooter 
 } from '@/components/ui/card';
 import ErrorTestButton from '@/components/ErrorTestButton';
+import SentryTestPanel from '@/components/SentryTestPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EditProfileForm } from '@/components/EditProfileForm';
 import { EditSocialLinkForm } from '@/components/EditSocialLinkForm';
@@ -320,6 +321,7 @@ export default function Admin() {
             <TabsTrigger value="social" className="flex-grow">Media</TabsTrigger>
             <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
             <TabsTrigger value="featured" className="flex-grow">Treści</TabsTrigger>
+            <TabsTrigger value="diagnostics" className="flex-grow bg-amber-50">Diagnostyka</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="mt-4">
@@ -369,9 +371,6 @@ export default function Admin() {
                     <Button variant="outline" onClick={() => loadData()}>
                       Odśwież dane
                     </Button>
-                    <div className="ml-auto">
-                      <ErrorTestButton variant="secondary" />
-                    </div>
                   </>
                 ) : (
                   <Button variant="outline" onClick={() => setIsEditingProfile(false)}>
@@ -411,6 +410,10 @@ export default function Admin() {
                 }}
               />
             )}
+          </TabsContent>
+          
+          <TabsContent value="diagnostics" className="mt-4">
+            <SentryTestPanel />
           </TabsContent>
           
           <TabsContent value="integrations" className="mt-4">
