@@ -4,6 +4,17 @@ import { authenticateToken } from "./auth";
 import { z } from "zod";
 import { insertTechnologySchema, technologyCategories } from "@shared/schema";
 
+// Rozszerzamy interfejs Request, aby dodać informacje o użytkowniku
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        userId: number;
+      };
+    }
+  }
+}
+
 const technologyParamsSchema = z.object({
   id: z.coerce.number(),
 });

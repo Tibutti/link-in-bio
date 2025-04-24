@@ -11,6 +11,7 @@ import BackgroundSelector from "@/components/BackgroundSelector";
 import GitHubStats from "@/components/GitHubStats";
 import TryHackMeBadge from "@/components/TryHackMeBadge";
 import ContactDetails from "@/components/ContactDetails";
+import TechnologiesSection from "@/components/TechnologiesSection";
 import Footer from "@/components/Footer";
 import { QuickShareButtons } from "@/components/QuickShareButtons";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,8 @@ import { BACKGROUND_OPTIONS } from "@/lib/constants";
 import { 
   type Profile, 
   type SocialLink, 
-  type FeaturedContent as FeaturedContentType
+  type FeaturedContent as FeaturedContentType,
+  type Technology
 } from "@shared/schema";
 
 export default function Home() {
