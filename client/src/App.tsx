@@ -1,10 +1,14 @@
 import { Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "next-themes";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Admin from "@/pages/Admin";
+
+// Importujemy konfigurację i18n
+import "@/lib/i18n";
 
 function Router() {
   return (
@@ -19,10 +23,12 @@ function Router() {
 
 function App() {
   return (
-    <TooltipProvider>
-      <Toaster />
-      <Router />
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+      </TooltipProvider>
+    </ThemeProvider>
   );
 }
 
