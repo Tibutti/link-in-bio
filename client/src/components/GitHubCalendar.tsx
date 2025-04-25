@@ -1,47 +1,62 @@
 import { type Profile } from '@shared/schema';
 import { CalendarClock } from 'lucide-react';
+import AccordionSection from './AccordionSection';
+import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 interface GitHubCalendarProps {
   profile: Profile;
 }
 
 export default function GitHubCalendar({ profile }: GitHubCalendarProps) {
-  // Sprawdzamy, czy użytkownik ma nazwę użytkownika GitHub
-  if (!profile.githubUsername) {
-    // Wyświetlamy placeholder dla kalendarza aktywności
+  const { t } = useTranslation();
+  const username = profile.githubUsername;
+  
+  // Renderowanie placeholder, gdy nie ma nazwy użytkownika GitHub
+  const renderNoUserContent = () => (
+    <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+      <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center">
+        <CalendarClock className="h-10 w-10 text-primary" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="text-lg font-medium text-foreground">
+          {t('ui.noData')}
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          {t('github.connectAccount')}
+        </p>
+      </div>
+    </div>
+  );
+
+  // Renderowanie zawartości dla przypadku gdy mamy nazwę użytkownika GitHub
+  const renderUserContent = () => {
+    // Dodajemy kolor (hex bez znaku #) - używamy różowego zgodnie z motywem "radical"
+    const contributionColor = '9c0079'; // ciemny róż, pasujący do motywu
+    const contributionsUrl = `https://ghchart.rshah.org/${contributionColor}/${username}`;
+
     return (
-      <div className="w-full mt-4">
-        <h2 className="text-lg font-semibold mb-2 text-center">Aktywność na GitHub</h2>
-        <div className="rounded-md overflow-hidden shadow-md bg-white p-6 flex flex-col items-center justify-center">
-          <CalendarClock className="h-10 w-10 text-primary/50 mb-2" />
-          <p className="text-sm text-center text-muted-foreground">
-            Wykres aktywności będzie dostępny po połączeniu konta GitHub
-          </p>
+      <div className="w-full">
+        {/* Obraz z aktywnością GitHub */}
+        <div className="rounded-md overflow-hidden bg-background dark:bg-gray-800 p-2">
+          <img
+            src={contributionsUrl}
+            alt={t('github.activityAlt', { username })}
+            width="100%"
+            className="max-w-full h-auto"
+            loading="lazy"
+          />
         </div>
       </div>
     );
-  }
-
-  // URL do wykresu kontrybucji GitHub
-  const username = profile.githubUsername;
-  // Dodajemy kolor (hex bez znaku #) - używamy różowego zgodnie z motywem "radical"
-  const contributionColor = '9c0079'; // ciemny róż, pasujący do motywu
-  // Użyjmy wykresu bezpośrednio z GitHub, który pokazuje aktywność w kolorach
-  const contributionsUrl = `https://ghchart.rshah.org/${contributionColor}/${username}`;
+  };
 
   return (
-    <div className="w-full mt-4">
-      <h2 className="text-lg font-semibold mb-2 text-center">Aktywność na GitHub</h2>
-      {/* Obraz z aktywnością GitHub */}
-      <div className="rounded-md overflow-hidden shadow-md bg-white p-2">
-        <img
-          src={contributionsUrl}
-          alt={`Aktywność GitHub użytkownika ${username}`}
-          width="100%"
-          className="max-w-full h-auto"
-          loading="lazy"
-        />
-      </div>
-    </div>
+    <AccordionSection
+      title={t('sections.github')}
+      value="github"
+    >
+      {username ? renderUserContent() : renderNoUserContent()}
+    </AccordionSection>
   );
 }

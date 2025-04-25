@@ -71,7 +71,7 @@ export default function TechnologiesSection({ profileId, showTechnologies = true
       title={t('sections.technologies')}
       value="technologies"
       badge={
-        <Badge variant="outline" className="ml-2 bg-primary/10">
+        <Badge variant="outline" className="bg-primary/10 text-foreground dark:text-foreground">
           {technologies.length}
         </Badge>
       }
