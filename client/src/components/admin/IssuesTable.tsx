@@ -267,12 +267,23 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
                   )}
                   {issue.imageUrl && (
                     <div className="mt-2">
-                      <img 
-                        src={issue.imageUrl} 
-                        alt="Zdjęcie usterki" 
-                        className="max-h-20 max-w-40 object-cover rounded-md cursor-zoom-in hover:opacity-80 transition-opacity" 
-                        onClick={(e) => handleImageClick(e, issue.imageUrl!)}
-                      />
+                      <div className="relative">
+                        <img 
+                          src={issue.imageUrl} 
+                          alt="Zdjęcie usterki" 
+                          className="max-h-20 max-w-40 object-cover rounded-md cursor-zoom-in hover:opacity-80 transition-opacity" 
+                          onClick={(e) => handleImageClick(e, issue.imageUrl!)}
+                          onError={(e) => {
+                            // Dodajemy klasę do rodzica, aby pokazać error state
+                            (e.target as HTMLImageElement).parentElement?.classList.add('image-error');
+                            // Ustawiamy placeholder tekst
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="hidden image-error:flex text-xs text-red-500 italic border border-red-200 rounded-md p-2 bg-red-50">
+                          Zdjęcie niedostępne
+                        </div>
+                      </div>
                     </div>
                   )}
                 </TableCell>
@@ -449,6 +460,21 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
                       onClick={(e) => {
                         setZoomedImage(selectedIssue.imageUrl!);
                         setIsImageZoomDialogOpen(true);
+                      }}
+                      onError={(e) => {
+                        // Ukrywamy obraz
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        // Ukrywamy przycisk powiększenia
+                        const button = (e.target as HTMLImageElement).nextElementSibling;
+                        if (button) button.style.display = 'none';
+                        // Pokazujemy informację o braku zdjęcia
+                        const parent = (e.target as HTMLImageElement).parentElement;
+                        if (parent) {
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'p-3 border border-red-200 bg-red-50 text-red-500 italic rounded-md';
+                          errorDiv.textContent = 'Zdjęcie niedostępne';
+                          parent.appendChild(errorDiv);
+                        }
                       }}
                     />
                     <Button
