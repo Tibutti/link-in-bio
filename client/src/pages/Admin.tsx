@@ -327,8 +327,8 @@ export default function Admin() {
               <TabsTrigger value="knowledge" className="whitespace-nowrap">Platformy</TabsTrigger>
               <TabsTrigger value="featured" className="whitespace-nowrap">Treści</TabsTrigger>
               <TabsTrigger value="technologies" className="whitespace-nowrap">Technologie</TabsTrigger>
-              <TabsTrigger value="issues" className="whitespace-nowrap">Usterki</TabsTrigger>
-              <TabsTrigger value="diagnostics" className="whitespace-nowrap bg-amber-50">Diagnostyka</TabsTrigger>
+              <TabsTrigger value="issues" className="whitespace-nowrap text-red-600 font-semibold">Usterki</TabsTrigger>
+              <TabsTrigger value="diagnostics" className="whitespace-nowrap text-orange-500 font-semibold">Diagnostyka</TabsTrigger>
             </TabsList>
           </div>
 
@@ -430,7 +430,7 @@ export default function Admin() {
             {profile && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Usterki</CardTitle>
+                  <CardTitle className="text-red-600">Usterki</CardTitle>
                   <CardDescription>
                     Zarządzaj zgłoszonymi usterkami i błędami
                   </CardDescription>
@@ -443,7 +443,17 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="diagnostics" className="mt-4">
-            <SentryTestPanel />
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-orange-500">Diagnostyka</CardTitle>
+                <CardDescription>
+                  Narzędzia diagnostyczne i testowe
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SentryTestPanel />
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="integrations" className="mt-4">
