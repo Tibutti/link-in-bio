@@ -116,7 +116,9 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
 
   const deleteIssueMutation = useMutation({
     mutationFn: async (issueId: number) => {
-      return apiRequest("DELETE", `/api/issues/${issueId}`, {});
+      return apiRequest(`/api/issues/${issueId}`, {
+        method: "DELETE"
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profile", profileId, "issues"] });
@@ -137,7 +139,9 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
 
   const resolveIssueMutation = useMutation({
     mutationFn: async (issueId: number) => {
-      return apiRequest("POST", `/api/issues/${issueId}/resolve`, {});
+      return apiRequest(`/api/issues/${issueId}/resolve`, {
+        method: "POST"
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profile", profileId, "issues"] });
@@ -157,7 +161,9 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
 
   const reopenIssueMutation = useMutation({
     mutationFn: async (issueId: number) => {
-      return apiRequest("POST", `/api/issues/${issueId}/reopen`, {});
+      return apiRequest(`/api/issues/${issueId}/reopen`, {
+        method: "POST"
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profile", profileId, "issues"] });

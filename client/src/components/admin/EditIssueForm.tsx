@@ -71,7 +71,10 @@ export function EditIssueForm({ issue, onSuccess, onCancel }: EditIssueFormProps
 
   const updateIssueMutation = useMutation({
     mutationFn: async (data: FormValues) => {
-      return apiRequest("PATCH", `/api/issues/${issue.id}`, data);
+      return apiRequest(`/api/issues/${issue.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data)
+      });
     },
     onSuccess: () => {
       toast({
