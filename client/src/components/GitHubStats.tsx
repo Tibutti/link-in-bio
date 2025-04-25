@@ -23,11 +23,6 @@ export default function GitHubStats({ profile }: GitHubStatsProps) {
     <AccordionSection
       title={t('sections.github')}
       value="github"
-      badge={profile.githubUsername ? (
-        <Badge variant="outline" className="ml-2 bg-primary/10">
-          {profile.githubUsername}
-        </Badge>
-      ) : undefined}
     >
       {profile.githubUsername ? (
         <div className="flex flex-col space-y-4 items-center w-full">
