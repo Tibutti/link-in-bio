@@ -28,6 +28,7 @@ import IssuesTable from '@/components/admin/IssuesTable';
 import { ContactsAdminPanel } from '@/components/admin/ContactsAdminPanel';
 import IssueAiAnalyzer from '@/components/admin/IssueAiAnalyzer';
 import BackgroundGradientManager from '@/components/admin/BackgroundGradientManager';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
@@ -338,7 +339,8 @@ export default function Admin() {
               </p>
             )}
           </div>
-          <div className="flex gap-2 self-end sm:self-auto">
+          <div className="flex gap-2 self-end sm:self-auto items-center">
+            <ThemeToggle />
             <Button variant="secondary" size="sm" onClick={() => setLocation('/')}>
               Strona główna
             </Button>
