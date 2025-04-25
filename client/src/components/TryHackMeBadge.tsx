@@ -61,11 +61,12 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
           overflow: 'hidden',
           width: '330px', 
           height: '82px',
-          position: 'relative'
+          position: 'relative',
+          background: '#141c2b'
         }}
       >
         <iframe 
-          src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+          src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}&theme=dark`} 
           style={{ 
             border: 'none', 
             width: '330px', 
@@ -73,7 +74,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             position: 'absolute',
             top: 0,
             left: 0,
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            filter: 'invert(1) hue-rotate(180deg)' // Odwróć kolory i zmień barwę
           }}
           title="TryHackMe Badge"
           onLoad={() => setIsLoaded(true)}
