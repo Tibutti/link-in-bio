@@ -17,7 +17,7 @@ export default function FeaturedContent({ contents, onContentClick }: FeaturedCo
       title={t('sections.featured')}
       value="featured"
       badge={
-        <Badge variant="outline" className="ml-2 bg-primary/10">
+        <Badge variant="outline" className="bg-primary/10 text-foreground dark:text-foreground">
           {contents.length}
         </Badge>
       }
