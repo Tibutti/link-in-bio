@@ -55,42 +55,96 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
       <div 
         className={`flex justify-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ 
-          overflow: 'hidden',
-          width: '330px', 
-          height: '82px',
-          position: 'relative',
+          width: '330px',
           margin: '0 auto',
-          backgroundColor: '#141c2b',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+          position: 'relative',
         }}
       >
+        {/* Dodajemy obramowanie z ciemnego koloru */}
+        <div style={{
+          position: 'absolute',
+          top: -4,
+          left: -4,
+          right: -4,
+          bottom: -4,
+          backgroundColor: '#141c2b',
+          borderRadius: '12px',
+          zIndex: 1
+        }}></div>
+        
+        {/* Maska która maskuje białe narożniki */}
         <div style={{
           position: 'absolute',
           top: 0,
           left: 0,
-          right: 0,
-          bottom: 0,
-          overflow: 'hidden',
-          borderRadius: '8px',
-          backgroundColor: '#141c2b'
+          width: '330px',
+          height: '82px',
+          zIndex: 3,
+          pointerEvents: 'none',
         }}>
-          <iframe 
-            src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
-            style={{ 
-              border: 'none', 
-              width: '330px', 
-              height: '82px',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              backgroundColor: '#141c2b'
-            }}
-            title="TryHackMe Badge"
-            onLoad={() => setIsLoaded(true)}
-            scrolling="no"
-          />
+          {/* Górny lewy róg */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '12px',
+            height: '12px',
+            backgroundColor: '#141c2b',
+            borderRadius: '0 0 0 0',
+            zIndex: 3
+          }}></div>
+          
+          {/* Górny prawy róg */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '12px',
+            height: '12px',
+            backgroundColor: '#141c2b',
+            borderRadius: '0 0 0 0',
+            zIndex: 3
+          }}></div>
+          
+          {/* Dolny lewy róg */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '12px',
+            height: '12px',
+            backgroundColor: '#141c2b',
+            borderRadius: '0 0 0 0',
+            zIndex: 3
+          }}></div>
+          
+          {/* Dolny prawy róg */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            width: '12px',
+            height: '12px',
+            backgroundColor: '#141c2b',
+            borderRadius: '0 0 0 0',
+            zIndex: 3
+          }}></div>
         </div>
+        
+        {/* Iframe umieszczony pod maską */}
+        <iframe 
+          src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+          style={{ 
+            border: 'none', 
+            width: '330px', 
+            height: '82px',
+            position: 'relative',
+            zIndex: 2
+          }}
+          title="TryHackMe Badge"
+          onLoad={() => setIsLoaded(true)}
+          scrolling="no"
+        />
       </div>
     </div>
   );
