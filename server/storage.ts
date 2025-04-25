@@ -1,12 +1,13 @@
 import { 
-  users, profiles, socialLinks, featuredContents, sessions, technologies,
+  users, profiles, socialLinks, featuredContents, sessions, technologies, issues,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
   type FeaturedContent, type InsertFeaturedContent,
   type Session, type InsertSession,
   type Technology, type InsertTechnology,
-  type TechnologyCategory
+  type TechnologyCategory,
+  type Issue, type InsertIssue
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -59,6 +60,15 @@ export interface IStorage {
   getSessionByToken(token: string): Promise<Session | undefined>;
   deleteSession(id: number): Promise<boolean>;
   deleteSessionByToken(token: string): Promise<boolean>;
+  
+  // Issues methods
+  getIssues(profileId: number): Promise<Issue[]>;
+  getIssue(id: number): Promise<Issue | undefined>;
+  createIssue(issue: InsertIssue): Promise<Issue>;
+  updateIssue(id: number, data: Partial<Issue>): Promise<Issue>;
+  deleteIssue(id: number): Promise<boolean>;
+  markIssueAsResolved(id: number): Promise<Issue>;
+  markIssueAsOpen(id: number): Promise<Issue>;
   
   // Demo data initialization
   initializeDemoData(): Promise<void>;
@@ -404,6 +414,85 @@ export class DatabaseStorage implements IStorage {
   }
 
   // GitHub contributions methods have been removed
+
+  // Issues methods
+  async getIssues(profileId: number): Promise<Issue[]> {
+    return db
+      .select()
+      .from(issues)
+      .where(eq(issues.profileId, profileId))
+      .orderBy(desc(issues.createdAt));
+  }
+
+  async getIssue(id: number): Promise<Issue | undefined> {
+    const [issue] = await db.select().from(issues).where(eq(issues.id, id));
+    return issue;
+  }
+
+  async createIssue(insertIssue: InsertIssue): Promise<Issue> {
+    const [issue] = await db.insert(issues).values(insertIssue).returning();
+    return issue;
+  }
+
+  async updateIssue(id: number, data: Partial<Issue>): Promise<Issue> {
+    const [updatedIssue] = await db
+      .update(issues)
+      .set(data)
+      .where(eq(issues.id, id))
+      .returning();
+    
+    if (!updatedIssue) {
+      throw new Error(`Issue with ID ${id} not found`);
+    }
+    
+    return updatedIssue;
+  }
+
+  async deleteIssue(id: number): Promise<boolean> {
+    const [deleted] = await db
+      .delete(issues)
+      .where(eq(issues.id, id))
+      .returning();
+    
+    return !!deleted;
+  }
+
+  async markIssueAsResolved(id: number): Promise<Issue> {
+    const now = new Date();
+    const [updatedIssue] = await db
+      .update(issues)
+      .set({ 
+        isResolved: true,
+        status: "resolved",
+        resolvedAt: now
+      })
+      .where(eq(issues.id, id))
+      .returning();
+    
+    if (!updatedIssue) {
+      throw new Error(`Issue with ID ${id} not found`);
+    }
+    
+    return updatedIssue;
+  }
+
+  async markIssueAsOpen(id: number): Promise<Issue> {
+    const [updatedIssue] = await db
+      .update(issues)
+      .set({ 
+        isResolved: false,
+        status: "open",
+        resolvedAt: null
+      })
+      .where(eq(issues.id, id))
+      .returning();
+    
+    if (!updatedIssue) {
+      throw new Error(`Issue with ID ${id} not found`);
+    }
+    
+    return updatedIssue;
+  }
 
   // Session methods
   async createSession(insertSession: InsertSession): Promise<Session> {

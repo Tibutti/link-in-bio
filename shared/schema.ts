@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -197,3 +197,38 @@ export const insertTechnologySchema = createInsertSchema(technologies).pick({
 
 export type InsertTechnology = z.infer<typeof insertTechnologySchema>;
 export type Technology = typeof technologies.$inferSelect;
+
+// Issue severity categories
+export const issueSeverities = [
+  "low",
+  "medium",
+  "high",
+  "critical"
+] as const;
+
+export type IssueSeverity = typeof issueSeverities[number];
+
+// Issues schema
+export const issues = pgTable("issues", {
+  id: serial("id").primaryKey(),
+  profileId: integer("profile_id").notNull().references(() => profiles.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  severity: text("severity").$type<IssueSeverity>().default("medium"),
+  status: text("status").default("open").notNull(), // "open" | "in_progress" | "resolved"
+  isResolved: boolean("is_resolved").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
+export const insertIssueSchema = createInsertSchema(issues).pick({
+  profileId: true,
+  title: true,
+  description: true,
+  severity: true,
+  status: true,
+  isResolved: true,
+});
+
+export type InsertIssue = z.infer<typeof insertIssueSchema>;
+export type Issue = typeof issues.$inferSelect;
