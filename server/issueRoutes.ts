@@ -8,12 +8,14 @@ import { insertIssueSchema, issueSeverities } from '@shared/schema';
 const issueCreateSchema = insertIssueSchema.extend({
   title: z.string().min(1, "Tytuł jest wymagany"),
   description: z.string().optional(),
+  imageUrl: z.string().optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical'] as const).default("medium"),
 });
 
 const issueUpdateSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
+  imageUrl: z.string().optional(),
   severity: z.enum(['low', 'medium', 'high', 'critical'] as const).optional(),
   status: z.enum(["open", "in_progress", "resolved"]).optional(),
   isResolved: z.boolean().optional(),

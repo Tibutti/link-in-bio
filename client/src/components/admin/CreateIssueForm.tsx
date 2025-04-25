@@ -126,11 +126,14 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                   <FormLabel>URL obrazu (opcjonalnie)</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="Wprowadź URL obrazu..." 
+                      placeholder="Wprowadź URL obrazu (np. https://example.com/image.jpg)" 
                       {...field} 
                     />
                   </FormControl>
                   <FormMessage />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Wprowadź pełny adres URL do obrazu w internecie (musi zaczynać się od http:// lub https://)
+                  </p>
                 </FormItem>
               )}
             />
