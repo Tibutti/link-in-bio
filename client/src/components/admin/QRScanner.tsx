@@ -53,7 +53,7 @@ export function QRScanner({ onQRCodeDetected }: QRScannerProps) {
       const selectedDevice = backCamera || videoDevices[0];
       
       await reader.decodeFromVideoDevice(
-        selectedDevice?.deviceId || undefined, 
+        selectedDevice?.deviceId as string | null || null, 
         videoRef.current, 
         (result, error) => {
           if (result) {

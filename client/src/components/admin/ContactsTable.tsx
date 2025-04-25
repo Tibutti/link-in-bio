@@ -34,6 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { pl, enUS } from "date-fns/locale";
 import ContactForm from "./ContactForm";
+// Path corrected for module import
 import {
   Dialog,
   DialogContent,
@@ -148,7 +149,7 @@ export default function ContactsTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {contacts.map((contact) => (
+              {contacts.map((contact: Contact) => (
                 <TableRow key={contact.id}>
                   <TableCell className="font-medium">
                     <div>

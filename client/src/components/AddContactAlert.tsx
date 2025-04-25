@@ -65,8 +65,14 @@ export function AddContactAlert() {
       return apiRequest('/api/contacts', {
         method: 'POST',
         body: JSON.stringify({
+          userId: user.id,
           contactProfileId: Number(profileId),
           name: profileData?.name || 'Unknown',
+          email: profileData?.email || '',
+          phone: profileData?.phone || '',
+          company: '',
+          position: '',
+          website: '',
           category: 'Business',
           notes: '',
         }),
