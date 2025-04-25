@@ -29,11 +29,11 @@ export function LanguageToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => changeLanguage("pl")}>
-          <span className="mr-2">🇵🇱</span>
+          <span className="mr-2 font-semibold px-1 bg-red-100 dark:bg-red-900 rounded text-red-800 dark:text-red-200">PL</span>
           <span>{t("language.polish")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeLanguage("en")}>
-          <span className="mr-2">🇬🇧</span>
+          <span className="mr-2 font-semibold px-1 bg-blue-100 dark:bg-blue-900 rounded text-blue-800 dark:text-blue-200">EN</span>
           <span>{t("language.english")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
