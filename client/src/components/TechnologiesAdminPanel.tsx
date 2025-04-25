@@ -7,6 +7,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -17,7 +23,7 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Edit, Eye, EyeOff, Trash, GripVertical, Code, Plus } from "lucide-react";
+import { Edit, Eye, EyeOff, Trash, GripVertical, Code, Plus, MoreVertical } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 // Importując po nazwie funkcji (nie jako domyślny eksport)
@@ -190,13 +196,15 @@ export default function TechnologiesAdminPanel({ profileId }: TechnologiesAdminP
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={activeCategory} onValueChange={(value) => setActiveCategory(value as TechnologyCategory)}>
-          <TabsList className="grid grid-cols-3 md:grid-cols-5 mb-6">
-            {allCategories.map(category => (
-              <TabsTrigger key={category} value={category} className="capitalize">
-                {getCategoryDisplayName(category)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="mb-6 overflow-x-auto">
+            <TabsList className="inline-flex flex-nowrap min-w-full">
+              {allCategories.map(category => (
+                <TabsTrigger key={category} value={category} className="capitalize whitespace-nowrap">
+                  {getCategoryDisplayName(category)}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           {allCategories.map(category => (
             <TabsContent key={category} value={category} className="space-y-4">
@@ -261,26 +269,26 @@ function SortableTechnologyItem({ technology, onToggleVisibility, onEdit, onDele
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center justify-between p-3 border rounded-md ${isVisible ? 'bg-white' : 'bg-gray-50'}`}
+      className={`flex items-center justify-between p-3 border rounded-md ${isVisible ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'}`}
     >
-      <div className="flex items-center flex-1">
-        <div {...attributes} {...listeners} className="cursor-grab pr-3">
+      <div className="flex items-center flex-1 min-w-0">
+        <div {...attributes} {...listeners} className="cursor-grab pr-3 flex-shrink-0">
           <GripVertical className="h-5 w-5 text-gray-400" />
         </div>
 
-        <div className="flex items-center flex-1">
+        <div className="flex items-center flex-1 min-w-0 overflow-hidden">
           {technology.logoUrl && (
-            <div className="h-8 w-8 mr-3 flex items-center justify-center">
+            <div className="h-8 w-8 mr-3 flex-shrink-0 flex items-center justify-center">
               <img 
                 src={technology.logoUrl} 
                 alt={`${technology.name} logo`} 
-                className="max-h-8 max-w-8"
+                className="max-h-8 max-w-8 object-contain"
               />
             </div>
           )}
-          <div>
-            <div className="font-medium">{technology.name}</div>
-            <div className="flex items-center gap-2 mt-1">
+          <div className="min-w-0 overflow-hidden">
+            <div className="font-medium truncate">{technology.name}</div>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
               <Badge variant="outline" className="text-xs">
                 {getCategoryDisplayName(technology.category)}
               </Badge>
@@ -291,7 +299,7 @@ function SortableTechnologyItem({ technology, onToggleVisibility, onEdit, onDele
               )}
               {technology.yearsOfExperience && (
                 <Badge variant="outline" className="text-xs">
-                  {technology.yearsOfExperience} {technology.yearsOfExperience === 1 ? 'rok' : 'lat'}
+                  {technology.yearsOfExperience} {technology.yearsOfExperience === 1 ? 'rok' : technology.yearsOfExperience >= 5 ? 'lat' : 'lata'}
                 </Badge>
               )}
             </div>
@@ -299,18 +307,18 @@ function SortableTechnologyItem({ technology, onToggleVisibility, onEdit, onDele
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 ml-2 flex-shrink-0">
         <Switch
           checked={isVisible}
           onCheckedChange={() => onToggleVisibility(technology)}
           aria-label={isVisible ? "Ukryj" : "Pokaż"}
         />
-        <Button variant="ghost" size="icon" onClick={onEdit} title="Edytuj">
+        <Button variant="ghost" size="icon" onClick={onEdit} title="Edytuj" className="hidden sm:flex">
           <Edit className="h-4 w-4" />
         </Button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="icon" title="Usuń">
+            <Button variant="ghost" size="icon" title="Usuń" className="hidden sm:flex">
               <Trash className="h-4 w-4" />
             </Button>
           </AlertDialogTrigger>
@@ -323,10 +331,32 @@ function SortableTechnologyItem({ technology, onToggleVisibility, onEdit, onDele
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Anuluj</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(technology.id)}>Usuń</AlertDialogAction>
+              <AlertDialogAction onClick={() => onDelete(technology.id)} className="bg-red-600 hover:bg-red-700">Usuń</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        
+        {/* Menu dla urządzeń mobilnych */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="flex sm:hidden">
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onEdit}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edytuj
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              className="text-red-600 focus:text-red-600" 
+              onClick={() => onDelete(technology.id)}
+            >
+              <Trash className="h-4 w-4 mr-2" />
+              Usuń
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
