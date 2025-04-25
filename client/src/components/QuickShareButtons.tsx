@@ -25,11 +25,13 @@ import {
 interface QuickShareButtonsProps {
   url?: string;
   title?: string;
+  profileId?: number;
 }
 
 export function QuickShareButtons({ 
   url = window.location.href, 
-  title = 'Sprawdź mój profil!' 
+  title = 'Sprawdź mój profil!',
+  profileId
 }: QuickShareButtonsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
