@@ -60,12 +60,18 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <span className="inline-flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-primary" viewBox="0 0 20 20" fill="currentColor">
+          <a 
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.location)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center hover:text-primary transition-colors duration-200 group cursor-pointer"
+            title={`Zobacz lokalizację: ${profile.location}`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-primary group-hover:text-accent transition-colors duration-200" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
-            <span>{profile.location}</span>
-          </span>
+            <span className="group-hover:underline">{profile.location}</span>
+          </a>
         </motion.div>
       )}
     </header>
