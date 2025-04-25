@@ -444,6 +444,12 @@ export default function Admin() {
             )}
           </TabsContent>
 
+          <TabsContent value="contacts" className="mt-4">
+            {profile && (
+              <ContactsAdminPanel />
+            )}
+          </TabsContent>
+
           <TabsContent value="diagnostics" className="mt-4">
             <Card>
               <CardHeader>

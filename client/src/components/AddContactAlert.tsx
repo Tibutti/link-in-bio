@@ -1,82 +1,75 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
-} from "@/components/ui/alert-dialog";
-import { Loader2, UserPlus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
-interface Profile {
-  id: number;
-  name: string;
-  bio?: string;
-  email?: string;
-  phone?: string;
-  position?: string;
-  cvUrl?: string;
-}
-
-interface AddContactAlertProps {
-  profileId: number;
-}
-
-export function AddContactAlert({ profileId }: AddContactAlertProps) {
-  const [open, setOpen] = useState(false);
-  const { user, isLoading: isAuthLoading } = useAuth();
-  const { toast } = useToast();
+/**
+ * Komponent wyświetlający alert dodawania kontaktu po przeskanowaniu kodu QR
+ * Komponent sprawdza czy w URL są parametry ?profile=XXX&add_contact=true
+ * i wyświetla dialog potwierdzenia dodania kontaktu
+ */
+export function AddContactAlert() {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [location, setLocation] = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const [profileId, setProfileId] = useState<string | null>(null);
   
-  // Sprawdzamy, czy QR kod zawiera parametr add_contact
+  // Sprawdzenie parametrów URL w momencie ładowania komponentu
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldAddContact = urlParams.get('add_contact') === 'true';
+    const url = new URL(window.location.href);
+    const profileIdParam = url.searchParams.get('profile');
+    const addContactParam = url.searchParams.get('add_contact');
     
-    if (shouldAddContact && user && profileId) {
-      setOpen(true);
-      // Usuwamy parametr z URL bez odświeżania strony
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
+    if (profileIdParam && addContactParam === 'true') {
+      setProfileId(profileIdParam);
+      setIsOpen(true);
+      
+      // Usuń parametry z URL, ale zachowaj profileId do wyświetlenia
+      url.searchParams.delete('add_contact');
+      const newUrl = url.pathname + (url.search !== '?' ? url.search : '');
+      window.history.replaceState({}, '', newUrl);
     }
-  }, [user, profileId]);
-
-  // Pobieranie danych profilu
-  const { data: profileData, isLoading: isProfileLoading } = useQuery({
+  }, []);
+  
+  // Pobierz dane profilu kontaktu
+  const { data: profileData, isLoading: isLoadingProfile } = useQuery({
     queryKey: [`/api/profile/${profileId}`],
-    queryFn: async ({ signal }) => {
-      const res = await fetch(`/api/profile/${profileId}`, { signal });
-      if (!res.ok) throw new Error("Failed to fetch profile");
-      return res.json();
+    queryFn: async () => {
+      if (!profileId) return null;
+      return apiRequest(`/api/profile/${profileId}`);
     },
-    enabled: open && !!profileId,
+    enabled: !!profileId && isOpen,
   });
-
+  
   // Mutacja dodawania kontaktu
   const addContactMutation = useMutation({
-    mutationFn: async (profileData: Profile) => {
-      const contactData = {
-        name: profileData.name,
-        email: profileData.email || "",
-        phone: profileData.phone || "",
-        position: profileData.position || "",
-        company: "",
-        notes: profileData.bio || "",
-        category: "Business",
-        profileId: profileData.id,
-      };
+    mutationFn: async () => {
+      if (!profileId || !user) return null;
       
-      return await apiRequest("/api/contacts", {
+      return apiRequest('/api/contacts', {
         method: 'POST',
-        body: JSON.stringify(contactData)
+        body: JSON.stringify({
+          contactProfileId: Number(profileId),
+          name: profileData?.name || 'Unknown',
+          category: 'Business',
+          notes: '',
+        }),
       });
     },
     onSuccess: () => {
@@ -84,62 +77,81 @@ export function AddContactAlert({ profileId }: AddContactAlertProps) {
         title: t('contacts.contact_added'),
         description: t('contacts.contact_added_success'),
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/contacts"] });
-      setOpen(false);
+      setIsOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
     },
     onError: (error) => {
       toast({
         title: t('contacts.contact_add_error'),
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
+      setIsOpen(false);
     },
   });
-
+  
   const handleAddContact = () => {
-    if (profileData?.profile) {
-      addContactMutation.mutate(profileData.profile);
+    if (!user) {
+      toast({
+        title: t('auth.login_required'),
+        description: t('auth.login_required_to_add_contacts'),
+        variant: 'destructive',
+      });
+      setIsOpen(false);
+      setLocation('/login?redirect=/');
+      return;
     }
+    
+    addContactMutation.mutate();
   };
-
-  const isLoading = isAuthLoading || isProfileLoading || addContactMutation.isPending;
-
+  
+  const handleCancel = () => {
+    setIsOpen(false);
+  };
+  
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {t('contacts.add_contact_title')}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{t('contacts.add_to_contacts')}</AlertDialogTitle>
           <AlertDialogDescription>
-            {isProfileLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-6 w-6 animate-spin" />
+            {isLoadingProfile ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
+            ) : profileData ? (
+              <>
+                {t('contacts.add_contact_confirmation', { name: profileData.name })}
+                <div className="mt-2 text-sm text-gray-700">
+                  {profileData.bio && (
+                    <p className="line-clamp-2">{profileData.bio}</p>
+                  )}
+                  {profileData.location && (
+                    <p className="mt-1 font-medium">{profileData.location}</p>
+                  )}
+                </div>
+              </>
             ) : (
-              profileData?.profile && (
-                <>
-                  {t('contacts.add_contact_description', { name: profileData.profile.name })}
-                </>
-              )
+              t('contacts.profile_not_found')
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
+          <AlertDialogCancel onClick={handleCancel}>
             {t('common.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction 
-            disabled={isLoading || !profileData?.profile} 
             onClick={handleAddContact}
-            className="bg-primary hover:bg-primary/90"
+            disabled={isLoadingProfile || addContactMutation.isPending}
           >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            {addContactMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('common.saving')}
+              </>
             ) : (
-              <UserPlus className="h-4 w-4 mr-2" />
+              t('contacts.add_contact')
             )}
-            {t('contacts.add_to_contacts')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
