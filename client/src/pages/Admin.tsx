@@ -27,6 +27,7 @@ import TechnologiesAdminPanel from '@/components/TechnologiesAdminPanel';
 import IssuesTable from '@/components/admin/IssuesTable';
 import { ContactsAdminPanel } from '@/components/admin/ContactsAdminPanel';
 import IssueAiAnalyzer from '@/components/admin/IssueAiAnalyzer';
+import BackgroundGradientManager from '@/components/admin/BackgroundGradientManager';
 import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
@@ -41,6 +42,12 @@ interface User {
   username: string;
 }
 
+interface GradientSettings {
+  colorFrom: string;
+  colorTo: string;
+  direction: string;
+}
+
 interface Profile {
   id: number;
   userId: number;
@@ -53,7 +60,7 @@ interface Profile {
   imageIndex: number;
   customImageUrl: string | null;
   backgroundIndex: number;
-  backgroundGradient: string | null;
+  backgroundGradient: GradientSettings | null;
   githubUsername: string | null;
   tryHackMeUserId: string | null;
   showGithubStats: boolean;
@@ -296,10 +303,33 @@ export default function Admin() {
     );
   }
 
+  // Generowanie stylu gradientu dla tła
+  const getGradientStyle = () => {
+    if (!profile || !profile.backgroundGradient) return {};
+    
+    const { colorFrom, colorTo, direction } = profile.backgroundGradient;
+    
+    return {
+      background: `linear-gradient(${
+        direction === "to-r" ? "to right" :
+        direction === "to-l" ? "to left" :
+        direction === "to-b" ? "to bottom" :
+        direction === "to-t" ? "to top" :
+        direction === "to-tr" ? "to top right" :
+        direction === "to-tl" ? "to top left" :
+        direction === "to-br" ? "to bottom right" :
+        "to bottom left"
+      }, ${colorFrom}, ${colorTo})`,
+    };
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div 
+      className="min-h-screen p-4 md:p-8" 
+      style={profile?.backgroundGradient ? getGradientStyle() : { background: "rgb(249 250 251)" }}
+    >
       <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">Panel administracyjny</h1>
             {user && profile && (
@@ -323,6 +353,7 @@ export default function Admin() {
             <TabsList className="inline-flex flex-nowrap min-w-full">
               <TabsTrigger value="profile" className="whitespace-nowrap">Profil</TabsTrigger>
               <TabsTrigger value="avatar" className="whitespace-nowrap">Zdjęcie</TabsTrigger>
+              <TabsTrigger value="background" className="whitespace-nowrap">Tło</TabsTrigger>
               <TabsTrigger value="contact" className="whitespace-nowrap">Kontakt</TabsTrigger>
               <TabsTrigger value="integrations" className="whitespace-nowrap">Integracje</TabsTrigger>
               <TabsTrigger value="visibility" className="whitespace-nowrap">Widoczność</TabsTrigger>
@@ -410,6 +441,16 @@ export default function Admin() {
                   // Dodatkowo przeładujemy dane z serwera dla pewności
                   loadData();
                 }}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="background" className="mt-4">
+            {profile && (
+              <BackgroundGradientManager
+                profileId={profile.id}
+                backgroundGradient={profile.backgroundGradient}
+                onSuccess={loadData}
               />
             )}
           </TabsContent>
