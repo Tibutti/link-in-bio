@@ -55,93 +55,20 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
       <div 
         className={`flex justify-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ 
-          width: '400px', // Powiększony szerokość
           margin: '0 auto',
           position: 'relative',
-          transform: 'scale(1.2)', // Skalowanie całego kontenera
+          transform: 'scale(1.3)', // Zwiększona skala dla lepszej widoczności
           transformOrigin: 'center center'
         }}
       >
-        {/* Dodajemy obramowanie z ciemnego koloru */}
-        <div style={{
-          position: 'absolute',
-          top: -4,
-          left: -4,
-          right: -4,
-          bottom: -4,
-          backgroundColor: '#141c2b',
-          borderRadius: '12px',
-          zIndex: 1
-        }}></div>
-        
-        {/* Maska która maskuje białe narożniki */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '400px', // Powiększona szerokość
-          height: '98px', // Powiększona wysokość
-          zIndex: 3,
-          pointerEvents: 'none',
-        }}>
-          {/* Górny lewy róg */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '15px',
-            height: '15px',
-            backgroundColor: '#141c2b',
-            borderRadius: '0 0 0 0',
-            zIndex: 3
-          }}></div>
-          
-          {/* Górny prawy róg */}
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            width: '15px',
-            height: '15px',
-            backgroundColor: '#141c2b',
-            borderRadius: '0 0 0 0',
-            zIndex: 3
-          }}></div>
-          
-          {/* Dolny lewy róg */}
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '15px',
-            height: '15px',
-            backgroundColor: '#141c2b',
-            borderRadius: '0 0 0 0',
-            zIndex: 3
-          }}></div>
-          
-          {/* Dolny prawy róg */}
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            width: '15px',
-            height: '15px',
-            backgroundColor: '#141c2b',
-            borderRadius: '0 0 0 0',
-            zIndex: 3
-          }}></div>
-        </div>
-        
-        {/* Iframe umieszczony pod maską */}
+        {/* Iframe z TryHackMe */}
         <iframe 
           src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
           style={{ 
             border: 'none', 
-            width: '400px', // Powiększona szerokość
-            height: '98px', // Powiększona wysokość
-            position: 'relative',
-            zIndex: 2
+            width: '330px', // Oryginalny rozmiar widgetu
+            height: '82px', 
+            position: 'relative'
           }}
           title="TryHackMe Badge"
           onLoad={() => setIsLoaded(true)}
