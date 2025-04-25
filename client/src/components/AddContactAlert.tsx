@@ -17,18 +17,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
 
+interface AddContactAlertProps {
+  profileId?: number;
+}
+
 /**
  * Komponent wyświetlający alert dodawania kontaktu po przeskanowaniu kodu QR
  * Komponent sprawdza czy w URL są parametry ?profile=XXX&add_contact=true
  * i wyświetla dialog potwierdzenia dodania kontaktu
  */
-export function AddContactAlert() {
+export function AddContactAlert({ profileId: propProfileId }: AddContactAlertProps = {}) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [profileId, setProfileId] = useState<string | null>(null);
+  const [urlProfileId, setUrlProfileId] = useState<string | null>(null);
   
   // Sprawdzenie parametrów URL w momencie ładowania komponentu
   useEffect(() => {
@@ -37,7 +41,7 @@ export function AddContactAlert() {
     const addContactParam = url.searchParams.get('add_contact');
     
     if (profileIdParam && addContactParam === 'true') {
-      setProfileId(profileIdParam);
+      setUrlProfileId(profileIdParam);
       setIsOpen(true);
       
       // Usuń parametry z URL, ale zachowaj profileId do wyświetlenia
@@ -47,26 +51,29 @@ export function AddContactAlert() {
     }
   }, []);
   
+  // Determine which profile ID to use (URL parameter or prop)
+  const currentProfileId = urlProfileId || (propProfileId ? String(propProfileId) : null);
+  
   // Pobierz dane profilu kontaktu
   const { data: profileData, isLoading: isLoadingProfile } = useQuery({
-    queryKey: [`/api/profile/${profileId}`],
+    queryKey: [`/api/profile/${currentProfileId}`],
     queryFn: async () => {
-      if (!profileId) return null;
-      return apiRequest(`/api/profile/${profileId}`);
+      if (!currentProfileId) return null;
+      return apiRequest(`/api/profile/${currentProfileId}`);
     },
-    enabled: !!profileId && isOpen,
+    enabled: !!currentProfileId && isOpen,
   });
   
   // Mutacja dodawania kontaktu
   const addContactMutation = useMutation({
     mutationFn: async () => {
-      if (!profileId || !user) return null;
+      if (!currentProfileId || !user) return null;
       
       return apiRequest('/api/contacts', {
         method: 'POST',
         body: JSON.stringify({
           userId: user.id,
-          contactProfileId: Number(profileId),
+          contactProfileId: Number(currentProfileId),
           name: profileData?.name || 'Unknown',
           email: profileData?.email || '',
           phone: profileData?.phone || '',

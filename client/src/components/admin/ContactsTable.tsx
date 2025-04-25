@@ -200,7 +200,7 @@ export default function ContactsTable() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {contact.createdAt && formatDistanceToNow(new Date(contact.createdAt), {
+                    {contact.addedAt && formatDistanceToNow(new Date(contact.addedAt), {
                       addSuffix: true,
                       locale: dateLocale,
                     })}
