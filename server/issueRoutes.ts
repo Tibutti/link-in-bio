@@ -45,7 +45,7 @@ export function registerIssueRoutes(app: Express) {
   app.get('/api/issues/:id', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const issueId = parseInt(req.params.id);
       
       const issue = await storage.getIssue(issueId);
@@ -70,7 +70,7 @@ export function registerIssueRoutes(app: Express) {
   app.post('/api/profile/:profileId/issues', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const profileId = parseInt(req.params.profileId);
       
       // Sprawdzenie, czy profil należy do zalogowanego użytkownika
@@ -101,7 +101,7 @@ export function registerIssueRoutes(app: Express) {
   app.patch('/api/issues/:id', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const issueId = parseInt(req.params.id);
       
       // Sprawdzenie, czy usterka istnieje
@@ -135,7 +135,7 @@ export function registerIssueRoutes(app: Express) {
   app.delete('/api/issues/:id', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const issueId = parseInt(req.params.id);
       
       // Sprawdzenie, czy usterka istnieje
@@ -166,7 +166,7 @@ export function registerIssueRoutes(app: Express) {
   app.post('/api/issues/:id/resolve', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const issueId = parseInt(req.params.id);
       
       // Sprawdzenie, czy usterka istnieje
@@ -193,7 +193,7 @@ export function registerIssueRoutes(app: Express) {
   app.post('/api/issues/:id/reopen', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const issueId = parseInt(req.params.id);
       
       // Sprawdzenie, czy usterka istnieje
