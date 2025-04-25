@@ -51,6 +51,7 @@ interface Profile {
   phone: string | null;
   cvUrl: string | null;
   imageIndex: number;
+  customImageUrl: string | null;
   backgroundIndex: number;
   backgroundGradient: string | null;
   githubUsername: string | null;
@@ -395,14 +396,16 @@ export default function Admin() {
 
           <TabsContent value="avatar" className="mt-4">
             {profile && (
-              <ProfileImageSelector
+              <ProfileImageUploader
                 profileId={profile.id}
                 currentImageIndex={profile.imageIndex}
-                onImageChange={(newIndex) => {
+                customImageUrl={profile.customImageUrl}
+                onImageChange={(data) => {
                   // Aktualizujemy profil lokalnie aby uniknąć konieczności przeładowania strony
                   setProfile({
                     ...profile,
-                    imageIndex: newIndex
+                    ...(data.imageIndex !== undefined && { imageIndex: data.imageIndex }),
+                    ...(data.customImageUrl !== undefined && { customImageUrl: data.customImageUrl })
                   });
                   // Dodatkowo przeładujemy dane z serwera dla pewności
                   loadData();

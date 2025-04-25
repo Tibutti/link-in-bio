@@ -11,7 +11,7 @@ import { Profile } from '@shared/schema';
 interface ProfileImageUploaderProps {
   profileId: number;
   currentImageIndex: number;
-  customImageUrl: string | null;
+  customImageUrl: string | null | undefined;
   onImageChange: (data: { imageIndex?: number, customImageUrl?: string }) => void;
 }
 
@@ -24,7 +24,7 @@ export default function ProfileImageUploader({
   const [selectedIndex, setSelectedIndex] = useState(currentImageIndex);
   const [selectedTab, setSelectedTab] = useState(customImageUrl ? 'custom' : 'preset');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(customImageUrl);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(customImageUrl || null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -50,7 +50,7 @@ export default function ProfileImageUploader({
       });
       
       const updatedProfile = await response.json();
-      onImageChange({ imageIndex: selectedIndex, customImageUrl: null });
+      onImageChange({ imageIndex: selectedIndex, customImageUrl: undefined });
       setSuccess('Zdjęcie profilowe zostało zaktualizowane');
       setSelectedTab('preset');
     } catch (error) {
@@ -100,7 +100,7 @@ export default function ProfileImageUploader({
 
   // Obsługa usunięcia wybranego pliku
   const handleRemoveFile = () => {
-    setPreviewUrl(customImageUrl);
+    setPreviewUrl(customImageUrl || null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
