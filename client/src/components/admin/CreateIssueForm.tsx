@@ -55,10 +55,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
     mutationFn: async (data: FormValues) => {
       return apiRequest(`/api/profile/${profileId}/issues`, {
         method: "POST",
-        body: JSON.stringify({
-          ...data,
-          profileId,
-        })
+        body: JSON.stringify(data)
       });
     },
     onSuccess: () => {

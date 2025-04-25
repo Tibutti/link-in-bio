@@ -24,7 +24,7 @@ export function registerIssueRoutes(app: Express) {
   app.get('/api/profile/:profileId/issues', authenticateToken, async (req: Request, res: Response) => {
     try {
       // @ts-ignore
-      const userId = req.user?.userId;
+      const userId = (req as any).userId;
       const profileId = parseInt(req.params.profileId);
       
       // Sprawdzenie, czy profil należy do zalogowanego użytkownika

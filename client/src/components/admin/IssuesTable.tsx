@@ -103,14 +103,10 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: issues, isLoading } = useQuery<Issue[]>({
+  const { data: issues, isLoading, error } = useQuery<Issue[]>({
     queryKey: ["/api/profile", profileId, "issues"],
     queryFn: async () => {
-      const response = await fetch(`/api/profile/${profileId}/issues`);
-      if (!response.ok) {
-        throw new Error("Nie udało się pobrać usterek");
-      }
-      return response.json();
+      return await apiRequest(`/api/profile/${profileId}/issues`);
     },
   });
 
