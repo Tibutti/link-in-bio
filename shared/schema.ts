@@ -234,3 +234,24 @@ export const insertIssueSchema = createInsertSchema(issues).pick({
 
 export type InsertIssue = z.infer<typeof insertIssueSchema>;
 export type Issue = typeof issues.$inferSelect;
+
+// Wizytownik - kontakty
+export const contacts = pgTable("contacts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  contactProfileId: integer("contact_profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  category: text("category").default("default"),
+  notes: text("notes"),
+  addedAt: timestamp("added_at").defaultNow(),
+  lastViewedAt: timestamp("last_viewed_at").defaultNow(),
+});
+
+export const insertContactSchema = createInsertSchema(contacts).pick({
+  userId: true,
+  contactProfileId: true, 
+  category: true,
+  notes: true,
+});
+
+export type InsertContact = z.infer<typeof insertContactSchema>;
+export type Contact = typeof contacts.$inferSelect;

@@ -1,5 +1,5 @@
 import { 
-  users, profiles, socialLinks, featuredContents, sessions, technologies, issues,
+  users, profiles, socialLinks, featuredContents, sessions, technologies, issues, contacts,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
@@ -7,7 +7,8 @@ import {
   type Session, type InsertSession,
   type Technology, type InsertTechnology,
   type TechnologyCategory,
-  type Issue, type InsertIssue
+  type Issue, type InsertIssue,
+  type Contact, type InsertContact
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -69,6 +70,13 @@ export interface IStorage {
   deleteIssue(id: number): Promise<boolean>;
   markIssueAsResolved(id: number): Promise<Issue>;
   markIssueAsOpen(id: number): Promise<Issue>;
+  
+  // Contacts methods (Wizytownik)
+  getUserContacts(userId: number): Promise<Contact[]>;
+  getContact(id: number): Promise<Contact | undefined>;
+  addContact(contact: InsertContact): Promise<Contact>;
+  updateContact(id: number, data: Partial<Contact>): Promise<Contact>;
+  deleteContact(id: number): Promise<boolean>;
   
   // Demo data initialization
   initializeDemoData(): Promise<void>;
