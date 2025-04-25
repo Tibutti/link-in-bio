@@ -25,6 +25,7 @@ import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { SortableList } from '@/components/SortableList';
 import TechnologiesAdminPanel from '@/components/TechnologiesAdminPanel';
 import IssuesTable from '@/components/admin/IssuesTable';
+import { ContactsAdminPanel } from '@/components/admin/ContactsAdminPanel';
 import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
@@ -327,6 +328,7 @@ export default function Admin() {
               <TabsTrigger value="knowledge" className="whitespace-nowrap">Platformy</TabsTrigger>
               <TabsTrigger value="featured" className="whitespace-nowrap">Treści</TabsTrigger>
               <TabsTrigger value="technologies" className="whitespace-nowrap">Technologie</TabsTrigger>
+              <TabsTrigger value="contacts" className="whitespace-nowrap text-blue-600 font-semibold">Wizytownik</TabsTrigger>
               <TabsTrigger value="issues" className="whitespace-nowrap text-red-600 font-semibold">Usterki</TabsTrigger>
               <TabsTrigger value="diagnostics" className="whitespace-nowrap text-orange-500 font-semibold">Diagnostyka</TabsTrigger>
             </TabsList>
