@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 interface QuickShareButtonsProps {
@@ -169,19 +170,21 @@ export function QuickShareButtons({
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle>Kod QR</DialogTitle>
+                    <DialogDescription>
+                      Zeskanuj kod, aby otworzyć link do profilu
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="flex flex-col items-center justify-center p-4">
-                    <QRCodeSVG 
-                      value={url}
-                      size={200}
-                      bgColor={"var(--background)"}
-                      fgColor={"var(--foreground)"}
-                      level={"L"}
-                      includeMargin={false}
-                    />
-                    <p className="mt-4 text-sm text-center text-muted-foreground">
-                      Zeskanuj kod QR, aby otworzyć link
-                    </p>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <QRCodeSVG 
+                        value={url}
+                        size={200}
+                        bgColor={"#ffffff"}
+                        fgColor={"#000000"}
+                        level={"L"}
+                        includeMargin={true}
+                      />
+                    </div>
                   </div>
                 </DialogContent>
               </Dialog>
