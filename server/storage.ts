@@ -114,7 +114,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProfile(insertProfile: InsertProfile): Promise<Profile> {
-    const [profile] = await db.insert(profiles).values(insertProfile).returning();
+    const [profile] = await db.insert(profiles).values([insertProfile]).returning();
     return profile;
   }
 
@@ -430,7 +430,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createIssue(insertIssue: InsertIssue): Promise<Issue> {
-    const [issue] = await db.insert(issues).values(insertIssue).returning();
+    // Inicjalizujemy status i isResolved jeśli nie są podane
+    const issueToInsert = {
+      ...insertIssue,
+      status: insertIssue.status || "open",
+      isResolved: insertIssue.isResolved !== undefined ? insertIssue.isResolved : false
+    };
+    
+    const [issue] = await db.insert(issues).values([issueToInsert]).returning();
     return issue;
   }
 

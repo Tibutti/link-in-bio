@@ -12,6 +12,7 @@ import { registerGithubStatsRoutes } from "./githubStatsRoutes";
 import { registerProfileContentRoutes } from "./profileContentRoutes";
 import { registerSocialCategoryRoutes } from "./socialCategoryRoutes";
 import { registerTechnologyRoutes } from "./technologyRoutes";
+import { registerIssueRoutes } from "./issueRoutes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rejestruj wszystkie ścieżki API
@@ -20,6 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerProfileContentRoutes(app);
   registerSocialCategoryRoutes(app);
   registerTechnologyRoutes(app);
+  registerIssueRoutes(app);
   // Endpoint do ponownej inicjalizacji danych testowych
   app.post("/api/reinitialize-demo-data", async (req, res) => {
     try {
