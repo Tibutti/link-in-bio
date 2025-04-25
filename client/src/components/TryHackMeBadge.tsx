@@ -55,9 +55,11 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
       <div 
         className={`flex justify-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ 
-          width: '330px',
+          width: '400px', // Powiększony szerokość
           margin: '0 auto',
           position: 'relative',
+          transform: 'scale(1.2)', // Skalowanie całego kontenera
+          transformOrigin: 'center center'
         }}
       >
         {/* Dodajemy obramowanie z ciemnego koloru */}
@@ -77,8 +79,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
           position: 'absolute',
           top: 0,
           left: 0,
-          width: '330px',
-          height: '82px',
+          width: '400px', // Powiększona szerokość
+          height: '98px', // Powiększona wysokość
           zIndex: 3,
           pointerEvents: 'none',
         }}>
@@ -87,8 +89,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '12px',
-            height: '12px',
+            width: '15px',
+            height: '15px',
             backgroundColor: '#141c2b',
             borderRadius: '0 0 0 0',
             zIndex: 3
@@ -99,8 +101,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             position: 'absolute',
             top: 0,
             right: 0,
-            width: '12px',
-            height: '12px',
+            width: '15px',
+            height: '15px',
             backgroundColor: '#141c2b',
             borderRadius: '0 0 0 0',
             zIndex: 3
@@ -111,8 +113,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             position: 'absolute',
             bottom: 0,
             left: 0,
-            width: '12px',
-            height: '12px',
+            width: '15px',
+            height: '15px',
             backgroundColor: '#141c2b',
             borderRadius: '0 0 0 0',
             zIndex: 3
@@ -123,8 +125,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
             position: 'absolute',
             bottom: 0,
             right: 0,
-            width: '12px',
-            height: '12px',
+            width: '15px',
+            height: '15px',
             backgroundColor: '#141c2b',
             borderRadius: '0 0 0 0',
             zIndex: 3
@@ -136,8 +138,8 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
           src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
           style={{ 
             border: 'none', 
-            width: '330px', 
-            height: '82px',
+            width: '400px', // Powiększona szerokość
+            height: '98px', // Powiększona wysokość
             position: 'relative',
             zIndex: 2
           }}
