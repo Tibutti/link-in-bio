@@ -110,7 +110,7 @@ export function QuickShareButtons({
               <Button 
                 size="icon" 
                 variant="outline" 
-                className="bg-white h-10 w-10 rounded-full shadow-md hover:bg-blue-100 hover:text-blue-600 transition-colors"
+                className="bg-background h-10 w-10 rounded-full shadow-md hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 transition-colors"
                 onClick={() => window.open(twitterShareUrl, '_blank')}
                 aria-label="Udostępnij na Twitter"
               >
@@ -122,7 +122,7 @@ export function QuickShareButtons({
               <Button 
                 size="icon" 
                 variant="outline" 
-                className="bg-white h-10 w-10 rounded-full shadow-md hover:bg-blue-700 hover:text-white transition-colors"
+                className="bg-background h-10 w-10 rounded-full shadow-md hover:bg-blue-700 hover:text-white transition-colors"
                 onClick={() => window.open(facebookShareUrl, '_blank')}
                 aria-label="Udostępnij na Facebook"
               >
@@ -134,7 +134,7 @@ export function QuickShareButtons({
               <Button 
                 size="icon" 
                 variant="outline" 
-                className="bg-white h-10 w-10 rounded-full shadow-md hover:bg-blue-800 hover:text-white transition-colors"
+                className="bg-background h-10 w-10 rounded-full shadow-md hover:bg-blue-800 hover:text-white transition-colors"
                 onClick={() => window.open(linkedinShareUrl, '_blank')}
                 aria-label="Udostępnij na LinkedIn"
               >
@@ -146,7 +146,7 @@ export function QuickShareButtons({
               <Button 
                 size="icon" 
                 variant="outline" 
-                className="bg-white h-10 w-10 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                className="bg-background h-10 w-10 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={copyToClipboard}
                 aria-label="Kopiuj link"
               >
@@ -160,7 +160,7 @@ export function QuickShareButtons({
                   <Button 
                     size="icon" 
                     variant="outline" 
-                    className="bg-white h-10 w-10 rounded-full shadow-md hover:bg-purple-100 hover:text-purple-600 transition-colors"
+                    className="bg-background h-10 w-10 rounded-full shadow-md hover:bg-purple-100 dark:hover:bg-purple-900 hover:text-purple-600 transition-colors"
                     aria-label="Pokaż kod QR"
                   >
                     <QrCode size={18} />
@@ -174,12 +174,12 @@ export function QuickShareButtons({
                     <QRCodeSVG 
                       value={url}
                       size={200}
-                      bgColor={"#ffffff"}
-                      fgColor={"#000000"}
+                      bgColor={"var(--background)"}
+                      fgColor={"var(--foreground)"}
                       level={"L"}
                       includeMargin={false}
                     />
-                    <p className="mt-4 text-sm text-center text-gray-500">
+                    <p className="mt-4 text-sm text-center text-muted-foreground">
                       Zeskanuj kod QR, aby otworzyć link
                     </p>
                   </div>
