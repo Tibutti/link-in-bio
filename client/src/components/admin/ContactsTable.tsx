@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
-import { Contact } from "@shared/schema";
+import { Contact, Profile } from "@shared/schema";
 import { 
   Table, 
   TableBody, 

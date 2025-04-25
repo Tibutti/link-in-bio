@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/use-auth";
+import { AddContactAlert } from "@/components/AddContactAlert";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
@@ -28,6 +29,7 @@ function App() {
       <TooltipProvider>
         <AuthProvider>
           <Toaster />
+          <AddContactAlert />
           <Router />
         </AuthProvider>
       </TooltipProvider>
