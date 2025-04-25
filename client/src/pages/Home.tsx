@@ -216,12 +216,15 @@ export default function Home() {
       />
       
       {/* Przyciski administracyjne, przełącznik motywu i języka */}
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-        <ThemeToggle />
-        <LanguageToggle />
+      <div className="fixed top-4 right-4 z-50 flex flex-col sm:flex-row items-end sm:items-center gap-2">
+        <div className="flex items-center gap-2 mb-2 sm:mb-0">
+          <ThemeToggle />
+          <LanguageToggle />
+        </div>
         <Button
           variant="secondary"
-          className="shadow-md hover:shadow-lg transition-shadow"
+          size="sm"
+          className="shadow-md hover:shadow-lg transition-shadow text-xs sm:text-sm"
           onClick={() => setLocation('/login')}
         >
           {t('admin.panel')}
