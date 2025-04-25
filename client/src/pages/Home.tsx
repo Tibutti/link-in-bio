@@ -17,6 +17,7 @@ import Footer from "@/components/Footer";
 import { QuickShareButtons } from "@/components/QuickShareButtons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { AddContactAlert } from "@/components/AddContactAlert";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
 import { Settings } from "lucide-react";
@@ -216,6 +217,7 @@ export default function Home() {
         title={`Profil ${profile.name}`}
         profileId={profile.id} 
       />
+      <AddContactAlert profileId={profile.id} />
       
       {/* Przyciski administracyjne, przełącznik motywu i języka */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
