@@ -27,6 +27,7 @@ export const profiles = pgTable("profiles", {
   phone: text("phone"),
   cvUrl: text("cv_url"),
   imageIndex: integer("image_index").default(0),
+  customImageUrl: text("custom_image_url"),
   backgroundIndex: integer("background_index").default(0),
   backgroundGradient: jsonb("background_gradient").$type<{
     colorFrom: string;
@@ -55,6 +56,7 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   phone: true,
   cvUrl: true,
   imageIndex: true,
+  customImageUrl: true,
   backgroundIndex: true,
   backgroundGradient: true,
   githubUsername: true,

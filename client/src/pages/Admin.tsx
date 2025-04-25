@@ -21,7 +21,7 @@ import { ContactDetailsForm } from '@/components/ContactDetailsForm';
 import { GitHubSettingsForm } from '@/components/GitHubSettingsForm';
 import { TryHackMeSettingsForm } from '@/components/TryHackMeSettingsForm';
 import { SectionVisibilityForm } from '@/components/SectionVisibilityForm';
-import ProfileImageSelector from '@/components/ProfileImageSelector';
+import ProfileImageUploader from '@/components/ProfileImageUploader';
 import { SortableList } from '@/components/SortableList';
 import TechnologiesAdminPanel from '@/components/TechnologiesAdminPanel';
 import IssuesTable from '@/components/admin/IssuesTable';
