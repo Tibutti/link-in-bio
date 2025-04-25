@@ -29,6 +29,7 @@ import {
 const createIssueSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany"),
   description: z.string().optional(),
+  imageUrl: z.string().optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).default("medium"),
 });
 
@@ -47,6 +48,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
     defaultValues: {
       title: "",
       description: "",
+      imageUrl: "",
       severity: "medium",
     },
   });
@@ -116,6 +118,23 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>URL obrazu (opcjonalnie)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Wprowadź URL obrazu..." 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <FormField
               control={form.control}
               name="severity"

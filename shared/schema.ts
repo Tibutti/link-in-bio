@@ -214,6 +214,7 @@ export const issues = pgTable("issues", {
   profileId: integer("profile_id").notNull().references(() => profiles.id),
   title: text("title").notNull(),
   description: text("description"),
+  imageUrl: text("image_url"),
   severity: text("severity").$type<IssueSeverity>().default("medium"),
   status: text("status").default("open").notNull(), // "open" | "in_progress" | "resolved"
   isResolved: boolean("is_resolved").default(false),
@@ -225,6 +226,7 @@ export const insertIssueSchema = createInsertSchema(issues).pick({
   profileId: true,
   title: true,
   description: true,
+  imageUrl: true,
   severity: true,
   status: true,
   isResolved: true,
