@@ -26,6 +26,7 @@ import { SortableList } from '@/components/SortableList';
 import TechnologiesAdminPanel from '@/components/TechnologiesAdminPanel';
 import IssuesTable from '@/components/admin/IssuesTable';
 import { ContactsAdminPanel } from '@/components/admin/ContactsAdminPanel';
+import IssueAiAnalyzer from '@/components/admin/IssueAiAnalyzer';
 import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
@@ -330,6 +331,7 @@ export default function Admin() {
               <TabsTrigger value="technologies" className="whitespace-nowrap">Technologie</TabsTrigger>
               <TabsTrigger value="contacts" className="whitespace-nowrap text-blue-600 font-semibold">Wizytownik</TabsTrigger>
               <TabsTrigger value="issues" className="whitespace-nowrap text-red-600 font-semibold">Usterki</TabsTrigger>
+              <TabsTrigger value="issues-ai" className="whitespace-nowrap text-purple-600 font-semibold">Analiza AI</TabsTrigger>
               <TabsTrigger value="diagnostics" className="whitespace-nowrap text-orange-500 font-semibold">Diagnostyka</TabsTrigger>
             </TabsList>
           </div>
@@ -439,6 +441,22 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent>
                   <IssuesTable profileId={profile.id} />
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="issues-ai" className="mt-4">
+            {profile && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-purple-600">Analiza usterek przez AI</CardTitle>
+                  <CardDescription>
+                    Analizuj zgłoszone usterki, otrzymuj sugestie rozwiązań i zarządzaj nimi z pomocą sztucznej inteligencji
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <IssueAiAnalyzer />
                 </CardContent>
               </Card>
             )}

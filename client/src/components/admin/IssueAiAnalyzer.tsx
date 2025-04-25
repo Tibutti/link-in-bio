@@ -34,9 +34,12 @@ interface IssueAnalysisResult {
   analysis: string;
 }
 
-function formatDate(dateString: string | null | undefined) {
+function formatDate(dateString: string | Date | null | undefined) {
   if (!dateString) return 'nieznana data';
-  return new Date(dateString).toLocaleDateString('pl-PL', {
+  
+  const date = dateString instanceof Date ? dateString : new Date(dateString);
+  
+  return date.toLocaleDateString('pl-PL', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -158,6 +161,9 @@ const IssueAnalyzer = () => {
     refetch: refetchAnalysis
   } = useQuery<IssueAnalysisResult>({
     queryKey: ['/api/ai/issues', selectedIssue?.id, 'analyze'],
+    queryFn: selectedIssue ? 
+      async () => await apiRequest(`/api/ai/issues/${selectedIssue.id}/analyze`) : 
+      undefined,
     enabled: !!selectedIssue,
     staleTime: 300000, // 5 minut - analizy nie zmieniają się często
   });
