@@ -83,9 +83,19 @@ export function EditIssueForm({ issue, onSuccess, onCancel }: EditIssueFormProps
       const formData = new FormData();
       formData.append('image', file);
       
+      // Pobranie tokenu uwierzytelniającego z localStorage
+      const token = localStorage.getItem('authToken');
+      
+      // Przygotowanie nagłówków z tokenem uwierzytelniającym
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch('/api/upload/image', {
         method: 'POST',
         body: formData,
+        headers,
       });
       
       if (!response.ok) {

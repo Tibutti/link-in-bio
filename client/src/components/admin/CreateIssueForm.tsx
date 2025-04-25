@@ -64,9 +64,19 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
       const formData = new FormData();
       formData.append('image', file);
       
+      // Pobranie tokenu uwierzytelniającego z localStorage
+      const token = localStorage.getItem('authToken');
+      
+      // Przygotowanie nagłówków z tokenem uwierzytelniającym
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
       const response = await fetch('/api/upload/image', {
         method: 'POST',
         body: formData,
+        headers,
         // Nie ustawiamy nagłówka Content-Type, fetch ustawi go automatycznie wraz z boundary dla FormData
       });
       
