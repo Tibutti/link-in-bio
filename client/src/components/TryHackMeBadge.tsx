@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, ExternalLink, Award, Clock, UserCheck, Monitor } from 'lucide-react';
+import { Shield, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import AccordionSection from './AccordionSection';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,17 @@ interface TryHackMeBadgeProps {
 export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    // Ustawienie flagi załadowania po renderze iFrame (tylko gdy mamy userId)
+    if (userId) {
+      const timer = setTimeout(() => {
+        setIsLoaded(true);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [userId]);
 
   // Renderowanie placeholder, gdy nie ma userId
   const renderNoUserContent = () => (
@@ -38,63 +49,44 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
     </div>
   );
 
-  // Własna implementacja odznaki TryHackMe
+  // Renderowanie zawartości dla przypadku gdy mamy userId
   const renderUserContent = () => (
-    <div className="flex justify-center w-full p-4">
-      <div className="bg-[#141c2b] dark:bg-[#141c2b] rounded-lg p-4 max-w-md w-full shadow-md">
-        <div className="flex items-center mb-3">
-          <div className="w-16 h-16 bg-[#1a2332] rounded-full overflow-hidden flex items-center justify-center mr-3 border-2 border-[#88cc14]">
-            <img 
-              src="https://avatars.githubusercontent.com/u/136629321?v=4" 
-              alt="Tibutti" 
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "https://tryhackme.com/img/badges/default.png";
-              }}
-            />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center">
-              <h3 className="text-xl font-bold text-white mr-2">Tibutti</h3>
-              <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">0x6</Badge>
-            </div>
-            <div className="flex items-center mt-1">
-              <a 
-                href={`https://tryhackme.com/p/${userId}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-sm text-gray-300 hover:text-white transition-colors flex items-center"
-              >
-                tryhackme.com
-                <ExternalLink className="ml-1 h-3 w-3" />
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-[#1a2332] rounded p-2">
-            <Award className="mx-auto h-5 w-5 text-yellow-400 mb-1" />
-            <p className="text-lg font-bold text-white">267685</p>
-            <p className="text-xs text-gray-400">Punkty</p>
-          </div>
-          <div className="bg-[#1a2332] rounded p-2">
-            <Clock className="mx-auto h-5 w-5 text-green-400 mb-1" />
-            <p className="text-lg font-bold text-white">0</p>
-            <p className="text-xs text-gray-400">Dni</p>
-          </div>
-          <div className="bg-[#1a2332] rounded p-2">
-            <UserCheck className="mx-auto h-5 w-5 text-purple-400 mb-1" />
-            <p className="text-lg font-bold text-white">5</p>
-            <p className="text-xs text-gray-400">Pokoje</p>
-          </div>
-        </div>
-        
-        <div className="mt-2 bg-[#1a2332] rounded p-2 text-center">
-          <Monitor className="mx-auto h-5 w-5 text-blue-400 mb-1" />
-          <p className="text-lg font-bold text-white">13</p>
-          <p className="text-xs text-gray-400">Odznaki</p>
+    <div className="flex justify-center p-4 bg-[#141c2b] dark:bg-[#141c2b] rounded-lg">
+      <div 
+        className={`text-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          width: '100%',
+          overflow: 'hidden' 
+        }}
+      >
+        <div className="bg-[#141c2b] dark:bg-[#141c2b]" style={{ 
+          width: '100%', 
+          maxWidth: '350px', 
+          height: '130px', 
+          position: 'relative',
+          margin: '0 auto',
+          overflow: 'hidden',
+          borderRadius: '8px'
+        }}>
+          <iframe 
+            src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+            style={{ 
+              border: 'none', 
+              width: '330px', 
+              height: '220px',
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              marginTop: '0px',
+              backgroundColor: 'transparent'
+            }}
+            title="TryHackMe Badge"
+            onLoad={() => setIsLoaded(true)}
+            scrolling="no" // Wyłączenie przewijania
+          />
         </div>
       </div>
     </div>
