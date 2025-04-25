@@ -22,12 +22,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, CheckCircle, AlertTriangle, CircleAlert, AlertCircle } from "lucide-react";
+import { MoreVertical, CheckCircle, AlertTriangle, CircleAlert, AlertCircle, X, Maximize2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -100,7 +108,10 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [isImageZoomDialogOpen, setIsImageZoomDialogOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -188,6 +199,17 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
     setIsEditDialogOpen(true);
   };
 
+  const handleRowClick = (issue: Issue) => {
+    setSelectedIssue(issue);
+    setIsDetailsDialogOpen(true);
+  };
+
+  const handleImageClick = (e: React.MouseEvent<HTMLImageElement>, imageUrl: string) => {
+    e.stopPropagation(); // Zapobiega wywołaniu handleRowClick po kliknięciu w obraz
+    setZoomedImage(imageUrl);
+    setIsImageZoomDialogOpen(true);
+  };
+
   const handleResolve = (issue: Issue) => {
     resolveIssueMutation.mutate(issue.id);
   };
@@ -227,7 +249,11 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
           </TableHeader>
           <TableBody>
             {issues.map((issue) => (
-              <TableRow key={issue.id}>
+              <TableRow 
+                key={issue.id} 
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => handleRowClick(issue)}
+              >
                 <TableCell>
                   {getStatusBadge(issue.status, issue.isResolved)}
                 </TableCell>
@@ -244,7 +270,8 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
                       <img 
                         src={issue.imageUrl} 
                         alt="Zdjęcie usterki" 
-                        className="max-h-20 max-w-40 object-cover rounded-md" 
+                        className="max-h-20 max-w-40 object-cover rounded-md cursor-zoom-in hover:opacity-80 transition-opacity" 
+                        onClick={(e) => handleImageClick(e, issue.imageUrl!)}
                       />
                     </div>
                   )}
@@ -259,28 +286,40 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button variant="ghost" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
                         <span className="sr-only">Otwórz menu</span>
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEdit(issue)}>
+                      <DropdownMenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(issue);
+                      }}>
                         Edytuj
                       </DropdownMenuItem>
                       {!issue.isResolved ? (
-                        <DropdownMenuItem onClick={() => handleResolve(issue)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleResolve(issue);
+                        }}>
                           <CheckCircle className="w-4 h-4 mr-2" />
                           Oznacz jako rozwiązaną
                         </DropdownMenuItem>
                       ) : (
-                        <DropdownMenuItem onClick={() => handleReopen(issue)}>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleReopen(issue);
+                        }}>
                           Otwórz ponownie
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => handleDelete(issue)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(issue);
+                        }}
                       >
                         Usuń
                       </DropdownMenuItem>
@@ -334,7 +373,7 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Czy na pewno chcesz usunąć tę usterkę?</AlertDialogTitle>
             <AlertDialogDescription>
-              Ta akcja jest nieodwracalna. Usterka zostanie trwale usunięta z systemu.
+              Ta akcja jest nieodwarcalna. Usterka zostanie trwale usunięta z systemu.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -348,6 +387,149 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialog ze szczegółami usterki */}
+      <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
+        {selectedIssue && (
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {getSeverityIcon(selectedIssue.severity)}
+                <span>{selectedIssue.title}</span>
+                <span className="ml-3">{getStatusBadge(selectedIssue.status, selectedIssue.isResolved)}</span>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Priorytet</h4>
+                  <div>{getSeverityBadge(selectedIssue.severity)}</div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Status</h4>
+                  <div>{getStatusBadge(selectedIssue.status, selectedIssue.isResolved)}</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Data zgłoszenia</h4>
+                  <div>{formatDistanceToNow(new Date(selectedIssue.createdAt), { addSuffix: true, locale: pl })}</div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Data rozwiązania</h4>
+                  <div>
+                    {selectedIssue.resolvedAt 
+                      ? formatDistanceToNow(new Date(selectedIssue.resolvedAt), { addSuffix: true, locale: pl }) 
+                      : "-"}
+                  </div>
+                </div>
+              </div>
+              
+              {selectedIssue.description && (
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Opis</h4>
+                  <div className="p-4 bg-muted rounded-md">
+                    {selectedIssue.description.split('\n').map((line, i) => (
+                      <p key={i} className="mb-2">{line}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {selectedIssue.imageUrl && (
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Zdjęcie</h4>
+                  <div className="relative inline-block">
+                    <img 
+                      src={selectedIssue.imageUrl} 
+                      alt="Zdjęcie usterki" 
+                      className="max-h-60 rounded-md cursor-zoom-in hover:opacity-80 transition-opacity"
+                      onClick={(e) => {
+                        setZoomedImage(selectedIssue.imageUrl!);
+                        setIsImageZoomDialogOpen(true);
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="absolute top-2 right-2 bg-white/70 hover:bg-white"
+                      onClick={() => {
+                        setZoomedImage(selectedIssue.imageUrl!);
+                        setIsImageZoomDialogOpen(true);
+                      }}
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button variant="outline" onClick={() => handleEdit(selectedIssue)}>
+                Edytuj
+              </Button>
+              {!selectedIssue.isResolved ? (
+                <Button 
+                  variant="default" 
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => {
+                    handleResolve(selectedIssue);
+                    setIsDetailsDialogOpen(false);
+                  }}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Oznacz jako rozwiązaną
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    handleReopen(selectedIssue);
+                    setIsDetailsDialogOpen(false);
+                  }}
+                >
+                  Otwórz ponownie
+                </Button>
+              )}
+              <Button 
+                variant="destructive"
+                onClick={() => {
+                  setIsDetailsDialogOpen(false);
+                  handleDelete(selectedIssue);
+                }}
+              >
+                Usuń
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </Dialog>
+
+      {/* Dialog powiększenia obrazu */}
+      <Dialog open={isImageZoomDialogOpen} onOpenChange={setIsImageZoomDialogOpen}>
+        <DialogContent className="max-w-4xl p-1">
+          <div className="relative w-full h-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 z-10 bg-black/30 hover:bg-black/50 text-white"
+              onClick={() => setIsImageZoomDialogOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            {zoomedImage && (
+              <img 
+                src={zoomedImage} 
+                alt="Powiększone zdjęcie usterki" 
+                className="max-w-full max-h-[80vh] object-contain mx-auto"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
