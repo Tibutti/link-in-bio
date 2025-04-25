@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2, Upload } from "lucide-react";
 
 // Schemat walidacji dla formularza tworzenia usterki
 const createIssueSchema = z.object({
@@ -43,6 +44,10 @@ type CreateIssueFormProps = {
 
 export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueFormProps) {
   const { toast } = useToast();
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(createIssueSchema),
     defaultValues: {
@@ -52,6 +57,88 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
       severity: "medium",
     },
   });
+
+  // Mutacja do uploadowania pliku
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+        // Nie ustawiamy nagłówka Content-Type, fetch ustawi go automatycznie wraz z boundary dla FormData
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Wystąpił błąd podczas przesyłania obrazu');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      // Ustawienie URL z odpowiedzi od serwera
+      form.setValue('imageUrl', data.url);
+      setUploadingImage(false);
+      toast({
+        title: "Obraz przesłany",
+        description: "Obraz został pomyślnie przesłany.",
+      });
+    },
+    onError: (error: Error) => {
+      setUploadingImage(false);
+      toast({
+        title: "Błąd podczas przesyłania obrazu",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Obsługa zmiany pliku
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    
+    if (file) {
+      // Sprawdzenie typu pliku
+      if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+        toast({
+          title: "Nieprawidłowy format pliku",
+          description: "Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, WEBP).",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Sprawdzenie rozmiaru pliku (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Plik jest zbyt duży",
+          description: "Maksymalny rozmiar pliku to 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setSelectedFile(file);
+      
+      // Tworzenie URL dla podglądu
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result as string);
+      };
+      fileReader.readAsDataURL(file);
+    }
+  };
+  
+  // Funkcja uploadująca obraz
+  const uploadImage = async () => {
+    if (selectedFile) {
+      setUploadingImage(true);
+      await uploadImageMutation.mutateAsync(selectedFile);
+    }
+  };
 
   const createIssueMutation = useMutation({
     mutationFn: async (data: FormValues) => {
@@ -76,7 +163,13 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
+    // Jeśli mamy plik do przesłania i jeszcze nie został wysłany
+    if (selectedFile && !form.getValues('imageUrl')) {
+      await uploadImage();
+      // Po przesłaniu obrazu form.getValues('imageUrl') będzie zaktualizowane
+    }
+    
     createIssueMutation.mutate(data);
   };
 
@@ -123,17 +216,79 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
               name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL obrazu (opcjonalnie)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Wprowadź URL obrazu (np. https://example.com/image.jpg)" 
-                      {...field} 
+                  <FormLabel>Obraz (opcjonalnie)</FormLabel>
+                  <div className="space-y-4">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      className="hidden"
+                      id="issue-image-upload"
+                      onChange={handleFileChange}
                     />
-                  </FormControl>
+                    
+                    {/* Przycisk do wyboru pliku */}
+                    <div>
+                      <label htmlFor="issue-image-upload" className="cursor-pointer">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md w-fit">
+                          <Upload className="h-4 w-4" />
+                          <span>{selectedFile ? 'Zmień obraz' : 'Wybierz obraz'}</span>
+                        </div>
+                      </label>
+                      
+                      {selectedFile && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Wybrany plik: {selectedFile.name} ({Math.round(selectedFile.size / 1024)} KB)
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* Podgląd obrazu */}
+                    {previewUrl && (
+                      <div className="mt-2">
+                        <p className="text-sm font-medium mb-1">Podgląd:</p>
+                        <div className="relative border rounded-md overflow-hidden" style={{ maxWidth: '300px' }}>
+                          <img src={previewUrl} alt="Podgląd" className="max-w-full h-auto" />
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Przycisk do przesłania obrazu */}
+                    {selectedFile && !field.value && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={uploadImage}
+                        disabled={uploadingImage}
+                      >
+                        {uploadingImage ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Przesyłanie...
+                          </>
+                        ) : (
+                          <>Prześlij obraz</>
+                        )}
+                      </Button>
+                    )}
+                    
+                    {/* Komunikat o już przesłanym obrazie */}
+                    {field.value && (
+                      <div className="text-sm text-green-600 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Obraz przesłany
+                      </div>
+                    )}
+                    
+                    {/* Ukryte pole z URL obrazu */}
+                    <Input 
+                      type="hidden"
+                      {...field}
+                    />
+                  </div>
                   <FormMessage />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Wprowadź pełny adres URL do obrazu w internecie (musi zaczynać się od http:// lub https://)
-                  </p>
                 </FormItem>
               )}
             />
