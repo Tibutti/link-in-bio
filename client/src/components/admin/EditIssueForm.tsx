@@ -31,6 +31,7 @@ type Issue = {
   profileId: number;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   severity: "low" | "medium" | "high" | "critical" | null;
   status: string;
   isResolved: boolean | null;
@@ -42,6 +43,7 @@ type Issue = {
 const editIssueSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany"),
   description: z.string().optional(),
+  imageUrl: z.string().optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).default("medium"),
   status: z.enum(["open", "in_progress", "resolved"]).default("open"),
 });
@@ -60,6 +62,7 @@ export function EditIssueForm({ issue, onSuccess, onCancel }: EditIssueFormProps
   const defaultValues: FormValues = {
     title: issue.title,
     description: issue.description || "",
+    imageUrl: issue.imageUrl || "",
     severity: issue.severity || "medium",
     status: issue.status as "open" | "in_progress" | "resolved",
   };
@@ -127,6 +130,24 @@ export function EditIssueForm({ issue, onSuccess, onCancel }: EditIssueFormProps
                     <Textarea
                       placeholder="Opisz problem szczegółowo..."
                       className="resize-none"
+                      {...field}
+                      value={field.value || ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>URL obrazu (opcjonalnie)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Wprowadź URL obrazu..."
                       {...field}
                       value={field.value || ""}
                     />

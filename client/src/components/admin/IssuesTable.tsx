@@ -39,6 +39,7 @@ type Issue = {
   profileId: number;
   title: string;
   description: string | null;
+  imageUrl: string | null;
   severity: "low" | "medium" | "high" | "critical" | null;
   status: string;
   isResolved: boolean | null;
@@ -237,6 +238,15 @@ export default function IssuesTable({ profileId }: IssuesTableProps) {
                   </div>
                   {issue.description && (
                     <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                  )}
+                  {issue.imageUrl && (
+                    <div className="mt-2">
+                      <img 
+                        src={issue.imageUrl} 
+                        alt="Zdjęcie usterki" 
+                        className="max-h-20 max-w-40 object-cover rounded-md" 
+                      />
+                    </div>
                   )}
                 </TableCell>
                 <TableCell>{getSeverityBadge(issue.severity)}</TableCell>
