@@ -185,7 +185,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Dodaj nową usterkę</DialogTitle>
         </DialogHeader>
@@ -214,6 +214,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                     <Textarea
                       placeholder="Opisz problem szczegółowo..."
                       className="resize-none"
+                      rows={3}
                       {...field}
                     />
                   </FormControl>
@@ -227,7 +228,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Obraz (opcjonalnie)</FormLabel>
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/gif,image/webp"
@@ -252,17 +253,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                       )}
                     </div>
                     
-                    {/* Podgląd obrazu */}
-                    {previewUrl && (
-                      <div className="mt-2">
-                        <p className="text-sm font-medium mb-1">Podgląd:</p>
-                        <div className="relative border rounded-md overflow-hidden" style={{ maxWidth: '300px' }}>
-                          <img src={previewUrl} alt="Podgląd" className="max-w-full h-auto" />
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Przycisk do przesłania obrazu */}
+                    {/* Przycisk do przesłania obrazu - przeniesiony wyżej */}
                     {selectedFile && !field.value && (
                       <Button 
                         type="button" 
@@ -270,6 +261,7 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                         size="sm"
                         onClick={uploadImage}
                         disabled={uploadingImage}
+                        className="mt-2"
                       >
                         {uploadingImage ? (
                           <>
@@ -284,11 +276,26 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                     
                     {/* Komunikat o już przesłanym obrazie */}
                     {field.value && (
-                      <div className="text-sm text-green-600 flex items-center gap-2">
+                      <div className="text-sm text-green-600 flex items-center gap-2 mt-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                         Obraz przesłany
+                      </div>
+                    )}
+                    
+                    {/* Podgląd obrazu - zmniejszona maksymalna wysokość */}
+                    {previewUrl && (
+                      <div className="mt-2">
+                        <p className="text-sm font-medium mb-1">Podgląd:</p>
+                        <div className="relative border rounded-md overflow-hidden" style={{ maxWidth: '100%' }}>
+                          <img 
+                            src={previewUrl} 
+                            alt="Podgląd" 
+                            className="max-w-full h-auto" 
+                            style={{ maxHeight: '200px', objectFit: 'contain' }} 
+                          />
+                        </div>
                       </div>
                     )}
                     
@@ -329,7 +336,9 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
                 </FormItem>
               )}
             />
-            <div className="flex justify-end space-x-2 pt-4">
+            
+            {/* Przyciski w sticky footer dla lepszej dostępności */}
+            <div className="sticky bottom-0 pt-4 pb-2 bg-background flex justify-end space-x-2">
               <Button variant="outline" onClick={onCancel} type="button">
                 Anuluj
               </Button>
