@@ -19,6 +19,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { BACKGROUND_OPTIONS } from "@/lib/constants";
+import { Settings } from "lucide-react";
 
 import { 
   type Profile, 
@@ -216,18 +217,17 @@ export default function Home() {
       />
       
       {/* Przyciski administracyjne, przełącznik motywu i języka */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col sm:flex-row items-end sm:items-center gap-2">
-        <div className="flex items-center gap-2 mb-2 sm:mb-0">
-          <ThemeToggle />
-          <LanguageToggle />
-        </div>
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        <ThemeToggle />
+        <LanguageToggle />
         <Button
-          variant="secondary"
-          size="sm"
-          className="shadow-md hover:shadow-lg transition-shadow text-xs sm:text-sm"
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 rounded-full bg-background shadow-md hover:shadow-lg transition-shadow"
           onClick={() => setLocation('/login')}
+          title={t('admin.panel')}
         >
-          {t('admin.panel')}
+          <Settings className="h-5 w-5" />
         </Button>
       </div>
       
