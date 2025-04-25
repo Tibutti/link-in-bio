@@ -53,6 +53,8 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
 
   // Dodaj informacje o użytkowniku do obiektu zapytania
   (req as any).userId = payload.userId;
+  // Dodaj również obiekt user z polem userId dla kompatybilności z istniejącym kodem
+  (req as any).user = { userId: payload.userId };
   
   next();
 }

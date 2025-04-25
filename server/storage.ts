@@ -8,7 +8,8 @@ import {
   type Technology, type InsertTechnology,
   type TechnologyCategory,
   type Issue, type InsertIssue,
-  type Contact, type InsertContact
+  type Contact, type InsertContact,
+  type IssueSeverity
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
