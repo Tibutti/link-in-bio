@@ -24,6 +24,7 @@ import { SectionVisibilityForm } from '@/components/SectionVisibilityForm';
 import ProfileImageSelector from '@/components/ProfileImageSelector';
 import { SortableList } from '@/components/SortableList';
 import TechnologiesAdminPanel from '@/components/TechnologiesAdminPanel';
+import IssuesTable from '@/components/admin/IssuesTable';
 import { Plus, GripVertical } from 'lucide-react';
 import {
   Dialog,
@@ -325,6 +326,7 @@ export default function Admin() {
             <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
             <TabsTrigger value="featured" className="flex-grow">Treści</TabsTrigger>
             <TabsTrigger value="technologies" className="flex-grow">Technologie</TabsTrigger>
+            <TabsTrigger value="issues" className="flex-grow">Usterki</TabsTrigger>
             <TabsTrigger value="diagnostics" className="flex-grow bg-amber-50">Diagnostyka</TabsTrigger>
           </TabsList>
 
@@ -419,6 +421,22 @@ export default function Admin() {
           <TabsContent value="technologies" className="mt-4">
             {profile && (
               <TechnologiesAdminPanel profileId={profile.id} />
+            )}
+          </TabsContent>
+
+          <TabsContent value="issues" className="mt-4">
+            {profile && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Usterki</CardTitle>
+                  <CardDescription>
+                    Zarządzaj zgłoszonymi usterkami i błędami
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <IssuesTable profileId={profile.id} />
+                </CardContent>
+              </Card>
             )}
           </TabsContent>
 
