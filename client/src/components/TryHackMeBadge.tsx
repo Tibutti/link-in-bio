@@ -51,37 +51,32 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
 
   // Renderowanie zawartości dla przypadku gdy mamy userId
   const renderUserContent = () => (
-    <div className="flex justify-center bg-[#141c2b] dark:bg-[#141c2b] rounded-lg p-4">
-      <div 
-        className={`text-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+    <div 
+      className={`flex justify-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+      style={{ 
+        overflow: 'hidden',
+        width: '330px', 
+        height: '82px',
+        position: 'relative',
+        margin: '0 auto'
+      }}
+    >
+      <iframe 
+        src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}&theme=dark`} 
         style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center',
-          overflow: 'hidden',
+          border: 'none', 
           width: '330px', 
-          height: '82px',
-          position: 'relative',
-          background: '#141c2b'
+          height: '82px', // Dokładny rozmiar widgetu
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          backgroundColor: 'transparent',
+          filter: 'invert(1) hue-rotate(180deg)' // Odwróć kolory i zmień barwę
         }}
-      >
-        <iframe 
-          src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}&theme=dark`} 
-          style={{ 
-            border: 'none', 
-            width: '330px', 
-            height: '82px', // Dokładny rozmiar widgetu
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            backgroundColor: 'transparent',
-            filter: 'invert(1) hue-rotate(180deg)' // Odwróć kolory i zmień barwę
-          }}
-          title="TryHackMe Badge"
-          onLoad={() => setIsLoaded(true)}
-          scrolling="no" // Wyłączenie przewijania
-        />
-      </div>
+        title="TryHackMe Badge"
+        onLoad={() => setIsLoaded(true)}
+        scrolling="no" // Wyłączenie przewijania
+      />
     </div>
   );
 
