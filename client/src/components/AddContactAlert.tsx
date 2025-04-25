@@ -52,8 +52,8 @@ export function AddContactAlert({ profileId }: AddContactAlertProps) {
   // Pobieranie danych profilu
   const { data: profileData, isLoading: isProfileLoading } = useQuery({
     queryKey: [`/api/profile/${profileId}`],
-    queryFn: async () => {
-      const res = await fetch(`/api/profile/${profileId}`);
+    queryFn: async ({ signal }) => {
+      const res = await fetch(`/api/profile/${profileId}`, { signal });
       if (!res.ok) throw new Error("Failed to fetch profile");
       return res.json();
     },
@@ -74,9 +74,10 @@ export function AddContactAlert({ profileId }: AddContactAlertProps) {
         profileId: profileData.id,
       };
       
-      const res = await apiRequest("POST", "/api/contacts", contactData);
-      if (!res.ok) throw new Error("Failed to add contact");
-      return res.json();
+      return await apiRequest("/api/contacts", {
+        method: 'POST',
+        body: JSON.stringify(contactData)
+      });
     },
     onSuccess: () => {
       toast({

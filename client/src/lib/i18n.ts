@@ -66,6 +66,25 @@ const resources = {
         panel: "Admin Panel",
         login: "Login",
         logout: "Logout"
+      },
+      // Kontakty i Wizytownik
+      contacts: {
+        title: "Contacts",
+        contact_added: "Contact Added",
+        contact_added_success: "Contact has been added to your contacts",
+        contact_add_error: "Error adding contact",
+        add_contact_title: "Add to Contacts",
+        add_contact_description: "Do you want to add {{name}} to your contacts?",
+        add_to_contacts: "Add to Contacts",
+        scan_qr: "Scan QR Code"
+      },
+      // Wspólne elementy
+      common: {
+        save: "Save",
+        cancel: "Cancel",
+        delete: "Delete",
+        edit: "Edit",
+        close: "Close"
       }
     }
   },
@@ -131,6 +150,25 @@ const resources = {
         panel: "Panel administracyjny",
         login: "Zaloguj się",
         logout: "Wyloguj się"
+      },
+      // Kontakty i Wizytownik
+      contacts: {
+        title: "Kontakty",
+        contact_added: "Kontakt dodany",
+        contact_added_success: "Kontakt został dodany do Twoich kontaktów",
+        contact_add_error: "Błąd podczas dodawania kontaktu",
+        add_contact_title: "Dodaj do kontaktów",
+        add_contact_description: "Czy chcesz dodać {{name}} do swoich kontaktów?",
+        add_to_contacts: "Dodaj do kontaktów",
+        scan_qr: "Skanuj kod QR"
+      },
+      // Wspólne elementy
+      common: {
+        save: "Zapisz",
+        cancel: "Anuluj",
+        delete: "Usuń",
+        edit: "Edytuj",
+        close: "Zamknij"
       }
     }
   }
