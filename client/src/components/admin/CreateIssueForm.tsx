@@ -31,6 +31,7 @@ const createIssueSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany"),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
+  imageId: z.number().optional(), // Dodajemy pole na ID obrazu w bazie danych
   severity: z.enum(["low", "medium", "high", "critical"]).default("medium"),
 });
 
@@ -90,6 +91,10 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
     onSuccess: (data) => {
       // Ustawienie URL z odpowiedzi od serwera
       form.setValue('imageUrl', data.url);
+      // Zapisujemy również ID obrazu, jeśli jest dostępne
+      if (data.imageId) {
+        form.setValue('imageId', data.imageId);
+      }
       setUploadingImage(false);
       toast({
         title: "Obraz przesłany",

@@ -208,6 +208,28 @@ export const issueSeverities = [
 
 export type IssueSeverity = typeof issueSeverities[number];
 
+// Images schema - dodane dla odporności na resetowanie środowiska
+export const issueImages = pgTable("issue_images", {
+  id: serial("id").primaryKey(),
+  fileName: text("file_name").notNull().unique(),
+  originalName: text("original_name"),
+  mimeType: text("mime_type").notNull(),
+  binaryData: text("binary_data").notNull(), // Dane obrazu w base64
+  size: integer("size").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertIssueImageSchema = createInsertSchema(issueImages).pick({
+  fileName: true,
+  originalName: true,
+  mimeType: true,
+  binaryData: true,
+  size: true,
+});
+
+export type InsertIssueImage = z.infer<typeof insertIssueImageSchema>;
+export type IssueImage = typeof issueImages.$inferSelect;
+
 // Issues schema
 export const issues = pgTable("issues", {
   id: serial("id").primaryKey(),
@@ -215,6 +237,7 @@ export const issues = pgTable("issues", {
   title: text("title").notNull(),
   description: text("description"),
   imageUrl: text("image_url"),
+  imageId: integer("image_id").references(() => issueImages.id), // Relacja do tabeli obrazów
   severity: text("severity").$type<IssueSeverity>().default("medium"),
   status: text("status").default("open").notNull(), // "open" | "in_progress" | "resolved"
   isResolved: boolean("is_resolved").default(false),
@@ -227,6 +250,7 @@ export const insertIssueSchema = createInsertSchema(issues).pick({
   title: true,
   description: true,
   imageUrl: true,
+  imageId: true,
   severity: true,
   status: true,
   isResolved: true,
