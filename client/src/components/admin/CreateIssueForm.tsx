@@ -175,11 +175,27 @@ export function CreateIssueForm({ profileId, onSuccess, onCancel }: CreateIssueF
 
   const onSubmit = async (data: FormValues) => {
     // Jeśli mamy plik do przesłania i jeszcze nie został wysłany
-    if (selectedFile && !form.getValues('imageUrl')) {
-      await uploadImage();
-      // Po przesłaniu obrazu form.getValues('imageUrl') będzie zaktualizowane
+    if (selectedFile && !data.imageUrl) {
+      try {
+        await uploadImage();
+        // Po przesłaniu obrazu pobieramy aktualny URL z formularza
+        data = {
+          ...data,
+          imageUrl: form.getValues('imageUrl')
+        };
+        console.log("URL obrazu po przesłaniu:", data.imageUrl);
+      } catch (error) {
+        console.error("Błąd podczas przesyłania obrazu:", error);
+        toast({
+          title: "Błąd podczas przesyłania obrazu",
+          description: "Nie udało się przesłać obrazu. Spróbuj ponownie.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
     
+    // Teraz przesyłamy dane z aktualnym URL obrazu
     createIssueMutation.mutate(data);
   };
 
