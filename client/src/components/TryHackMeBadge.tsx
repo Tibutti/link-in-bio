@@ -94,11 +94,6 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
     <AccordionSection
       title={t('sections.tryHackMe')}
       value="tryhackme"
-      badge={userId ? (
-        <Badge variant="outline" className="bg-primary/10 text-foreground dark:text-foreground">
-          ID: {userId}
-        </Badge>
-      ) : undefined}
     >
       {userId ? renderUserContent() : renderNoUserContent()}
     </AccordionSection>
