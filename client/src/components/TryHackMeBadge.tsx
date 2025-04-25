@@ -52,20 +52,23 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
   // Renderowanie zawartości dla przypadku gdy mamy userId
   const renderUserContent = () => (
     <div className="flex justify-center py-6">
-      {/* Iframe bezpośrednio z TryHackMe */}
-      <iframe 
-        src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
-        style={{ 
-          border: 'none', 
-          width: '330px', 
-          height: '82px',
-          transform: 'scale(1.3)', // Powiększenie dla lepszej widoczności
-          transformOrigin: 'center center'
-        }}
-        title="TryHackMe Badge"
-        onLoad={() => setIsLoaded(true)}
-        scrolling="no"
-      />
+      {/* Kontener z tłem dopasowanym do motywu */}
+      <div className="bg-[#141c2b] dark:bg-[#141c2b] overflow-hidden rounded-md flex justify-center items-center" style={{ width: '430px', height: '107px' }}>
+        {/* Iframe bezpośrednio z TryHackMe */}
+        <iframe 
+          src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+          style={{ 
+            border: 'none', 
+            width: '330px', 
+            height: '82px',
+            transform: 'scale(1.3)', // Powiększenie dla lepszej widoczności
+            transformOrigin: 'center center'
+          }}
+          title="TryHackMe Badge"
+          onLoad={() => setIsLoaded(true)}
+          scrolling="no"
+        />
+      </div>
     </div>
   );
 
