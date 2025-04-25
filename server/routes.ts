@@ -14,6 +14,7 @@ import { registerSocialCategoryRoutes } from "./socialCategoryRoutes";
 import { registerTechnologyRoutes } from "./technologyRoutes";
 import { registerIssueRoutes } from "./issueRoutes";
 import { registerUploadRoutes } from "./uploadRoutes";
+import { registerContactsRoutes } from "./contactsRoutes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Rejestruj wszystkie ścieżki API
@@ -24,6 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerTechnologyRoutes(app);
   registerIssueRoutes(app);
   registerUploadRoutes(app);
+  registerContactsRoutes(app);
   // Endpoint do ponownej inicjalizacji danych testowych
   app.post("/api/reinitialize-demo-data", async (req, res) => {
     try {

@@ -530,6 +530,53 @@ export class DatabaseStorage implements IStorage {
     return !!deleted;
   }
 
+  // Contacts methods (Wizytownik)
+  async getUserContacts(userId: number): Promise<Contact[]> {
+    return db
+      .select()
+      .from(contacts)
+      .where(eq(contacts.userId, userId))
+      .orderBy(desc(contacts.addedAt));
+  }
+
+  async getContact(id: number): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).where(eq(contacts.id, id));
+    return contact;
+  }
+
+  async addContact(contact: InsertContact): Promise<Contact> {
+    const [newContact] = await db.insert(contacts).values(contact).returning();
+    return newContact;
+  }
+
+  async updateContact(id: number, data: Partial<Contact>): Promise<Contact> {
+    const updatedData = {
+      ...data,
+      lastViewedAt: new Date() // Aktualizujemy czas ostatniego wyświetlenia
+    };
+
+    const [updatedContact] = await db
+      .update(contacts)
+      .set(updatedData)
+      .where(eq(contacts.id, id))
+      .returning();
+    
+    if (!updatedContact) {
+      throw new Error(`Contact with ID ${id} not found`);
+    }
+    
+    return updatedContact;
+  }
+
+  async deleteContact(id: number): Promise<boolean> {
+    const [deleted] = await db
+      .delete(contacts)
+      .where(eq(contacts.id, id))
+      .returning();
+    
+    return !!deleted;
+  }
+
   // Initialize database with demo data 
   async initializeDemoData() {
     // Sprawdź, czy użytkownik demo już istnieje
