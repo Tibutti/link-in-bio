@@ -7,7 +7,11 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ profile }: ProfileHeaderProps) {
-  const profileImage = PROFILE_IMAGES[profile.imageIndex];
+  // Obsługa przypadku, gdy imageIndex jest null
+  const imageIndex = profile.imageIndex !== null && profile.imageIndex !== undefined 
+    ? profile.imageIndex 
+    : 0;
+  const profileImage = PROFILE_IMAGES[imageIndex];
 
   return (
     <header className="flex flex-col items-center mb-10 pt-16 sm:pt-6">

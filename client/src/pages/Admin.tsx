@@ -296,39 +296,41 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Panel administracyjny</h1>
+            <h1 className="text-xl sm:text-2xl font-bold">Panel administracyjny</h1>
             {user && profile && (
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Zalogowany jako: {user.username} | Profil: {profile.name}
               </p>
             )}
           </div>
-          <div className="flex space-x-2">
-            <Button variant="secondary" onClick={() => setLocation('/')}>
+          <div className="flex gap-2 self-end sm:self-auto">
+            <Button variant="secondary" size="sm" onClick={() => setLocation('/')}>
               Strona główna
             </Button>
-            <Button variant="outline" onClick={handleLogout}>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
               Wyloguj się
             </Button>
           </div>
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="flex flex-wrap w-full gap-1">
-            <TabsTrigger value="profile" className="flex-grow">Profil</TabsTrigger>
-            <TabsTrigger value="avatar" className="flex-grow">Zdjęcie</TabsTrigger>
-            <TabsTrigger value="contact" className="flex-grow">Kontakt</TabsTrigger>
-            <TabsTrigger value="integrations" className="flex-grow">Integracje</TabsTrigger>
-            <TabsTrigger value="visibility" className="flex-grow">Widoczność</TabsTrigger>
-            <TabsTrigger value="social" className="flex-grow">Media</TabsTrigger>
-            <TabsTrigger value="knowledge" className="flex-grow">Platformy</TabsTrigger>
-            <TabsTrigger value="featured" className="flex-grow">Treści</TabsTrigger>
-            <TabsTrigger value="technologies" className="flex-grow">Technologie</TabsTrigger>
-            <TabsTrigger value="issues" className="flex-grow">Usterki</TabsTrigger>
-            <TabsTrigger value="diagnostics" className="flex-grow bg-amber-50">Diagnostyka</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto pb-2 -mx-4 px-4">
+            <TabsList className="inline-flex flex-nowrap min-w-full">
+              <TabsTrigger value="profile" className="whitespace-nowrap">Profil</TabsTrigger>
+              <TabsTrigger value="avatar" className="whitespace-nowrap">Zdjęcie</TabsTrigger>
+              <TabsTrigger value="contact" className="whitespace-nowrap">Kontakt</TabsTrigger>
+              <TabsTrigger value="integrations" className="whitespace-nowrap">Integracje</TabsTrigger>
+              <TabsTrigger value="visibility" className="whitespace-nowrap">Widoczność</TabsTrigger>
+              <TabsTrigger value="social" className="whitespace-nowrap">Media</TabsTrigger>
+              <TabsTrigger value="knowledge" className="whitespace-nowrap">Platformy</TabsTrigger>
+              <TabsTrigger value="featured" className="whitespace-nowrap">Treści</TabsTrigger>
+              <TabsTrigger value="technologies" className="whitespace-nowrap">Technologie</TabsTrigger>
+              <TabsTrigger value="issues" className="whitespace-nowrap">Usterki</TabsTrigger>
+              <TabsTrigger value="diagnostics" className="whitespace-nowrap bg-amber-50">Diagnostyka</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="profile" className="mt-4">
             <Card>
