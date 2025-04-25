@@ -27,6 +27,13 @@ export async function apiRequest<T = any>(
   });
 
   await throwIfResNotOk(res);
+  
+  // Obsługa odpowiedzi 204 No Content - zwracamy pusty obiekt zamiast próbować parsować JSON
+  if (res.status === 204) {
+    return {} as T;
+  }
+  
+  // Dla innych odpowiedzi parsujemy JSON
   return await res.json();
 }
 
@@ -54,6 +61,12 @@ export const getQueryFn: <T>(options: {
     }
 
     await throwIfResNotOk(res);
+    
+    // Obsługa odpowiedzi 204 No Content
+    if (res.status === 204) {
+      return {} as T;
+    }
+    
     return await res.json();
   };
 
