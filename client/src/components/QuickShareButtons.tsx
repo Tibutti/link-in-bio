@@ -179,7 +179,7 @@ export function QuickShareButtons({
                   <div className="flex flex-col items-center justify-center p-4">
                     <div className="bg-white p-4 rounded-lg shadow-sm">
                       <QRCodeSVG 
-                        value={url}
+                        value={profileId ? `${url}?add_contact=1&profileId=${profileId}` : url}
                         size={200}
                         bgColor={"#ffffff"}
                         fgColor={"#000000"}

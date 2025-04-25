@@ -213,7 +213,8 @@ export default function Home() {
   return (
     <div className={`min-h-screen ${BACKGROUND_OPTIONS[backgroundIndex].className}`}>
       <QuickShareButtons 
-        title={`Profil ${profile.name}`} 
+        title={`Profil ${profile.name}`}
+        profileId={profile.id} 
       />
       
       {/* Przyciski administracyjne, przełącznik motywu i języka */}
