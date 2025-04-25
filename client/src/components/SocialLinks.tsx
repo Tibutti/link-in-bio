@@ -121,7 +121,7 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
           title={t('sections.social')}
           value="social"
           badge={
-            <Badge variant="outline" className="ml-2 bg-primary/10">
+            <Badge variant="outline" className="bg-primary/10 text-foreground dark:text-foreground">
               {socialLinks.length}
             </Badge>
           }
@@ -143,7 +143,7 @@ export default function SocialLinks({ links, onLinkClick }: SocialLinksProps) {
           title={t('sections.knowledge')}
           value="knowledge"
           badge={
-            <Badge variant="outline" className="ml-2 bg-primary/10">
+            <Badge variant="outline" className="bg-primary/10 text-foreground dark:text-foreground">
               {knowledgeLinks.length}
             </Badge>
           }
