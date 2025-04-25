@@ -51,35 +51,21 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
 
   // Renderowanie zawartości dla przypadku gdy mamy userId
   const renderUserContent = () => (
-    <div className="py-4">
-      <div
-        className="bg-card flex flex-col items-center justify-center p-6 rounded-lg"
-        style={{backgroundColor: 'transparent'}}
-      >
-        <h3 className="text-lg font-medium text-foreground mb-4">TryHackMe Profil</h3>
-        <a 
-          href={`https://tryhackme.com/p/${userId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary hover:underline mb-2"
-        >
-          Zobacz pełny profil na TryHackMe
-        </a>
-        <div className="flex gap-8 mt-2">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-yellow-500">267685</p>
-            <p className="text-sm text-muted-foreground">Punktów</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-green-500">5</p>
-            <p className="text-sm text-muted-foreground">Pokoi</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-blue-500">13</p>
-            <p className="text-sm text-muted-foreground">Odznak</p>
-          </div>
-        </div>
-      </div>
+    <div className="flex justify-center py-6">
+      {/* Iframe bezpośrednio z TryHackMe */}
+      <iframe 
+        src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+        style={{ 
+          border: 'none', 
+          width: '330px', 
+          height: '82px',
+          transform: 'scale(1.3)', // Powiększenie dla lepszej widoczności
+          transformOrigin: 'center center'
+        }}
+        title="TryHackMe Badge"
+        onLoad={() => setIsLoaded(true)}
+        scrolling="no"
+      />
     </div>
   );
 
