@@ -51,43 +51,34 @@ export default function TryHackMeBadge({ userId }: TryHackMeBadgeProps) {
 
   // Renderowanie zawartości dla przypadku gdy mamy userId
   const renderUserContent = () => (
-    <div className="flex justify-center p-4 bg-[#141c2b] dark:bg-[#141c2b] rounded-lg">
+    <div className="flex justify-center bg-[#141c2b] dark:bg-[#141c2b] rounded-lg p-4">
       <div 
         className={`text-center transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ 
           display: 'flex', 
           justifyContent: 'center', 
-          alignItems: 'center', 
-          width: '100%',
-          overflow: 'hidden' 
+          alignItems: 'center',
+          overflow: 'hidden',
+          width: '330px', 
+          height: '82px',
+          position: 'relative'
         }}
       >
-        <div className="bg-[#141c2b] dark:bg-[#141c2b]" style={{ 
-          width: '100%', 
-          maxWidth: '350px', 
-          height: '130px', 
-          position: 'relative',
-          margin: '0 auto',
-          overflow: 'hidden',
-          borderRadius: '8px'
-        }}>
-          <iframe 
-            src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
-            style={{ 
-              border: 'none', 
-              width: '330px', 
-              height: '220px',
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              marginTop: '0px',
-              backgroundColor: 'transparent'
-            }}
-            title="TryHackMe Badge"
-            onLoad={() => setIsLoaded(true)}
-            scrolling="no" // Wyłączenie przewijania
-          />
-        </div>
+        <iframe 
+          src={`https://tryhackme.com/api/v2/badges/public-profile?userPublicId=${userId}`} 
+          style={{ 
+            border: 'none', 
+            width: '330px', 
+            height: '82px', // Dokładny rozmiar widgetu
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            backgroundColor: 'transparent'
+          }}
+          title="TryHackMe Badge"
+          onLoad={() => setIsLoaded(true)}
+          scrolling="no" // Wyłączenie przewijania
+        />
       </div>
     </div>
   );
