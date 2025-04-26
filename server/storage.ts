@@ -1,5 +1,5 @@
 import { 
-  users, profiles, socialLinks, featuredContents, sessions, technologies, issues, contacts,
+  users, profiles, socialLinks, featuredContents, sessions, technologies, issues, contacts, issueImages,
   type User, type InsertUser, 
   type Profile, type InsertProfile,
   type SocialLink, type InsertSocialLink,
@@ -9,7 +9,8 @@ import {
   type TechnologyCategory,
   type Issue, type InsertIssue,
   type Contact, type InsertContact,
-  type IssueSeverity
+  type IssueSeverity,
+  type IssueImage, type InsertIssueImage
 } from '@shared/schema';
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -514,6 +515,17 @@ export class DatabaseStorage implements IStorage {
     }
     
     return updatedIssue;
+  }
+
+  // Issue images methods
+  async createIssueImage(image: InsertIssueImage): Promise<IssueImage> {
+    const [issueImage] = await db.insert(issueImages).values(image).returning();
+    return issueImage;
+  }
+  
+  async getIssueImage(id: number): Promise<IssueImage | undefined> {
+    const [image] = await db.select().from(issueImages).where(eq(issueImages.id, id));
+    return image;
   }
 
   // Session methods
