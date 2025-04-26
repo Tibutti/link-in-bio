@@ -72,6 +72,10 @@ export interface IStorage {
   markIssueAsResolved(id: number): Promise<Issue>;
   markIssueAsOpen(id: number): Promise<Issue>;
   
+  // Issue images methods
+  createIssueImage(image: InsertIssueImage): Promise<IssueImage>;
+  getIssueImage(id: number): Promise<IssueImage | undefined>;
+  
   // Contacts methods (Wizytownik)
   getUserContacts(userId: number): Promise<Contact[]>;
   getContact(id: number): Promise<Contact | undefined>;
